@@ -1,0 +1,57 @@
+import { z } from "zod";
+import { ROOMS, TSocketTypes, TYPES } from "./static";
+
+/***** VALIDATORS *****/
+const roomsValidators = {
+  [TYPES.SERVER_CONNECTION]: z.array(z.never()),
+  [TYPES.INVALIDATE]: z.array(z.union([
+    z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_A),
+    z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_B),
+  ])),
+  [TYPES.ROOMS]: z.array(z.union([
+    z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_A),
+    z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_B),
+  ])),
+}
+
+/***** EXPORTS *****/
+export const socketValidators = {
+  typeValidator: z.object({
+    type: z.union([
+      z.literal(TYPES.SERVER_CONNECTION),
+      z.literal(TYPES.INVALIDATE),
+      z.literal(TYPES.ROOMS),
+    ]),
+  }),
+  serverConnection: z.object({
+    type: z.literal(TYPES.SERVER_CONNECTION),
+    identifier: z.string(),
+    rooms: roomsValidators[TYPES.SERVER_CONNECTION],
+    authorization: z.object({
+      level: z.union([
+        z.literal('guest'),
+        z.literal('user'),
+        z.literal('admin'),
+      ])
+    })
+  }),
+  invalidate: z.object({
+    type: z.literal(TYPES.INVALIDATE),
+    identifier: z.string(),
+    rooms: roomsValidators[TYPES.INVALIDATE]
+  }),
+  rooms: z.object({
+    type: z.literal(TYPES.ROOMS),
+    identifier: z.string(),
+    rooms: roomsValidators[TYPES.ROOMS]
+  })
+} as const;
+
+export const simpleParse: TSocketTypes.TSimpleParse = (callback) => (message) => {
+  const parsed = socketValidators.typeValidator.safeParse(message)
+
+  if (!parsed.success)
+    return;
+
+  callback(parsed.data)
+}

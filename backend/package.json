@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/web.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "@types/express": "^4.17.21"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/node": "^20.11.25",
+    "@types/ws": "^8.5.10",
+    "express": "^4.18.3",
+    "websocket": "^1.0.34",
+    "ws": "^8.16.0"
+  }
+}
