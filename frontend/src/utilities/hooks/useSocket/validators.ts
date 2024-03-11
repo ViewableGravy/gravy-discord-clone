@@ -7,10 +7,12 @@ const roomsValidators = {
   [TYPES.INVALIDATE]: z.array(z.union([
     z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_A),
     z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_B),
+    z.literal(ROOMS[TYPES.INVALIDATE].EXAMPLE),
   ])),
   [TYPES.ROOMS]: z.array(z.union([
     z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_A),
     z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_B),
+    z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_EXAMPLE),
   ])),
 }
 
@@ -37,12 +39,10 @@ export const socketValidators = {
   }),
   invalidate: z.object({
     type: z.literal(TYPES.INVALIDATE),
-    identifier: z.string(),
     rooms: roomsValidators[TYPES.INVALIDATE]
   }),
   rooms: z.object({
     type: z.literal(TYPES.ROOMS),
-    identifier: z.string(),
     rooms: roomsValidators[TYPES.ROOMS]
   })
 } as const;

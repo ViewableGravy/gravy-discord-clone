@@ -27,6 +27,12 @@ type TCreateBaseArgs = {
   res: express.Response;
 }
 
+type TUser = {};
+
+type TCreateAuthenticatedRouteCallbackArgs = {
+  user: TUser;
+} & TCreateBaseArgs
+
 export const createRouteCallback = (callback: ({ req, res, builder }: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
   const route = req.route.path;
 
@@ -43,12 +49,6 @@ export const createRouteCallback = (callback: ({ req, res, builder }: TCreateBas
     }
   });
 }
-
-type TUser = {};
-
-type TCreateAuthenticatedRouteCallbackArgs = {
-  user: TUser;
-} & TCreateBaseArgs
 
 export const createAuthenticatedRouteCallback = (level: string, callback: ({ req, res, user, builder }: TCreateAuthenticatedRouteCallbackArgs) => void) => {
   return (req: express.Request, res: express.Response) => {

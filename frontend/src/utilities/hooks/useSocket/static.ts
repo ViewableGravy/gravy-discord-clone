@@ -48,10 +48,12 @@ export const ROOMS = {
   [TYPES.SERVER_CONNECTION]: {},
   [TYPES.INVALIDATE]: {
     ENDPOINT_A: 'endpointA',
-    ENDPOINT_B: 'endpointB'
+    ENDPOINT_B: 'endpointB',
+    EXAMPLE: 'example'
   },
   [TYPES.ROOMS]: {
     INVALIDATE_ENDPOINT_A: 'invalidate/endpointA',
-    INVALIDATE_ENDPOINT_B: 'invalidate/endpointB'
+    INVALIDATE_ENDPOINT_B: 'invalidate/endpointB',
+    INVALIDATE_EXAMPLE: 'invalidate/example'
   }
 } as const;

@@ -2,6 +2,7 @@ import { z, ZodType } from "zod";
 import { socketValidators } from "./validators";
 import { _socketStore } from ".";
 import { TSocketTypes } from "./static";
+import { queryClient } from "../../../main";
 
 type TVoidParse = <T extends ZodType<any, any, any>>(parser: T, callback: (message: z.infer<T>) => void) => (message: any) => void;
 type THandlers = Record<TSocketTypes.TSimpleMessage['type'], (message: TSocketTypes.TSimpleMessage) => void>
@@ -45,7 +46,8 @@ export const RouteHandlers: THandlers = {
   }),
   'invalidate': voidParse(socketValidators.invalidate, (message) => {
     message.rooms.forEach((room) => {
-      //In this context, rooms are the names of the Tanstack queries
+      //In this context, rooms are the names of the Tanstack query keys (the query keys should be based off rooms in the backend)
+      queryClient.invalidateQueries({ queryKey: [room] })
     })
   }),
 }

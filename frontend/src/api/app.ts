@@ -31,6 +31,17 @@ export const APP_API = {
      return APP_API_VALIDATORS.authenticate.parse(result.data);
     }
     
+  },
+
+  GET: {
+
+    /**
+     * Example endpoint that can be invalidated
+     */
+    example: async () => {
+      return await globalAxios.get('/test/example');
+    }
+
   }
 
 } as const;
