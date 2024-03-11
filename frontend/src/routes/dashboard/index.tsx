@@ -6,7 +6,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h1>Dashboard</h1>
+            <h1>Dashboard | Tests</h1>
             <Button onClick={() => console.log("test")} to="">
                 Test Click
             </Button>
@@ -15,11 +15,17 @@ const Dashboard = () => {
                 Zuver 
             </Button>
             <br></br>
-            <Button to="/">Root</Button>
+            <Button to="/">
+                Root
+            </Button>
             <br/>
-            <Button.Anchor href="https://boatstore.com">Ship</Button.Anchor>
+            <Button.Anchor href="https://boatstore.com">
+                Ship
+            </Button.Anchor>
             <br/>
-            <Button.Link to="/">Trunk</Button.Link>
+            <Button.Link to="/">
+                Trunk
+            </Button.Link>
         </div>
     )
 }
