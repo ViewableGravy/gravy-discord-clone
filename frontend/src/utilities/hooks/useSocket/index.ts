@@ -1,5 +1,5 @@
 import { Store, useStore } from "@tanstack/react-store";
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { RouteHandlers } from "./handlers";
 import { socketValidators } from "./validators";
 import { TSocketTypes } from "./static";
@@ -65,6 +65,14 @@ export const useSocket = () => {
     }
   }, [send, rooms])
 
+  const joinRoomEffect = useCallback((rooms: TSocketTypes.TRooms, dependencies: React.DependencyList) => {
+    useEffect(() => {
+      if (readyState === 'READY') {
+        joinRoom(rooms)
+      }
+    }, dependencies)
+  }, [joinRoom, readyState])
+
   useEffect(() => {
     if (readyState === 'READY') {
       joinRoom(['invalidate/endpointA'])
@@ -74,6 +82,7 @@ export const useSocket = () => {
   return {
     joinRoom,
     leaveRoom,
+    joinRoomEffect,
     identifier,
     readyState
   }

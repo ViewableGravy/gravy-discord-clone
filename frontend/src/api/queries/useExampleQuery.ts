@@ -1,23 +1,21 @@
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { API } from "../api";
 import { useSocket } from "../../utilities/hooks/useSocket";
-import { useEffect } from "react";
 
 type TReturnType = Awaited<ReturnType<typeof API.APP.GET.example>>
-type TOptions = UseQueryOptions<TReturnType, Error, unknown>
+type TOptions = Omit<Omit<UseQueryOptions<TReturnType, Error, unknown>, 'queryFn'>, 'queryKey'> & { queryKey?: string[] }
 
-export const useExampleQuery = ({ queryKey, ...rest }: TOptions) => {
-  const { joinRoom, readyState } = useSocket();
+type TExampleQuery = (options?: TOptions) => ReturnType<typeof useQuery>
+
+export const useExampleQuery: TExampleQuery = ({ queryKey = [], ...rest } = {}) => {
+  const { readyState, joinRoomEffect } = useSocket();
   
-  useEffect(() => {
-    if (readyState === 'READY') {
-      joinRoom(['invalidate/example']) 
-    }
-  }, [readyState])
+  joinRoomEffect(['invalidate/example'], [readyState])
 
   return useQuery({
+    staleTime: 100,
     queryFn: API.APP.GET.example,
-    queryKey: ['socket', 'example', ...queryKey],
+    queryKey: ['example', ...queryKey],
     ...rest
   })
 }; 

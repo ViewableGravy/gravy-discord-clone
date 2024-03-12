@@ -1,28 +1,29 @@
 import { createRoute } from "@tanstack/react-router"
 import { rootRoute } from "../../router"
 import { Button } from "../../components/Button"
+import { useExampleQuery } from "../../api/queries/useExampleQuery"
 
 const Dashboard = () => {
+    const { isFetching, data } = useExampleQuery();
 
     return (
         <div>
             <h1>Dashboard | Tests</h1>
-            <Button onClick={() => console.log("test")} to="">
-                Test Click
-            </Button>
-            <br></br>
-            <Button href="https://zuver.net.au">
-                Zuver 
-            </Button>
-            <br></br>
-            <Button to="/">
+
+            {isFetching && (
+                <p>Loading...</p>
+            )}
+
+            <Button onClick={() => console.log('hello')}>
                 Root
             </Button>
             <br/>
-            <Button.Anchor href="https://boatstore.com">
+
+            <Button.Anchor href="https://gravy.cc">
                 Ship
             </Button.Anchor>
             <br/>
+
             <Button.Link to="/">
                 Trunk
             </Button.Link>

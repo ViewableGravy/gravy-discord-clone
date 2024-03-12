@@ -38,8 +38,14 @@ export const APP_API = {
     /**
      * Example endpoint that can be invalidated
      */
-    example: async () => {
-      return await globalAxios.get('/test/example');
+    example: () => {
+      return new Promise((resolve) => {
+        globalAxios.get('/test/example').then((response) => {
+          setTimeout(() => {
+            resolve(response);
+          }, 1000);
+        }).catch((error) => ({ error }))
+      })
     }
 
   }

@@ -44,10 +44,13 @@ export const RouteHandlers: THandlers = {
       rooms
     }))
   }),
-  'invalidate': voidParse(socketValidators.invalidate, (message) => {
-    message.rooms.forEach((room) => {
-      //In this context, rooms are the names of the Tanstack query keys (the query keys should be based off rooms in the backend)
-      queryClient.invalidateQueries({ queryKey: [room] })
+  'invalidate': voidParse(socketValidators.invalidate, ({ rooms }) => {
+    //In this context, rooms are the names of the Tanstack query keys (the query keys should be based off rooms in the backend)
+    rooms.forEach((room) => {
+      console.log(room)
+      queryClient.invalidateQueries({ 
+        queryKey: [room]
+      })
     })
   }),
 }
