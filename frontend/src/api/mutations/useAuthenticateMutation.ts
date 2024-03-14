@@ -1,7 +1,7 @@
 import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { _socketStore } from "../../utilities/hooks/useSocket";
 import { API } from "../api";
-import { TAuthenticationArgs } from "../app";
+import { TAuthenticationArgs } from "../apis/app";
 import { globalAxios } from "../axios";
 
 

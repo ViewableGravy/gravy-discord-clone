@@ -1,10 +1,23 @@
+/***** BASE IMPORTS *****/
 import { createRoute } from "@tanstack/react-router"
 import { rootRoute } from "../../router"
+
+/***** SHARED *****/
 import { Button } from "../../components/Button"
+
+/***** QUERY IMPORTS *****/
 import { useExampleQuery } from "../../api/queries/useExampleQuery"
 
-const Dashboard = () => {
-    const { isFetching, data } = useExampleQuery();
+/***** UTILITIES *****/
+import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
+
+const Dashboard = () => {      
+    const { isFetching } = useExampleQuery(); // testing
+    const { trigger } = useBrowserNotification();
+
+    const sendBrowserNotification = () => trigger('hello', {
+        body: 'I am the body, some might even say, the powerhouse of the cell'
+    })
 
     return (
         <div>
@@ -14,7 +27,7 @@ const Dashboard = () => {
                 <p>Loading...</p>
             )}
 
-            <Button onClick={() => console.log('hello')}>
+            <Button onClick={sendBrowserNotification}>
                 Root
             </Button>
             <br/>
