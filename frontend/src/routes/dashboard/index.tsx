@@ -2,6 +2,8 @@ import { createRoute } from "@tanstack/react-router"
 import { rootRoute } from "../../router"
 import { Button } from "../../components/Button"
 import { useExampleQuery } from "../../api/queries/useExampleQuery"
+import { ChatHeads } from "../../components/ChatHeads"
+import ubuntu from "../../assets/ubun.png"
 
 const Dashboard = () => {
     const { isFetching, data } = useExampleQuery();
@@ -27,6 +29,9 @@ const Dashboard = () => {
             <Button.Link to="/">
                 Trunk
             </Button.Link>
+            <ChatHeads>
+                <img src={ubuntu} alt="server-icon" style={{ marginLeft: -10 }}/>
+            </ChatHeads>
         </div>
     )
 }

@@ -1,0 +1,38 @@
+.ChatHeads {
+  background: #73AD21;
+  width: 285px;
+  position: relative;
+  
+  &:hover {
+    .ChatHeads__selected {
+      opacity: 100%;
+    }
+    .ChatHeads__icon {
+      border-radius: 60px;
+    }
+  }
+
+  &__icon {
+    background: #0c09c2;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    align-self: center;
+    margin-inline: auto;
+    transition: border-radius 0.2s ease-in-out;
+    overflow: hidden;
+  }
+
+  &__selected {
+    position: absolute;
+    top: 20%;
+    width: 15px;
+    height: 60%;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-color: white;
+    opacity: 0%;
+    transition: opacity 0.2s ease-in-out;
+
+  }
+}
