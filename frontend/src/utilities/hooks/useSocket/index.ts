@@ -1,8 +1,14 @@
 import { Store, useStore } from "@tanstack/react-store";
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { RouteHandlers } from "./handlers";
 import { socketValidators } from "./validators";
 import { TSocketTypes } from "./static";
+
+type TUseSocket = TUseSpecificStore<TCustomStore<typeof _socketStore>, {
+  joinRoom: typeof joinRoom,
+  leaveRoom: typeof leaveRoom,
+  useJoinRoomEffect: typeof useJoinRoomEffect,
+}>
 
 const defaultStoreState = {
   socket: null,
@@ -140,9 +146,7 @@ const useJoinRoomEffect = (rooms: TSocketTypes.TRooms, dependencies: React.Depen
 /**
  * This hook provides a set of standard methods to interact with the socket shared for the application. This includes joining "rooms", sending messages, and listening for messages.
  */
-export const useSocket = <
-  TSelected = NoInfer<typeof _socketStore['state']>,
->(selector: (state: typeof _socketStore['state']) => TSelected = (d) => d as any) => {
+export const useSocket: TUseSocket = (selector = (s) => s as any) => {
   const state = useStore(_socketStore, selector)
 
   return {
@@ -152,3 +156,4 @@ export const useSocket = <
     ...state
   }
 };
+
