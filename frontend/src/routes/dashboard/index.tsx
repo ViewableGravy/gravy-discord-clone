@@ -7,8 +7,6 @@ import { Button } from "../../components/Button"
 
 /***** QUERY IMPORTS *****/
 import { useExampleQuery } from "../../api/queries/useExampleQuery"
-import { ChatHeads } from "../../components/ChatHeads"
-import ubuntu from "../../assets/ubun.png"
 
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
@@ -42,9 +40,6 @@ const Dashboard = () => {
             <Button.Link to="/">
                 Trunk
             </Button.Link>
-            <ChatHeads>
-                <img src={ubuntu} alt="server-icon" style={{ marginLeft: -10 }}/>
-            </ChatHeads>
         </div>
     )
 }

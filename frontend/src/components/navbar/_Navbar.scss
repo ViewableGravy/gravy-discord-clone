@@ -4,4 +4,12 @@
   --navbar-background-color: #1e1f22;
 
   background-color: var(--navbar-background-color);
+
+  &__ChatHead {
+    margin-top: 8px;
+
+    &--first {
+      margin-top: 20px;
+    }
+  }
 }
