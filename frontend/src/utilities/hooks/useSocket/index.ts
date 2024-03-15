@@ -1,8 +1,14 @@
 import { Store, useStore } from "@tanstack/react-store";
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { RouteHandlers } from "./handlers";
 import { socketValidators } from "./validators";
 import { TSocketTypes } from "./static";
+
+type TUseSocket = TUseSpecificStore<TCustomStore<typeof _socketStore>, {
+  joinRoom: typeof joinRoom,
+  leaveRoom: typeof leaveRoom,
+  useJoinRoomEffect: typeof useJoinRoomEffect,
+}>
 
 const defaultStoreState = {
   socket: null,
@@ -31,62 +37,6 @@ export const _socketStore = new Store<{
     level: null | 'guest' | 'user' | 'admin',
   }
 }>(defaultStoreState)
-
-/**
- * This hook provides a set of standard methods to interact with the socket shared for the application. This includes joining "rooms", sending messages, and listening for messages.
- */
-export const useSocket = () => {
-  const { rooms, socket, identifier, readyState } = useStore(_socketStore)
-
-  const send = useCallback((message: TSocketTypes.Send.TSendMessage) => {
-    const stringified = JSON.stringify(message);
-    socket?.send(stringified)
-  }, [socket, identifier])
-  
-  const joinRoom = useCallback((_rooms: TSocketTypes.TRooms) => {
-    const newRooms = _rooms.filter((room) => !rooms.includes(room));
-
-    if (newRooms.length) {
-      send({
-        type: 'join-room',
-        rooms: newRooms
-      })
-    }
-  }, [send, rooms])
-
-  const leaveRoom = useCallback((_rooms: TSocketTypes.TRooms) => {
-    const removingRooms = _rooms.filter((room) => rooms.includes(room));
-
-    if (removingRooms.length) {
-      send({
-        type: 'leave-room',
-        rooms: removingRooms
-      })
-    }
-  }, [send, rooms])
-
-  const joinRoomEffect = useCallback((rooms: TSocketTypes.TRooms, dependencies: React.DependencyList) => {
-    useEffect(() => {
-      if (readyState === 'READY') {
-        joinRoom(rooms)
-      }
-    }, dependencies)
-  }, [joinRoom, readyState])
-
-  useEffect(() => {
-    if (readyState === 'READY') {
-      joinRoom(['invalidate/endpointA'])
-    }
-  }, [readyState])
-
-  return {
-    joinRoom,
-    leaveRoom,
-    joinRoomEffect,
-    identifier,
-    readyState
-  }
-};
 
 /***** IMMEDIATE FUNCTIONALITY *****/
 const url = new URL('ws://localhost:3000/api/socket')
@@ -156,3 +106,54 @@ const connect = () => {
  * "guest"
  */
 connect();
+
+/***** FUNCTIONS *****/
+const send = (message: TSocketTypes.Send.TSendMessage) => {
+  const stringified = JSON.stringify(message);
+  _socketStore.state.socket?.send(stringified)
+}
+
+const joinRoom = (_rooms: TSocketTypes.TRooms) => {
+  const newRooms = _rooms.filter((room) => !_socketStore.state.rooms.includes(room));
+
+  if (newRooms.length) {
+    send({
+      type: 'join-room',
+      rooms: newRooms
+    })
+  }
+}
+
+const leaveRoom = (_rooms: TSocketTypes.TRooms) => {
+  const removingRooms = _rooms.filter((room) => _socketStore.state.rooms.includes(room));
+
+  if (removingRooms.length) {
+    send({
+      type: 'leave-room',
+      rooms: removingRooms
+    })
+  }
+}
+
+const useJoinRoomEffect = (rooms: TSocketTypes.TRooms, dependencies: React.DependencyList) => {
+  useEffect(() => {
+    if (_socketStore.state.readyState === 'READY') {
+      joinRoom(rooms)
+    }
+  }, dependencies)
+}
+
+/**
+ * This hook provides a set of standard methods to interact with the socket shared for the application. This includes joining "rooms", sending messages, and listening for messages.
+ */
+export const useSocket: TUseSocket = (selector = (s) => s as any) => {
+  const state = useStore(_socketStore, selector)
+
+  return {
+    joinRoom,
+    leaveRoom,
+    useJoinRoomEffect,
+    ...state
+  }
+};
+

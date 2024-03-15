@@ -1,4 +1,4 @@
-import { APP_API } from "./app";
+import { APP_API } from "./apis/app";
 
 
 export const API = {

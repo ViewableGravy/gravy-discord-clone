@@ -1,6 +1,6 @@
-import { _socketStore } from "../utilities/hooks/useSocket";
+import { _socketStore } from "../../utilities/hooks/useSocket";
 import { z } from "zod";
-import { globalAxios } from "./axios";
+import { globalAxios } from "../axios";
 
 export type TAuthenticationArgs = {
   username: string,
