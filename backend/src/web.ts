@@ -3,7 +3,7 @@ import { aliveRoute } from './routes/ami/alive';
 import { socketServer } from './socket';
 import { authenticatedRoute } from './routes/ami/authenticated';
 import { testInvalidateRoute } from './routes/test/invalidate';
-import { createRouteCallback } from './models/base';
+import { createAccount } from './routes/test/createAccount';
 
 import cors from 'cors';
 
@@ -13,16 +13,10 @@ server.use(cors());
 
 server.get('/api/ami/alive', aliveRoute);
 server.get('/api/ami/authorized', authenticatedRoute);
-server.get('/api/test/invalidate', testInvalidateRoute)
-server.get('/api/test/example', createRouteCallback(({ builder }) => {
+server.post('/api/test/invalidate', testInvalidateRoute)
 
-  return builder({
-    status: 200,
-    data: {
-      message: 'Hello, World!'
-    }
-  })
-}))
+server.post('/api/auth/signup', createAccount)
+server.post('api/auth/login', () => {})
 
 // start server
 const expressServer = server.listen(3000, () => {
