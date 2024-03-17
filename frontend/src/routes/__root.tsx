@@ -8,6 +8,8 @@ import { Button } from "../components/Button";
 import { API } from "../api/queries";
 
 import ubuntu from '../assets/ubun.png';
+import nvidia from '../assets/nvidia.png';
+import spotify from '../assets/spotify.png';
 
 const RenderMain = () => {
   const { authorization } = useSocket();
@@ -40,10 +42,10 @@ const RootRoute = () => {
             <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
           </Navbar.Server>
           <Navbar.Server className="Navbar__ChatHead">
-            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+            <img src={nvidia} alt="server-icon" style={{ }}/>
           </Navbar.Server>
           <Navbar.Server className="Navbar__ChatHead">
-            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+            <img src={spotify} alt="server-icon" style={{ marginLeft: 0 }}/>
           </Navbar.Server>
         </Navbar>
         <RenderMain />
