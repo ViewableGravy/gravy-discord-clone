@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { socketStore } from "../store/store";
-import type { TClient, TCreateMeProps } from "./types";
+import type { TAuthorizationLevels, TClient, TCreateMeProps } from "./types";
 import type { INVALIDATE_ROOMS } from "../../models/enums";
 
 /***** INTERVALS *****/
@@ -12,8 +12,6 @@ setInterval(() => {
           socketStore.clients.splice(index, 1);
       }
   });
-
-  // console.log('clientIdentifiers: ', socketStore.clients.map(({ ws, ...rest }) => rest));
 }, 10000);
 
 /***** HELPER FUNCTIONS *****/
@@ -39,6 +37,17 @@ export const withMe = (callback: (options: { me: TClient, ws: WebSocket }) => vo
     const me = createMe({ ws });
 
     callback({ me, ws });
+  }
+}
+
+export const elevateClient = (clientId: string, level: TAuthorizationLevels) => {
+  const client = socketStore.clients.find(client => client.identifier === clientId);
+
+  if (client) {
+    client.authorization.level = level;
+    return { success: 'client elevated' }
+  } else {
+    return { error: 'client not found' }
   }
 }
 

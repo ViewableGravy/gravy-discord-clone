@@ -27,11 +27,37 @@ type TCreateBaseArgs = {
   res: express.Response;
 }
 
+type TCreateMiddlewareArgs = {
+  req: express.Request;
+  res: express.Response;
+  next: express.NextFunction;
+  builder: TBuilder;
+}
+
 type TUser = {};
 
 type TCreateAuthenticatedRouteCallbackArgs = {
   user: TUser;
 } & TCreateBaseArgs
+
+export const createMiddlewareCallback = (callback: ({ req, res, next, builder }: TCreateMiddlewareArgs) => void) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const route = req.route.path;
+
+  callback({
+    req,
+    res,
+    next,
+    builder: ({ status, data, meta }) => {
+      res.status(status).send({
+        route, 
+        status,
+        data,
+        meta
+      })
+    }
+  });
+}
+
 
 export const createRouteCallback = (callback: ({ req, res, builder }: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
   const route = req.route.path;

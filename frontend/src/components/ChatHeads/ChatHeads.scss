@@ -5,6 +5,7 @@
   &__icon {
     aspect-ratio: 1 / 1;
 
+    display: block;
     background-color: white;
     width: 65%;
     border-radius: 50%;
@@ -20,20 +21,30 @@
   }
 
   &__selected {
-    $height: 40%;
+    --selected-height: 40%;
 
     position: absolute;
-    top: calc((100% - $height) / 2);
-    width: 5%;
-    height: $height;
+    top: calc((100% - var(--selected-height)) / 2);
+    width: 4%;
+    height: var(--selected-height);
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     background-color: white;
     opacity: 0%;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.2s ease-in-out, height 0.2s ease-in-out, top 0.2s ease-in-out;
 
     &--hovered {
       opacity: 100%;
     }
+
+    &--toggled {
+      --selected-height: 80%;
+      opacity: 100%;
+      height: 80%;
+    }
+  }
+
+  &__input {
+    display: none;
   }
 }

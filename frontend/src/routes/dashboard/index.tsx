@@ -1,6 +1,5 @@
 /***** BASE IMPORTS *****/
-import { createRoute } from "@tanstack/react-router"
-import { rootRoute } from "../../router"
+import { createFileRoute } from "@tanstack/react-router"
 
 /***** SHARED *****/
 import { Button } from "../../components/Button"
@@ -14,6 +13,7 @@ import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotifica
 const Dashboard = () => {      
     const { isFetching } = useExampleQuery(); // testing
     const { trigger } = useBrowserNotification();
+    
 
     const sendBrowserNotification = () => trigger('hello', {
         body: 'I am the body, some might even say, the powerhouse of the cell'
@@ -32,9 +32,6 @@ const Dashboard = () => {
             </Button>
             <br/>
 
-            <Button.Anchor href="https://gravy.cc">
-                Ship
-            </Button.Anchor>
             <br/>
 
             <Button.Link to="/">
@@ -44,8 +41,6 @@ const Dashboard = () => {
     )
 }
 
-export const dashboardRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: "/dashboard",
-    component: Dashboard,
+export const Route = createFileRoute('/dashboard/')({
+    component: Dashboard
 })

@@ -11,13 +11,13 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as SignupIndexImport } from './routes/signup/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const SignupIndexRoute = SignupIndexImport.update({
+  path: '/signup/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -30,12 +30,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/dashboard/': {
       preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup/': {
+      preLoaderRoute: typeof SignupIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -44,8 +44,8 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  IndexRoute,
   DashboardIndexRoute,
+  SignupIndexRoute,
 ])
 
 /* prettier-ignore-end */

@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider } from '@tanstack/react-router'
-import { router } from './router'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import './_global.scss';
+
+import { routeTree } from './routeTree.gen'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,11 +17,18 @@ export const queryClient = new QueryClient({
   }
 })
 
+const router = createRouter({ routeTree })
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('app')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 )
