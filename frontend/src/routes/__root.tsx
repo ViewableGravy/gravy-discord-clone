@@ -7,6 +7,8 @@ import { useSocket } from "../utilities/hooks/useSocket";
 import { Button } from "../components/Button";
 import { API } from "../api/queries";
 
+import ubuntu from '../assets/ubun.png';
+
 const RenderMain = () => {
   const { authorization } = useSocket();
   const { mutate } = API.MUTATIONS.useAuthenticateMutation();
@@ -33,7 +35,17 @@ const RootRoute = () => {
   if (['admin', 'user'].includes(authorization.level ?? '')) {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', height: '100vh' }}>
-        <Navbar />
+        <Navbar>
+          <Navbar.Server className="Navbar__ChatHead--first">
+            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+          </Navbar.Server>
+          <Navbar.Server className="Navbar__ChatHead">
+            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+          </Navbar.Server>
+          <Navbar.Server className="Navbar__ChatHead">
+            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+          </Navbar.Server>
+        </Navbar>
         <RenderMain />
       </div>
     )
