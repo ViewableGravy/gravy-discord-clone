@@ -5,11 +5,15 @@ as a POC for Tanstack Store, Websocket Cache invalidation as well as for teachin
 ## Getting started:
 
 ### Setting up the database
-This project relies on a mongodb database to be accessible. To facilitate this, the docker compose file for this project is located in the /docker directory.
+This project uses SQLite and prisma to operate. This should automatically be setup as part of the migrations.
 
-To run this, ensure that docker is installed and run `docker compose up -d`.
+Unfortunately bun doesn't seem to like running the migrations so for now we can use npx. This is bundled with npm so if you don't already have this, just install npm and then you can run the following command to get things setup. Note that this must be run in the backend folder.
 
-Once this is running, you can use Mongo Compass or any other extension to ensure that the database is running and accessible from your environment.
+```bash
+npx prisma migrate dev
+```
+
+Once this has run, there should be a file called dev.db in your prisma directory. If this is all good, then the below commands can be run to get the application started.
 
 ### Run The application:
 
