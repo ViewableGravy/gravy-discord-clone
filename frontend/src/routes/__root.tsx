@@ -7,7 +7,7 @@ import { useSocket } from "../utilities/hooks/useSocket";
 import { Button } from "../components/Button";
 import { API } from "../api/queries";
 
-import ubuntu from '../assets/ubun.png';
+import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
 
@@ -38,11 +38,12 @@ const RootRoute = () => {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', height: '100vh' }}>
         <Navbar>
-          <Navbar.Server className="Navbar__ChatHead--first">
-            <img src={ubuntu} alt="server-icon" style={{ marginLeft: -3 }}/>
+          <Navbar.Server default className="Navbar__ChatHead--first">
+            <img src={discord} alt="server-icon" />
           </Navbar.Server>
+          <br />
           <Navbar.Server className="Navbar__ChatHead">
-            <img src={nvidia} alt="server-icon" style={{ }}/>
+            <img src={nvidia} alt="server-icon" />
           </Navbar.Server>
           <Navbar.Server className="Navbar__ChatHead">
             <img src={spotify} alt="server-icon" style={{ marginLeft: 0 }}/>
