@@ -21,12 +21,16 @@ const RenderMain = () => {
       <h1 style={{ fontSize: 30, textTransform: 'capitalize' }}>
         {authorization.level}
       </h1>
-      <Button onClick={() => createAccount({ email: 'test@test.com', password: 'test', username: 'test' })}>
-        Create Account
-      </Button>
-      <Button onClick={() => authenticate({ password: 'test', username: 'test' })}>
-        Authenticate
-      </Button>
+      {authorization.level === 'guest' && (
+        <>
+          <Button onClick={() => createAccount({ email: 'test@test.com', password: 'test', username: 'test' })}>
+            Create Account
+          </Button>
+          <Button onClick={() => authenticate({ password: 'test', username: 'test' })}>
+            Authenticate
+          </Button>
+        </>
+      )}
 
       <Outlet />
       <TanStackRouterDevtools />
@@ -47,10 +51,10 @@ const RootRoute = () => {
           </Navbar.Server>
           <br />
           <Navbar.Server className="Navbar__ChatHead">
-            <img src={nvidia} alt="server-icon" />
+            <img src={nvidia} alt="server-icon" style={{ marginTop: 0 }} />
           </Navbar.Server>
           <Navbar.Server className="Navbar__ChatHead">
-            <img src={spotify} alt="server-icon" style={{ marginLeft: 0 }}/>
+            <img src={spotify} alt="server-icon" />
           </Navbar.Server>
         </Navbar>
         <RenderMain />
