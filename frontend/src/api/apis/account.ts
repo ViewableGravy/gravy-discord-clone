@@ -8,7 +8,13 @@ export type TAuthenticationArgs = {
   id: string | null,
 }
 
-export const APP_API_VALIDATORS = {
+export type TCreateAccountArgs = {
+  username: string,
+  password: string,
+  email: string
+}
+
+export const ACCOUNT_API_VALIDATORS = {
   authenticate: z.object({ 
     data: z.object({
       level: z.union([
@@ -18,10 +24,14 @@ export const APP_API_VALIDATORS = {
         z.literal('admin')
       ]) 
     })
+  }),
+  create: z.object({
+    status: z.literal(200),
+    data: z.string()
   })
 } as const;
 
-export const APP_API = {
+export const ACCOUNT_API = {
 
   POST: {
 
@@ -31,8 +41,16 @@ export const APP_API = {
      * Note: The useMutation associated with this endpoint handles updating the socket store.
     */
     authenticate: async (body: TAuthenticationArgs) => {
-      const result = await globalAxios.post('/test/authenticate', body);
-      return APP_API_VALIDATORS.authenticate.parse(result.data);
+      const result = await globalAxios.post('/auth/login', body);
+      return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
+    },
+
+    /**
+     * Creates a new account
+     */
+    create: async (body: { username: string, password: string, email: string }) => {
+      const result = await globalAxios.post('/auth/signup', body);
+      return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
     }
   },
 

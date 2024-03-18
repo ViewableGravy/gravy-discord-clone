@@ -1,22 +1,25 @@
+/***** BASE IMPORTS *****/
 import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
 import { API } from "../api";
-import { TAuthenticationArgs } from "../apis/app";
+import { TAuthenticationArgs } from "../apis/account";
 import { globalAxios } from "../axios";
 
-
-type TReturnType = Awaited<ReturnType<typeof API.APP.POST.authenticate>>
+/***** TYPE DEFINITIONS *****/
+type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.authenticate>>
 type TOptions = UseMutationOptions<TReturnType, Error, Omit<TAuthenticationArgs, 'id'>, unknown> | undefined
 
+/***** HOOK START *****/
 export const useAuthenticateMutation = (options: TOptions = {}) => {
+  /***** HOOKS *****/
   const { id } = useSocket(({ identifier: id }) => ({ id }));
   
+  /***** RENDER *****/
   return useMutation({
-    mutationFn: (body) => API.APP.POST.authenticate({
+    mutationFn: (body) => API.ACCOUNT.POST.authenticate({
       ...body,
       id
     }),
-    mutationKey: ['socket', 'authenticate'],
     onSuccess: async ({ data }) => {
       _socketStore.setState((state) => { 
         globalAxios.defaults.headers.common.Authorization = state.identifier;

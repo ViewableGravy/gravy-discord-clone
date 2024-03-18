@@ -5,6 +5,7 @@ export type TClient = {
   ws: WebSocket;
   authorization: {
     level: TAuthorizationLevels;
-  }
+  },
+  userId?: string;
 }
 export type TCreateMeProps = Partial<Omit<TClient, 'ws'>> & { ws: WebSocket; }

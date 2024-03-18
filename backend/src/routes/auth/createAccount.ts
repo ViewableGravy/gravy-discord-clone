@@ -29,7 +29,7 @@ export const createAccount = createRouteCallback(async ({ builder, req, prisma }
       email,
       username,
       salt,
-      hash: hash.toString(),
+      hash,
     }
   }).catch((error) => ({ error }))
 

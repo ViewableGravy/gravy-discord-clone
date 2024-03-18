@@ -13,14 +13,18 @@ import spotify from '../assets/spotify.png';
 
 const RenderMain = () => {
   const { authorization } = useSocket();
-  const { mutate } = API.MUTATIONS.useAuthenticateMutation();
+  const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
+  const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
 
   return (
     <main>
       <h1 style={{ fontSize: 30, textTransform: 'capitalize' }}>
         {authorization.level}
       </h1>
-      <Button onClick={() => mutate({ password: 'test', username: 'test' })}>
+      <Button onClick={() => createAccount({ email: 'test@test.com', password: 'test', username: 'test' })}>
+        Create Account
+      </Button>
+      <Button onClick={() => authenticate({ password: 'test', username: 'test' })}>
         Authenticate
       </Button>
 

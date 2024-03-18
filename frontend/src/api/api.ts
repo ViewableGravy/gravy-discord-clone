@@ -1,8 +1,8 @@
-import { APP_API } from "./apis/app";
+import { ACCOUNT_API } from "./apis/account";
 
 
 export const API = {
 
-  APP: APP_API
+  ACCOUNT: ACCOUNT_API
   
 } as const;

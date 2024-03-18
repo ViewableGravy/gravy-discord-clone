@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id       String  @id @default(uuid()) @map("_id")
-  username String?
+  username String? @unique
   email    String  @unique
   hash     String
   salt     String

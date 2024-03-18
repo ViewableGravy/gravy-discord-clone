@@ -3,11 +3,11 @@ import { aliveRoute } from './routes/ami/alive';
 import { socketServer } from './socket';
 import { authenticatedRoute } from './routes/ami/authenticated';
 import { testInvalidateRoute } from './routes/test/invalidate';
-import { createAccount } from './routes/test/createAccount';
+import { createAccount } from './routes/auth/createAccount';
 
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { authenticateRoute } from './routes/test/authenticate';
+import { authenticateRoute } from './routes/auth/authenticate';
 
 const server =  express();
 
@@ -17,7 +17,6 @@ server.use(bodyParser.json());
 /***** DEVELOPMENT ROUTES ******/
 if (Bun.env.NODE_ENV === 'development') {
   server.post('/api/test/invalidate', testInvalidateRoute)
-  server.post('/api/test/authenticate', authenticateRoute)
 }
 
 /***** ROUTES ******/
@@ -25,7 +24,7 @@ server.get('/api/ami/alive', aliveRoute);
 server.get('/api/ami/authorized', authenticatedRoute);
 
 server.post('/api/auth/signup', createAccount)
-server.post('/api/auth/login', () => {})
+server.post('/api/auth/login', authenticateRoute)
 
 // start server
 const expressServer = server.listen(3000, () => {

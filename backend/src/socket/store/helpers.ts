@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { socketStore } from "../store/store";
 import type { TAuthorizationLevels, TClient, TCreateMeProps } from "./types";
 import type { INVALIDATE_ROOMS } from "../../models/enums";
+import type { User } from "@prisma/client";
 
 /***** INTERVALS *****/
 setInterval(() => {
@@ -40,11 +41,14 @@ export const withMe = (callback: (options: { me: TClient, ws: WebSocket }) => vo
   }
 }
 
-export const elevateClient = (clientId: string, level: TAuthorizationLevels) => {
+export const elevateClient = (clientId: string, { id }: User) => {
+  // since we do not currently store this in the database, we will hardcode the level
+  const level = 'user' as TAuthorizationLevels;
   const client = socketStore.clients.find(client => client.identifier === clientId);
 
   if (client) {
     client.authorization.level = level;
+    client.userId = id;
     return { success: 'client elevated' }
   } else {
     return { error: 'client not found' }
