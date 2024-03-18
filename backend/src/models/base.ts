@@ -6,7 +6,12 @@
 import express from 'express';
 import { STATUS } from './status';
 import { CODES } from './enums';
+import { PrismaClient } from '@prisma/client';
 
+/***** CONSTANTS *****/
+const prisma = new PrismaClient();
+
+/***** TYPE DEFINITIONS *****/
 type TBuilder = (args: {
   status: ValueOf<typeof STATUS>;
   data: Record<TObjectKeys, unknown> | string;
@@ -25,28 +30,31 @@ type TCreateBaseArgs = {
    * The response object
    */
   res: express.Response;
+
+  /**
+   * The prisma client
+   */
+  prisma: typeof prisma;
 }
 
-type TCreateMiddlewareArgs = {
-  req: express.Request;
-  res: express.Response;
+type TCreateMiddlewareArgs = TCreateBaseArgs & {
   next: express.NextFunction;
-  builder: TBuilder;
 }
 
 type TUser = {};
 
 type TCreateAuthenticatedRouteCallbackArgs = {
   user: TUser;
-} & TCreateBaseArgs
+} & TCreateBaseArgs;
 
-export const createMiddlewareCallback = (callback: ({ req, res, next, builder }: TCreateMiddlewareArgs) => void) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareArgs) => void) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const route = req.route.path;
 
   callback({
     req,
     res,
     next,
+    prisma,
     builder: ({ status, data, meta }) => {
       res.status(status).send({
         route, 
@@ -58,13 +66,13 @@ export const createMiddlewareCallback = (callback: ({ req, res, next, builder }:
   });
 }
 
-
-export const createRouteCallback = (callback: ({ req, res, builder }: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
+export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
   const route = req.route.path;
 
   callback({
     req,
     res,
+    prisma,
     builder: ({ status, data, meta }) => {
       res.status(status).send({
         route, 
@@ -76,7 +84,7 @@ export const createRouteCallback = (callback: ({ req, res, builder }: TCreateBas
   });
 }
 
-export const createAuthenticatedRouteCallback = (level: string, callback: ({ req, res, user, builder }: TCreateAuthenticatedRouteCallbackArgs) => void) => {
+export const createAuthenticatedRouteCallback = (level: string, callback: (options: TCreateAuthenticatedRouteCallbackArgs) => void) => {
   return (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
       return res.status(STATUS.UNAUTHORIZED).send({
@@ -104,6 +112,7 @@ export const createAuthenticatedRouteCallback = (level: string, callback: ({ req
     callback({
       req,
       res,
+      prisma,
       user: {} as TUser,
       builder: ({ status, data, meta }) => {
         res.status(status).send({

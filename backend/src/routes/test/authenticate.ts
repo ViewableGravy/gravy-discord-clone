@@ -2,7 +2,7 @@ import { createRouteCallback } from "../../models/base";
 import { elevateClient } from "../../socket/store/helpers";
 
 
-export const authenticateRoute = createRouteCallback(({ req, res, builder }) => {
+export const authenticateRoute = createRouteCallback(({ req, res, builder, prisma }) => {
   const { username, password, id } = req.body;
 
   // validate and get client information from DB
