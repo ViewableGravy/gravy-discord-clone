@@ -22,3 +22,7 @@ export const INVALIDATE_ROOMS = {
   ENDPOINT_B: 'endpointB',
   EXAMPLE: 'example',
 } as const;
+
+export const PRISMA_CODES = {
+  UNIQUE_CONSTRAINT: 'P2002',
+} as const;

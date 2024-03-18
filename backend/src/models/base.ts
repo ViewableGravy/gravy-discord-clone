@@ -13,8 +13,26 @@ const prisma = new PrismaClient();
 
 /***** TYPE DEFINITIONS *****/
 type TBuilder = (args: {
+  /**
+   * Code representing the response. This may be a custom code to match on the frontend 
+   * in case of a specific error, or it may be a standard HTTP status code.
+   */
+  code?: string,
+
+  /**
+   * The status of the response. This should be a standard HTTP status code.
+   */
   status: ValueOf<typeof STATUS>;
-  data: Record<TObjectKeys, unknown> | string;
+
+  /**
+   * The data to be sent back to the client. This may be an object, array, or string.
+   */
+  data: Record<TObjectKeys, unknown> | Array<any> | string;
+
+  /**
+   * Any additional metadata to be sent back to the client. This may be an object with 
+   * additional information about the request.
+   */
   meta?: Record<TObjectKeys, unknown>;
 }) => void;
 
