@@ -1,28 +1,30 @@
+/***** BASE IMPORTS *****/
 import { Outlet, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { RouteFallbackComponents } from "../components/RouteFallbackComponents";
-import { Navbar } from "../components/navbar";
-import { useSocket } from "../utilities/hooks/useSocket";
-import { Button } from "../components/Button";
+
+/***** QUERY IMPORTS *****/
 import { API } from "../api/queries";
 
+/***** SHARED *****/
+import { RouteFallbackComponents } from "../components/RouteFallbackComponents";
+import { Navbar } from "../components/navbar";
+import { Button } from "../components/Button";
+
+/***** UTILITIES *****/
+import { useSocket } from "../utilities/hooks/useSocket";
+import { useFirstEffect } from "../utilities/hooks/useFirstEffect";
+
+/***** CONSTS *****/
 import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
-import { useEffect } from "react";
 
+/***** COMPONENT START *****/
 const RenderMain = () => {
-  const { authorization, readyState } = useSocket();
+  const { authorization } = useSocket();
   const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
   const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
-  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
-
-  useEffect(() => {
-    if (readyState === 'READY') {
-      refresh();
-    }
-  }, [readyState])
 
   return (
     <main>
@@ -48,7 +50,10 @@ const RenderMain = () => {
 }
 
 const RootRoute = () => {
-  const { authorization } = useSocket();
+  const { authorization, readyState } = useSocket();
+  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
+
+  useFirstEffect(refresh, readyState === "READY")
 
   if (['admin', 'user'].includes(authorization.level ?? '')) {
     return (
