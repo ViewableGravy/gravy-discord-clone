@@ -5,13 +5,18 @@ import { globalAxios } from "../axios";
 export type TAuthenticationArgs = {
   username: string,
   password: string,
-  id: string | null,
+  id: string,
 }
 
 export type TCreateAccountArgs = {
   username: string,
   password: string,
   email: string
+}
+
+export type TRefreshArgs = {
+  refreshToken: string,
+  id: string
 }
 
 export const ACCOUNT_API_VALIDATORS = {
@@ -22,7 +27,8 @@ export const ACCOUNT_API_VALIDATORS = {
         z.literal('guest'),
         z.literal('user'), 
         z.literal('admin')
-      ]) 
+      ]),
+      refreshToken: z.string(),
     })
   }),
   create: z.object({
@@ -42,6 +48,14 @@ export const ACCOUNT_API = {
     */
     authenticate: async (body: TAuthenticationArgs) => {
       const result = await globalAxios.post('/auth/login', body);
+      return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
+    },
+
+    /**
+     * Logs in the user using the refresh token stored in local storage
+     */
+    refresh: async (body: TRefreshArgs) => {
+      const result = await globalAxios.post('/auth/refresh', body);
       return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
     },
 

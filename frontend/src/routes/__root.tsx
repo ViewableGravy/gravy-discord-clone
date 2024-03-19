@@ -10,11 +10,19 @@ import { API } from "../api/queries";
 import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
+import { useEffect } from "react";
 
 const RenderMain = () => {
-  const { authorization } = useSocket();
+  const { authorization, readyState } = useSocket();
   const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
   const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
+  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
+
+  useEffect(() => {
+    if (readyState === 'READY') {
+      refresh();
+    }
+  }, [readyState])
 
   return (
     <main>

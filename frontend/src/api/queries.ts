@@ -1,5 +1,6 @@
 import { useAuthenticateMutation } from "./mutations/useAuthenticateMutation";
 import { useCreateAccountMutation } from "./mutations/useCreateAccountMutation";
+import { useRefreshTokenMutation } from "./mutations/useRefreshTokenMutation";
 import { useExampleQuery } from "./queries/useExampleQuery";
 
 export const API = {
@@ -24,7 +25,12 @@ export const API = {
       /**
        * Mutation for creating a new account.
        */
-      useCreateAccountMutation
+      useCreateAccountMutation,
+
+      /**
+       * Mutation for refreshing the user's token.
+       */
+      useRefreshTokenMutation
     }
 
   }
