@@ -16,7 +16,7 @@ export const useRefreshTokenMutation = (options: TOptions = {}) => {
 
   /***** RENDER *****/
   return useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!refreshToken)
         throw new Error('No refresh token found')
 

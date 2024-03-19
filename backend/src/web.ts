@@ -26,6 +26,11 @@ server.get('/api/ami/authorized', authenticatedRoute);
 server.post('/api/auth/signup', createAccount)
 server.post('/api/auth/login', loginRoute)
 
+
+server.all('*', (_, res) => {
+  res.status(404).send('Not found');
+})
+
 // start server
 const expressServer = server.listen(3000, () => {
   console.log('Server is running on port 3000');
