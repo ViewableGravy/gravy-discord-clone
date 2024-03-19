@@ -6,7 +6,8 @@ import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
 import { elevateClient } from "../../socket/store/helpers";
-import { validatePassword } from "../../utilities/crypto";
+import { createJWT, validatePassword } from "../../utilities/crypto";
+import { randomBytes } from "crypto";
 
 /***** VALIDATION *****/
 const validator = z.object({
@@ -16,7 +17,7 @@ const validator = z.object({
 });
 
 /***** ROUTE START *****/
-export const authenticateRoute = createRouteCallback(async ({ req, builder, prisma }) => {
+export const loginRoute = createRouteCallback(async ({ req, builder, prisma }) => {
   const { username, password, id } = req.body;
 
   /***** VALIDATION *****/
@@ -35,7 +36,10 @@ export const authenticateRoute = createRouteCallback(async ({ req, builder, pris
     }
   });
 
-  if (!user || !validatePassword(password, user.hash, user.salt)) {
+  const userExists = !!user;
+  const validPassword = validatePassword(password, user?.hash ?? '', user?.salt ?? '');
+
+  if (!userExists || !validPassword) {
     return builder({
       status: 401,
       data: 'Invalid credentials'
@@ -44,12 +48,46 @@ export const authenticateRoute = createRouteCallback(async ({ req, builder, pris
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
 
+  //Create session ID
+  const expiry = {
+    str: '14d',
+    ms: 14 * 24 * 60 * 60 * 1000
+  }
+
+  const sessionToken = randomBytes(64).toString('base64');
+  const sessionJWT = await createJWT({ token: sessionToken }, expiry.str);
+
+  // Create Session
+  const session = await prisma.session.create({
+    data: {
+      userId: user.id,
+      token: sessionToken,
+      expires: new Date(Date.now() + expiry.ms)
+    }
+  }).catch((error) => ({ error }));
+
+  const revertSession = async () => {
+    await prisma.session.delete({
+      where: {
+        token: sessionToken
+      }
+    });
+  }
+
+  if ('error' in session) {
+    return builder({
+      status: 500,
+      data: 'Could not create session. Please try again.'
+    });
+  }
+
   /**
    * Elevate the socket and attach the database ID to the socket for use later
    */
   const elevationResult = elevateClient(id, user);
 
   if (elevationResult.error) {
+    await revertSession().catch(() => {});
     return builder({
       status: 401,
       data: 'Could not find socket identifier to elevate. Please try again.'
@@ -60,7 +98,8 @@ export const authenticateRoute = createRouteCallback(async ({ req, builder, pris
   return builder({
     status: 200,
     data: {
-      level: 'user'
+      level: 'user',
+      refreshToken: sessionJWT
     }
   });
 });

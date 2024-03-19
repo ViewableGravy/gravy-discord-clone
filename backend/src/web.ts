@@ -4,10 +4,10 @@ import { socketServer } from './socket';
 import { authenticatedRoute } from './routes/ami/authenticated';
 import { testInvalidateRoute } from './routes/test/invalidate';
 import { createAccount } from './routes/auth/createAccount';
+import { loginRoute } from './routes/auth/authenticate';
 
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { authenticateRoute } from './routes/auth/authenticate';
 
 const server =  express();
 
@@ -24,7 +24,7 @@ server.get('/api/ami/alive', aliveRoute);
 server.get('/api/ami/authorized', authenticatedRoute);
 
 server.post('/api/auth/signup', createAccount)
-server.post('/api/auth/login', authenticateRoute)
+server.post('/api/auth/login', loginRoute)
 
 // start server
 const expressServer = server.listen(3000, () => {
