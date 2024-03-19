@@ -5,7 +5,7 @@ import { globalAxios } from "../axios";
 import { useLocalStorage } from "../../utilities/hooks/useLocalStorage";
 
 /***** TYPE DEFINITIONS *****/
-type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.authenticate>>
+type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.refresh>>
 type TOptions = Omit<UseMutationOptions<TReturnType, Error, void, unknown>, 'mutationFn'> | undefined
 
 /***** HOOK START *****/

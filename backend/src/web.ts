@@ -8,6 +8,7 @@ import { loginRoute } from './routes/auth/authenticate';
 
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { refreshRoute } from './routes/auth/refresh';
 
 const server =  express();
 
@@ -25,7 +26,7 @@ server.get('/api/ami/authorized', authenticatedRoute);
 
 server.post('/api/auth/signup', createAccount)
 server.post('/api/auth/login', loginRoute)
-
+server.post('/api/auth/refresh', refreshRoute)
 
 server.all('*', (_, res) => {
   res.status(404).send('Not found');

@@ -34,6 +34,16 @@ export const ACCOUNT_API_VALIDATORS = {
   create: z.object({
     status: z.literal(200),
     data: z.string()
+  }),
+  refresh: z.object({
+    data: z.object({
+      level: z.union([
+        z.null(), 
+        z.literal('guest'),
+        z.literal('user'), 
+        z.literal('admin')
+      ])
+    })
   })
 } as const;
 
@@ -56,7 +66,7 @@ export const ACCOUNT_API = {
      */
     refresh: async (body: TRefreshArgs) => {
       const result = await globalAxios.post('/auth/refresh', body);
-      return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
+      return ACCOUNT_API_VALIDATORS.refresh.parse(result.data);
     },
 
     /**
@@ -64,7 +74,7 @@ export const ACCOUNT_API = {
      */
     create: async (body: { username: string, password: string, email: string }) => {
       const result = await globalAxios.post('/auth/signup', body);
-      return ACCOUNT_API_VALIDATORS.authenticate.parse(result.data);
+      return ACCOUNT_API_VALIDATORS.create.parse(result.data);
     }
   },
 
