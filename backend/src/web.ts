@@ -10,6 +10,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { refreshRoute } from './routes/auth/refresh';
 import { logoutRoute } from './routes/auth/logout';
+import { initializeClearSessionsCron } from './crons/clearSessions';
 
 const server =  express();
 
@@ -47,3 +48,6 @@ expressServer.on('upgrade', (req, socket, head) => {
     })
   }
 })
+
+/***** CRONS *****/
+initializeClearSessionsCron();

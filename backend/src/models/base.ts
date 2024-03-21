@@ -9,7 +9,7 @@ import { CODES } from './enums';
 import { PrismaClient } from '@prisma/client';
 
 /***** CONSTANTS *****/
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 /***** TYPE DEFINITIONS *****/
 export type TBuilder = (args: {
