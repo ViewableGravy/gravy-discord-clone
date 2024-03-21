@@ -41,7 +41,8 @@ export namespace TSocketTypes {
 export const TYPES = {
   SERVER_CONNECTION: 'server-connection',
   INVALIDATE: 'invalidate',
-  ROOMS: 'rooms'
+  ROOMS: 'rooms',
+  AUTHORIZATION: 'authorization'
 } as const;
 
 export const ROOMS = {
@@ -55,5 +56,6 @@ export const ROOMS = {
     INVALIDATE_ENDPOINT_A: 'invalidate/endpointA',
     INVALIDATE_ENDPOINT_B: 'invalidate/endpointB',
     INVALIDATE_EXAMPLE: 'invalidate/example'
-  }
+  },
+  [TYPES.AUTHORIZATION]: {}
 } as const;

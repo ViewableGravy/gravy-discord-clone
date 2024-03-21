@@ -16,8 +16,13 @@ type THandlers = Record<TSocketTypes.TSimpleMessage['type'], (message: TSocketTy
 export const voidParse: TVoidParse = (parser, callback) => (message) => {
   const parsed = parser.safeParse(message)
 
-  if (!parsed.success)
+  if (!parsed.success) {
+    if (import.meta.env.DEV) {
+      console.log(parsed.error)
+    }
+
     return;
+  }
 
   callback(parsed.data)
 }
@@ -52,4 +57,13 @@ export const RouteHandlers: THandlers = {
       })
     })
   }),
+  'authorization': voidParse(socketValidators.authorization, ({ level }) => {
+    console.log('level')
+    _socketStore.setState((state) => ({
+      ...state,
+      authorization: {
+        level
+      }
+    }))
+  })
 }

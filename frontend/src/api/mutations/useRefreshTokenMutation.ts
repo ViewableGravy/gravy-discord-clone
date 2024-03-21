@@ -24,19 +24,10 @@ export const useRefreshTokenMutation = (options: TOptions = {}) => {
       if (!id)
         throw new Error('No identifier found')
 
-      return API.ACCOUNT.POST.refresh({ id, refreshToken })
+      return await API.ACCOUNT.POST.refresh({ id, refreshToken })
     },
-    onSuccess: async ({ data }) => {
-      _socketStore.setState((state) => { 
-        globalAxios.defaults.headers.common.Authorization = state.identifier;
-        
-        return {
-          ...state, 
-          authorization: {
-            level: data.level
-          }
-        }
-      })
+    onSuccess: async () => {
+      globalAxios.defaults.headers.common.Authorization = _socketStore.state.identifier;
     },
     onError: async (error) => {
       if (error instanceof AxiosError) {

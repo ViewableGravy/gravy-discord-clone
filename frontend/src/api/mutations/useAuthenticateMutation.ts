@@ -4,6 +4,7 @@ import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
 import { API } from "../api";
 import { TAuthenticationArgs } from "../apis/account";
 import { globalAxios } from "../axios";
+import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.authenticate>>
@@ -13,6 +14,7 @@ type TOptions = UseMutationOptions<TReturnType, Error, Omit<TAuthenticationArgs,
 export const useAuthenticateMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
   const { id } = useSocket(({ identifier: id }) => ({ id }));
+  const [, setRefreshToken] = useRefreshToken();
   
   /***** RENDER *****/
   return useMutation({
@@ -26,18 +28,9 @@ export const useAuthenticateMutation = (options: TOptions = {}) => {
       })
     },
     onSuccess: async ({ data }) => {
-      localStorage.setItem('refreshToken', data.refreshToken);
+      setRefreshToken(data.refreshToken);
 
-      _socketStore.setState((state) => { 
-        globalAxios.defaults.headers.common.Authorization = state.identifier;
-        
-        return {
-          ...state, 
-          authorization: {
-            level: data.level
-          }
-        }
-      })
+      globalAxios.defaults.headers.common.Authorization = _socketStore.state.identifier;
     },
     ...options
   }); 

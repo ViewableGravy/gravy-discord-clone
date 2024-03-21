@@ -1,6 +1,6 @@
 import { useAuthenticateMutation } from "./mutations/useAuthenticateMutation";
 import { useCreateAccountMutation } from "./mutations/useCreateAccountMutation";
-import { useLogoutMutation } from "./mutations/useLogoutMutation";
+import { useLogoutMutation, useLogoutMutationState } from "./mutations/useLogoutMutation";
 import { useRefreshTokenMutation } from "./mutations/useRefreshTokenMutation";
 import { useExampleQuery } from "./queries/useExampleQuery";
 
@@ -36,7 +36,8 @@ export const API = {
       /**
        * Mutation for logging out the user.
        */
-      useLogoutMutation
+      useLogoutMutation,
+      useLogoutMutationState
     }
 
   }

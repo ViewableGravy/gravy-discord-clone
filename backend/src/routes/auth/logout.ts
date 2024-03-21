@@ -5,8 +5,9 @@ import { z } from "zod";
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { disconnectClient, getClientById } from "../../socket/store/helpers";
+import { getClientById } from "../../socket/store/helpers";
 import { getSession } from "./helpers/getSession";
+import { deElevateClient } from "../../socket/events/deElevateClient";
 
 /***** VALIDATION *****/
 const validator = z.object({
@@ -50,17 +51,13 @@ export const logoutRoute = createRouteCallback(async ({ req, builder, prisma }) 
   const { session } = sessionResponse;
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
-  await Promise.all([
-    //delete session
-    prisma.session.delete({
-      where: {
-        token: session.token
-      }
-    }),
+  await prisma.session.delete({
+    where: {
+      token: session.token
+    }
+  }),
 
-    //remove socket
-    disconnectClient(client)
-  ]);
+  deElevateClient(client)
 
   return builder(responses.success);
 });

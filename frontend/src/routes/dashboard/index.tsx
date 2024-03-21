@@ -4,15 +4,11 @@ import { createFileRoute } from "@tanstack/react-router"
 /***** SHARED *****/
 import { Button } from "../../components/Button"
 
-/***** QUERY IMPORTS *****/
-import { useExampleQuery } from "../../api/queries/useExampleQuery"
-
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
 import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
 
 const Dashboard = () => {      
-    const { isFetching } = useExampleQuery(); // testing
     const { trigger } = useBrowserNotification();
     const { mutate: logout } = useLogoutMutation()
     
@@ -24,10 +20,6 @@ const Dashboard = () => {
     return (
         <div>
             <h1>Dashboard | Tests</h1>
-
-            {isFetching && (
-                <p>Loading...</p>
-            )}
 
             <Button onClick={sendBrowserNotification}>
                 Root

@@ -41,33 +41,12 @@ export const withMe = (callback: (options: { me: TClient, ws: WebSocket }) => vo
   }
 }
 
-export const elevateClient = (clientId: string, { id }: User) => {
-  // since we do not currently store this in the database, we will hardcode the level
-  const level = 'user' as TAuthorizationLevels;
-  const client = socketStore.clients.find(client => client.identifier === clientId);
-
-  if (client) {
-    client.authorization.level = level;
-    client.userId = id;
-    return { success: 'client elevated' }
-  } else {
-    return { error: 'client not found' }
-  }
-}
+export const sendToClient = (client: TClient, message: any) => {
+  client.ws.send(JSON.stringify(message));
+} 
 
 export const getClientById = (id: string) => {
   return socketStore.clients.find(client => client.identifier === id);
-}
-
-export const disconnectClient = async (client: TClient) => {
-  //close socket if it is open
-  if (client) {
-    client.ws.close();
-  }
-
-  // remove client from the store
-  const index = socketStore.clients.findIndex(({ identifier }) => identifier === client.identifier);
-  socketStore.clients.splice(index, 1);
 }
 
 export const getClientsInRoom = (room: string) => {

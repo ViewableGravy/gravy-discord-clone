@@ -4,6 +4,7 @@ import { ROOMS, TSocketTypes, TYPES } from "./static";
 /***** VALIDATORS *****/
 const roomsValidators = {
   [TYPES.SERVER_CONNECTION]: z.array(z.never()),
+  [TYPES.AUTHORIZATION]: z.array(z.never()),
   [TYPES.INVALIDATE]: z.array(z.union([
     z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_A),
     z.literal(ROOMS[TYPES.INVALIDATE].ENDPOINT_B),
@@ -13,7 +14,7 @@ const roomsValidators = {
     z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_A),
     z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_ENDPOINT_B),
     z.literal(ROOMS[TYPES.ROOMS].INVALIDATE_EXAMPLE),
-  ])),
+  ]))
 }
 
 /***** EXPORTS *****/
@@ -23,6 +24,7 @@ export const socketValidators = {
       z.literal(TYPES.SERVER_CONNECTION),
       z.literal(TYPES.INVALIDATE),
       z.literal(TYPES.ROOMS),
+      z.literal(TYPES.AUTHORIZATION),
     ]),
   }),
   serverConnection: z.object({
@@ -44,6 +46,14 @@ export const socketValidators = {
   rooms: z.object({
     type: z.literal(TYPES.ROOMS),
     rooms: roomsValidators[TYPES.ROOMS]
+  }),
+  authorization: z.object({
+    type: z.literal(TYPES.AUTHORIZATION),
+    level: z.union([
+      z.literal('guest'),
+      z.literal('user'),
+      z.literal('admin'),
+    ])
   })
 } as const;
 

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { elevateClient } from "../../socket/store/helpers";
+import { elevateClient } from "../../socket/events/elevateClient";
 import { createJWT, validatePassword } from "../../utilities/crypto";
 import { randomBytes } from "crypto";
 

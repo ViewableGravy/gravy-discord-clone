@@ -10,4 +10,4 @@ export const useRefreshToken = () => useLocalStorage<undefined | string>('refres
   }
 
   return value;
-}});
+}, serializer: (value) => value ?? 'undefined' });
