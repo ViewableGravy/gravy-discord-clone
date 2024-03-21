@@ -2,8 +2,8 @@ import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { API } from "../api";
 import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
 import { globalAxios } from "../axios";
-import { useLocalStorage } from "../../utilities/hooks/useLocalStorage";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
+import { AxiosError } from "axios";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.refresh>>
@@ -13,7 +13,7 @@ type TOptions = Omit<UseMutationOptions<TReturnType, Error, void, unknown>, 'mut
 export const useRefreshTokenMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
   const { id } = useSocket(({ identifier: id }) => ({ id }));
-  const [refreshToken] = useRefreshToken();
+  const [refreshToken, setRefreshToken] = useRefreshToken();
 
   /***** RENDER *****/
   return useMutation({
@@ -37,6 +37,14 @@ export const useRefreshTokenMutation = (options: TOptions = {}) => {
           }
         }
       })
+    },
+    onError: async (error) => {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          console.warn('Attempted to refresh with invalid token');
+          setRefreshToken(undefined);
+        }
+      }
     },
     ...options
   }); 
