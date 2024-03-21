@@ -9,6 +9,7 @@ import { loginRoute } from './routes/auth/authenticate';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { refreshRoute } from './routes/auth/refresh';
+import { logoutRoute } from './routes/auth/logout';
 
 const server =  express();
 

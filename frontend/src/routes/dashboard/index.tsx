@@ -9,10 +9,12 @@ import { useExampleQuery } from "../../api/queries/useExampleQuery"
 
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
+import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
 
 const Dashboard = () => {      
     const { isFetching } = useExampleQuery(); // testing
     const { trigger } = useBrowserNotification();
+    const { mutate: logout } = useLogoutMutation()
     
 
     const sendBrowserNotification = () => trigger('hello', {
@@ -37,6 +39,10 @@ const Dashboard = () => {
             <Button.Link to="/">
                 Trunk
             </Button.Link>
+
+            <Button onClick={logout}>
+                Logout
+            </Button>
         </div>
     )
 }

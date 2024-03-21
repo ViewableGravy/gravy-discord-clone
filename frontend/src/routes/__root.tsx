@@ -13,7 +13,7 @@ import { Button } from "../components/Button";
 
 /***** UTILITIES *****/
 import { useSocket } from "../utilities/hooks/useSocket";
-import { useFirstEffect } from "../utilities/hooks/useFirstEffect";
+import { useApplicationBootProcess } from "./-useApplicationBootProcess";
 
 /***** CONSTS *****/
 import discord from '../assets/discord.jpg';
@@ -50,11 +50,13 @@ const RenderMain = () => {
 }
 
 const RootRoute = () => {
-  const { authorization, readyState } = useSocket();
-  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
+  // top level logic to run when application starts up
+  useApplicationBootProcess();
 
-  useFirstEffect(refresh, readyState === "READY")
+  /***** HOOKS *****/
+  const { authorization } = useSocket(({ authorization }) => ({ authorization }));
 
+  /***** RENDER *****/
   if (['admin', 'user'].includes(authorization.level ?? '')) {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', height: '100vh' }}>

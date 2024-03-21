@@ -19,6 +19,11 @@ export type TRefreshArgs = {
   id: string
 }
 
+export type TLogoutArgs = {
+  refreshToken: string,
+  id: string
+}
+
 export const ACCOUNT_API_VALIDATORS = {
   authenticate: z.object({ 
     data: z.object({
@@ -72,9 +77,17 @@ export const ACCOUNT_API = {
     /**
      * Creates a new account
      */
-    create: async (body: { username: string, password: string, email: string }) => {
+    create: async (body: TCreateAccountArgs) => {
       const result = await globalAxios.post('/auth/signup', body);
       return ACCOUNT_API_VALIDATORS.create.parse(result.data);
+    },
+
+    /**
+     * Logs out the user for the current session
+     */
+    logout: async (body: TLogoutArgs) => {
+      const result = await globalAxios.post('/auth/logout', body);
+      return result.data;
     }
   },
 
