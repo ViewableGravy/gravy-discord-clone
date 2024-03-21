@@ -55,6 +55,21 @@ export const elevateClient = (clientId: string, { id }: User) => {
   }
 }
 
+export const getClientById = (id: string) => {
+  return socketStore.clients.find(client => client.identifier === id);
+}
+
+export const disconnectClient = async (client: TClient) => {
+  //close socket if it is open
+  if (client) {
+    client.ws.close();
+  }
+
+  // remove client from the store
+  const index = socketStore.clients.findIndex(({ identifier }) => identifier === client.identifier);
+  socketStore.clients.splice(index, 1);
+}
+
 export const getClientsInRoom = (room: string) => {
   return socketStore.clients.filter(client => client.rooms.has(room));
 }

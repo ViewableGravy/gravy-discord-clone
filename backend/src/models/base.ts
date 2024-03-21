@@ -12,7 +12,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 /***** TYPE DEFINITIONS *****/
-type TBuilder = (args: {
+export type TBuilder = (args: {
   /**
    * Code representing the response. This may be a custom code to match on the frontend 
    * in case of a specific error, or it may be a standard HTTP status code.
@@ -35,6 +35,8 @@ type TBuilder = (args: {
    */
   meta?: Record<TObjectKeys, unknown>;
 }) => void;
+
+export type TPrisma = typeof prisma;
 
 type TCreateBaseArgs = {
   builder: TBuilder

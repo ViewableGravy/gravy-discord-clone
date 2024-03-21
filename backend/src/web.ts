@@ -27,6 +27,7 @@ server.get('/api/ami/authorized', authenticatedRoute);
 server.post('/api/auth/signup', createAccount)
 server.post('/api/auth/login', loginRoute)
 server.post('/api/auth/refresh', refreshRoute)
+server.post('/api/auth/logout', logoutRoute)
 
 server.all('*', (_, res) => {
   res.status(404).send('Not found');

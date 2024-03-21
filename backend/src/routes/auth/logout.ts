@@ -5,16 +5,26 @@ import { z } from "zod";
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { elevateClient } from "../../socket/store/helpers";
-import { createJWT, validatePassword, verifyJWT } from "../../utilities/crypto";
-import { randomBytes } from "crypto";
+import { disconnectClient, getClientById } from "../../socket/store/helpers";
 import { getSession } from "./helpers/getSession";
 
 /***** VALIDATION *****/
 const validator = z.object({
-  refreshToken: z.string(),
-  id: z.string()
+  id: z.string(),
+  refreshToken: z.string()
 });
+
+/***** CONSTS *****/
+const responses = {
+  InvalidSocket: {
+    status: 401,
+    data: 'Invalid session'
+  },
+  success: {
+    status: 200,
+    data: 'Logged out'
+  }
+} as const;
 
 /***** ROUTE START *****/
 export const refreshRoute = createRouteCallback(async ({ req, builder, prisma }) => {
@@ -27,34 +37,31 @@ export const refreshRoute = createRouteCallback(async ({ req, builder, prisma })
     });
   }
 
-  /***** DATABASE *****/
+  const { id } = validated.data;
+  const client = getClientById(id);
   const sessionResponse = await getSession({ ...validated.data }, { prisma });
 
-  if ('error' in sessionResponse) {
+  if ('error' in sessionResponse)
     return builder(sessionResponse);
-  }
+
+  if (!client)
+    return builder(responses.InvalidSocket);
 
   const { session } = sessionResponse;
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
-  /**
-   * Elevate the socket and attach the database ID to the socket for use later
-   */
-  const elevationResult = elevateClient(validated.data.id, session.user);
+  await Promise.all([
+    //delete session
+    prisma.session.delete({
+      where: {
+        token: session.token
+      }
+    }),
 
-  if (elevationResult.error) {
-    return builder({
-      status: 401,
-      data: 'Could not find socket identifier to elevate. Please try again.'
-    });
-  }
-  
-  /***** RETURN *****/
-  return builder({
-    status: 200,
-    data: {
-      level: 'user'
-    }
-  });
+    //remove socket
+    disconnectClient(client)
+  ]);
+
+  return builder(responses.success);
 });
 
