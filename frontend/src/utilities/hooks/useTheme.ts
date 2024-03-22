@@ -4,7 +4,8 @@ type TUseTheme = TUseSpecificStoreTuple<TCustomStore<typeof theme>>
 
 const theme = new Store({
   backgroundColor: {
-    navbar: '#1e1f22'
+    navbar: '#1e1f22',
+    sidebar: '#2b2d31'
   }
 })
 

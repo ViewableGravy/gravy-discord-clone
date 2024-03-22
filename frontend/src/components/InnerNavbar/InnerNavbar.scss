@@ -1,0 +1,10 @@
+.SideBar {
+  --sidebar-background-color: #2b2d31;
+
+  background-color: var(--sidebar-background-color);
+
+  width: 240px;
+  height: 100%;
+  padding: 8px;
+  border-top-left-radius: 6px;
+}

@@ -28,9 +28,6 @@ const Dashboard = () => {
                 Root
             </Button>
             <br/>
-
-            <br/>
-
             <Button.Link to="/">
                 Trunk
             </Button.Link>

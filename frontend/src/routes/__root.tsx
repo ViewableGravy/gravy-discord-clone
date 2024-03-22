@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 /***** QUERY IMPORTS *****/
 import { API } from "../api/queries";
+import { Sidebar } from "../components/InnerNavbar"
 
 /***** SHARED *****/
 import { RouteFallbackComponents } from "../components/RouteFallbackComponents";
@@ -61,7 +62,7 @@ const RootRoute = () => {
   /***** RENDER *****/
   if (['admin', 'user'].includes(authorization.level ?? '')) {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', height: '100vh' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '70px 240px 1fr', height: '100vh' }}>
         <Navbar>
           <Navbar.Server default className="Navbar__ChatHead--first">
             <img src={discord} alt="server-icon" />
@@ -74,6 +75,12 @@ const RootRoute = () => {
             <img src={spotify} alt="server-icon" />
           </Navbar.Server>
         </Navbar>
+        <Sidebar>
+          <Button.Anchor href="https://lurking.au">Lukas</Button.Anchor>
+          <Button.Anchor href="https://gravy.cc">Lleyton</Button.Anchor>
+          <p>TEST1</p>
+          <p>TEST 2</p>
+        </Sidebar>
         <RenderMain />
       </div>
     )
