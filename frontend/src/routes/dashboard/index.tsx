@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router"
 
 /***** SHARED *****/
 import { Button } from "../../components/Button"
-import { Sidebar } from "../../components/InnerNavbar"
 
 /***** QUERY IMPORTS *****/
 import { useExampleQuery } from "../../api/queries/useExampleQuery"
@@ -34,7 +33,7 @@ const Dashboard = () => {
             <br/>
             <Button.Link to="/">
                 Trunk
-            </Button.Link>       
+            </Button.Link>
         </div>
     )
 }
