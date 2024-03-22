@@ -1,3 +1,4 @@
+/***** SHARED *****/
 import { Outlet, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -6,6 +7,7 @@ import { Navbar } from "../components/navbar";
 import { useSocket } from "../utilities/hooks/useSocket";
 import { Button } from "../components/Button";
 import { API } from "../api/queries";
+import { Sidebar } from "../components/InnerNavbar"
 
 import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
@@ -23,7 +25,6 @@ const RenderMain = () => {
       <Button onClick={() => mutate({ password: 'test', username: 'test' })}>
         Authenticate
       </Button>
-
       <Outlet />
       <TanStackRouterDevtools />
       <ReactQueryDevtools />
@@ -36,7 +37,7 @@ const RootRoute = () => {
 
   if (['admin', 'user'].includes(authorization.level ?? '')) {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr', height: '100vh' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '70px 240px 1fr', height: '100vh' }}>
         <Navbar>
           <Navbar.Server default className="Navbar__ChatHead--first">
             <img src={discord} alt="server-icon" />
@@ -49,6 +50,12 @@ const RootRoute = () => {
             <img src={spotify} alt="server-icon" style={{ marginLeft: 0 }}/>
           </Navbar.Server>
         </Navbar>
+        <Sidebar>
+          <Button.Anchor href="https://lurking.au">Lukas</Button.Anchor>
+          <Button.Anchor href="https://gravy.cc">Lleyton</Button.Anchor>
+          <p>TEST1</p>
+          <p>TEST 2</p>
+        </Sidebar>
         <RenderMain />
       </div>
     )
