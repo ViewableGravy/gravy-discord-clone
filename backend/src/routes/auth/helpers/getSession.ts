@@ -1,6 +1,11 @@
-import { verifyJWT } from "../../../utilities/crypto";
-import type { TBuilder, TPrisma } from "../../../models/base";
+/***** BASE IMPORTS *****/
 import { z } from "zod";
+
+/***** UTILITIES *****/
+import { verifyJWT } from "../../../utilities/crypto";
+
+/***** TYPE DEFINITIONS *****/
+import type { TBuilder, TPrisma } from "../../../models/base";
 import type { Session, User } from "@prisma/client";
 
 /***** CONSTS *****/
@@ -22,6 +27,7 @@ const responses = {
   }
 } satisfies Record<string, Parameters<TBuilder>[0] & { error: true }>;
 
+/***** COMPONENT START *****/
 export const getSession = async ({ refreshToken }: { refreshToken: string }, { prisma }: { prisma: TPrisma }) => {
   /***** TYPE DEFINITIONS *****/
   type TSuccessResponse = {

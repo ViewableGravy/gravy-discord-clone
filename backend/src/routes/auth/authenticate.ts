@@ -1,5 +1,6 @@
 /***** BASE IMPORTS *****/
 import { z } from "zod";
+import { randomBytes } from "crypto";
 
 /***** MODELS *****/
 import { createRouteCallback } from "../../models/base";
@@ -7,7 +8,6 @@ import { createRouteCallback } from "../../models/base";
 /***** UTILITIES *****/
 import { elevateClient } from "../../socket/events/elevateClient";
 import { createJWT, validatePassword } from "../../utilities/crypto";
-import { randomBytes } from "crypto";
 
 /***** VALIDATION *****/
 const validator = z.object({

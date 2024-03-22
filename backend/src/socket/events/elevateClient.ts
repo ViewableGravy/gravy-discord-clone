@@ -1,16 +1,9 @@
+/***** UTILITIES *****/
+import { getClientById, sendToClient } from "../store/helpers";
+
 /***** TYPE DEFINITIONS *****/
 import type { User } from "@prisma/client";
-import { getClientById, sendToClient } from "../store/helpers";
 import type { TAuthorizationLevels } from "../store/types";
-
-/***** CONSTS *****/
-const functionResponses = {
-  clientNotFound: {
-    status: 404,
-    data: 'Client not found',
-    error: true
-  }
-} as const;
 
 /***** COMPONENT START *****/
 export const elevateClient = (clientId: string, { id }: User) => {

@@ -1,17 +1,24 @@
+/***** BASE IMPORTS *****/
 import express from 'express';
-import { aliveRoute } from './routes/ami/alive';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+
+/***** SOCKET IMPORTS *****/
 import { socketServer } from './socket';
+
+/***** ROUTE IMPORTS *****/
+import { aliveRoute } from './routes/ami/alive';
 import { authenticatedRoute } from './routes/ami/authenticated';
 import { testInvalidateRoute } from './routes/test/invalidate';
 import { createAccount } from './routes/auth/createAccount';
 import { loginRoute } from './routes/auth/authenticate';
-
-import cors from 'cors';
-import bodyParser from 'body-parser';
 import { refreshRoute } from './routes/auth/refresh';
 import { logoutRoute } from './routes/auth/logout';
+
+/***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
 
+/***** SERVER SETUP *****/
 const server =  express();
 
 server.use(cors());

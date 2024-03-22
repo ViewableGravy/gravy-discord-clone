@@ -1,16 +1,22 @@
+/***** BASE IMPORTS *****/
 import { z } from "zod"
-import { createRouteCallback } from "../../models/base"
-import type { NextFunction } from "express"
-import { hashPassword } from "../../utilities/crypto"
 import { Prisma } from "@prisma/client"
+
+/***** UTILITIES *****/
+import { hashPassword } from "../../utilities/crypto"
+import { createRouteCallback } from "../../models/base"
+
+/***** CONSTS *****/
 import { PRISMA_CODES } from "../../models/enums"
 
+/***** VALIDATORS *****/
 const bodyValidator = z.object({
   username: z.string(),
   password: z.string(),
   email: z.string().email(),
 })
 
+/***** ROUTE START *****/
 export const createAccount = createRouteCallback(async ({ builder, req, prisma }) => {
   const validated = bodyValidator.safeParse(req.body);
   

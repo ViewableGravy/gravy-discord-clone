@@ -2,11 +2,13 @@
  * @fileoverview Base function for creating a model. This includes information about the route,
  * status and data, meta, etc.
  */
-
+/***** BASE IMPORTS *****/
 import express from 'express';
+import { PrismaClient } from '@prisma/client';
+
+/***** CONSTS *****/
 import { STATUS } from './status';
 import { CODES } from './enums';
-import { PrismaClient } from '@prisma/client';
 
 /***** CONSTANTS *****/
 export const prisma = new PrismaClient();
@@ -67,6 +69,7 @@ type TCreateAuthenticatedRouteCallbackArgs = {
   user: TUser;
 } & TCreateBaseArgs;
 
+/***** COMPONENT START *****/
 export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareArgs) => void) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const route = req.route.path;
 
@@ -86,6 +89,7 @@ export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareAr
   });
 }
 
+/***** COMPONENT START *****/
 export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
   const route = req.route.path;
 
@@ -104,6 +108,7 @@ export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void
   });
 }
 
+/***** COMPONENT START *****/
 export const createAuthenticatedRouteCallback = (level: string, callback: (options: TCreateAuthenticatedRouteCallbackArgs) => void) => {
   return (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {

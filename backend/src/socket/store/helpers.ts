@@ -1,8 +1,12 @@
+/***** BASE IMPORTS *****/
 import { randomUUID } from "crypto";
+
+/***** STATE *****/
 import { socketStore } from "../store/store";
-import type { TAuthorizationLevels, TClient, TCreateMeProps } from "./types";
+
+/***** TYPE DEFINITIONS *****/
+import type { TClient, TCreateMeProps } from "./types";
 import type { INVALIDATE_ROOMS } from "../../models/enums";
-import type { User } from "@prisma/client";
 
 /***** INTERVALS *****/
 setInterval(() => {
