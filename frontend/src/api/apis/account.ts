@@ -1,7 +1,11 @@
-import { _socketStore } from "../../utilities/hooks/useSocket";
+/***** BASE IMPORTS *****/
 import { z } from "zod";
 import { globalAxios } from "../axios";
 
+/***** UTILITIES *****/
+import { _socketStore } from "../../utilities/hooks/useSocket";
+
+/***** TYPE DEFINITIONS *****/
 export type TAuthenticationArgs = {
   username: string,
   password: string,
@@ -24,6 +28,7 @@ export type TLogoutArgs = {
   id: string
 }
 
+/***** VALIDATORS *****/
 export const ACCOUNT_API_VALIDATORS = {
   authenticate: z.object({ 
     data: z.object({
@@ -52,6 +57,7 @@ export const ACCOUNT_API_VALIDATORS = {
   })
 } as const;
 
+/***** API START *****/
 export const ACCOUNT_API = {
 
   POST: {

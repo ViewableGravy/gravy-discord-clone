@@ -1,10 +1,14 @@
 /***** BASE IMPORTS *****/
 import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import { globalAxios } from "../axios";
+
+/***** UTILITIES *****/
 import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
+import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
+
+/***** API IMPORTS *****/
 import { API } from "../api";
 import { TAuthenticationArgs } from "../apis/account";
-import { globalAxios } from "../axios";
-import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.authenticate>>

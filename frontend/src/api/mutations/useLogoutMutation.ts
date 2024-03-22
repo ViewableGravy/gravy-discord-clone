@@ -1,9 +1,14 @@
+/***** BASE IMPORTS *****/
 import { UseMutationOptions, useMutation, useMutationState } from "@tanstack/react-query";
-import { API } from "../api";
-import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
 import { globalAxios } from "../axios";
+
+/***** UTILITIES *****/
+import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 import { wait } from "../../utilities/functions/wait";
+
+/***** API IMPORTS *****/
+import { API } from "../api";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.logout>>
@@ -50,6 +55,7 @@ export const useLogoutMutation = (options: TOptions = {}) => {
   }); 
 }
 
+/***** HOOK START *****/
 export const useLogoutMutationState = () => useMutationState({ 
   filters: { 
     mutationKey: mutationKeys 

@@ -1,5 +1,5 @@
+/***** BASE IMPORTS *****/
 import { useEffect, useLayoutEffect, useRef } from 'react'
-
 import type { RefObject } from 'react'
 
 // MediaQueryList Event based useEventListener interface

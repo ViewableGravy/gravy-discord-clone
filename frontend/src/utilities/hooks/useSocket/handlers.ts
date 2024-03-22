@@ -1,9 +1,15 @@
+/***** BASE IMPORTS *****/
 import { z, ZodType } from "zod";
+
+/***** UTILITIES *****/
 import { socketValidators } from "./validators";
 import { _socketStore } from ".";
-import { TSocketTypes } from "./static";
+
+/***** QUERY IMPORTS *****/
 import { queryClient } from "../../../main";
 
+/***** TYPE DEFINITIONS *****/
+import type { TSocketTypes } from "./static";
 type TVoidParse = <T extends ZodType<any, any, any>>(parser: T, callback: (message: z.infer<T>) => void) => (message: any) => void;
 type THandlers = Record<TSocketTypes.TSimpleMessage['type'], (message: TSocketTypes.TSimpleMessage) => void>
 
@@ -58,7 +64,6 @@ export const RouteHandlers: THandlers = {
     })
   }),
   'authorization': voidParse(socketValidators.authorization, ({ level }) => {
-    console.log('level')
     _socketStore.setState((state) => ({
       ...state,
       authorization: {

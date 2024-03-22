@@ -8,15 +8,18 @@ import { Button } from "../../components/Button"
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
 import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
 
-const Dashboard = () => {      
+/***** COMPONENT START *****/
+const Dashboard = () => {    
+    /***** HOOKS *****/  
     const { trigger } = useBrowserNotification();
     const { mutate: logout } = useLogoutMutation()
-    
 
+    /***** FUNCTIONS *****/
     const sendBrowserNotification = () => trigger('hello', {
         body: 'I am the body, some might even say, the powerhouse of the cell'
     })
 
+    /***** RENDER *****/
     return (
         <div>
             <h1>Dashboard | Tests</h1>

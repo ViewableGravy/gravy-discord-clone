@@ -1,9 +1,11 @@
+/***** QUERY IMPORTS *****/
 import { useAuthenticateMutation } from "./mutations/useAuthenticateMutation";
 import { useCreateAccountMutation } from "./mutations/useCreateAccountMutation";
 import { useLogoutMutation, useLogoutMutationState } from "./mutations/useLogoutMutation";
 import { useRefreshTokenMutation } from "./mutations/useRefreshTokenMutation";
 import { useExampleQuery } from "./queries/useExampleQuery";
 
+/***** API START *****/
 export const API = {
 
   QUERIES: {

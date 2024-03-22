@@ -22,10 +22,12 @@ import spotify from '../assets/spotify.png';
 
 /***** COMPONENT START *****/
 const RenderMain = () => {
+  /***** HOOKS *****/
   const { authorization } = useSocket();
   const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
   const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
 
+  /***** RENDER *****/
   return (
     <main>
       <h1 style={{ fontSize: 30, textTransform: 'capitalize' }}>
