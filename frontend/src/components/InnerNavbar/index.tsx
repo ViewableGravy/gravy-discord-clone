@@ -1,4 +1,6 @@
+/***** BASE IMPORTS *****/
 import React from 'react';
+
 /***** CONSTS *****/
 import './InnerNavbar.scss';
 

@@ -3,13 +3,13 @@ import { createFileRoute } from "@tanstack/react-router"
 
 /***** SHARED *****/
 import { Button } from "../../components/Button"
+import { Sidebar } from "../../components/InnerNavbar"
 
 /***** QUERY IMPORTS *****/
 import { useExampleQuery } from "../../api/queries/useExampleQuery"
 
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
-import { Sidebar } from "../../components/InnerNavbar"
 
 const Dashboard = () => {      
     const { isFetching } = useExampleQuery(); // testing
@@ -34,17 +34,7 @@ const Dashboard = () => {
             <br/>
             <Button.Link to="/">
                 Trunk
-            </Button.Link>
-            <br/>
-            <Sidebar>
-                <Button.Anchor href="https://lurking.au">Lukas</Button.Anchor>
-                <Button.Anchor href="https://gravy.cc">Lleyton</Button.Anchor>
-                <p>TEST1</p>
-                <p>TEST 2</p>
-            </Sidebar>
-
-            
-        
+            </Button.Link>       
         </div>
     )
 }
