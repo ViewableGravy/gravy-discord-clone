@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from '../../utilities/hooks/useTheme';
 
 /***** CONSTS *****/
-import './InnerNavbar.scss';
+import './_InnerNavbar.scss';
 
 /***** TYPE DEFINITIONS *****/
 type TSidebar = React.FC<{
