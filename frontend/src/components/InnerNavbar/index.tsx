@@ -8,7 +8,7 @@ type TSidebar = React.FC<{
 }>
 
 export const Sidebar: TSidebar = ({ children }) => {
-  return(
+  return (
     <div className="SideBar">
       {children}
     </div>
