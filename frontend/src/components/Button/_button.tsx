@@ -8,7 +8,13 @@ export namespace NButton {
   export type OnClickProps = {
     children: React.ReactNode;
     onClick: () => void;
-    type?: 'button' | 'reset' | 'submit'; 
+    type?: 'button' | 'reset'; 
+    className?: string;
+  }
+
+  export type SubmitProps = {
+    children: React.ReactNode;
+    type?: 'submit';
     className?: string;
   }
 
@@ -24,7 +30,7 @@ export namespace NButton {
     className?: string;
   }
 
-  export type Props = OnClickProps | HrefProps | ToProps
+  export type Props = OnClickProps | HrefProps | ToProps | SubmitProps
 }
 
 /***** COMPONENT START *****/
@@ -57,6 +63,14 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, ...props
           {children}
         </button>
       );
+    }
+    case "type" in props && props.type === 'submit': {
+      const { type } = props;
+      return (
+        <button type={type} className={classNames("Button", className)}>
+          {children}
+        </button>
+      )
     }
     default: {
       return null
