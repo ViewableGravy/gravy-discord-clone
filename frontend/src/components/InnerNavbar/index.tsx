@@ -14,11 +14,11 @@ type TSidebar = React.FC<{
 
 export const Sidebar: TSidebar = ({ children }) => {
   /***** HOOKS *****/
-  const [{ sidebar }] = useTheme((theme) => theme.backgroundColor);
+  const [{ primary }] = useTheme((theme) => theme.backgroundColor);
 
   /***** RENDER HELPERS *****/
   const style = {
-    '--sidebar-background-color': sidebar
+    '--sidebar-background-color': primary
   } as React.CSSProperties;
 
   return (

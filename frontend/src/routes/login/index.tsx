@@ -1,11 +1,31 @@
 /***** BASE IMPORTS *****/
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute } from '@tanstack/react-router'
+
+/***** FORM IMPORTS *****/
 import { useFormFields } from '../../components/form/input'
+
+/***** SHARED *****/
 import { Button } from '../../components/Button'
+
+/***** CONSTS *****/
+import { useTheme } from '../../utilities/hooks/useTheme'
+
+// Let the document know when the mouse is being used
+document.body.addEventListener('mousedown', () => {
+  document.body.classList.add('using-mouse');
+});
+
+// Re-enable focus styling when Tab is pressed
+document.body.addEventListener('keydown', function(event) {
+  if (event.keyCode === 9) {
+    document.body.classList.remove('using-mouse');
+  }
+});
 
 /***** COMPONENT START *****/
 const Login = () => {
+  const [{ primary }] = useTheme((theme) => theme.backgroundColor)
   const form = useForm({
     defaultValues: {
       email: '',
@@ -21,19 +41,25 @@ const Login = () => {
 
   /***** RENDER *****/
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={(e) => {
+    <form 
+      onSubmit={(e) => {
         e.preventDefault()
         e.stopPropagation()
         form.handleSubmit()
-      }}>
-        <InputField name="email" />
-        <InputField name="username" />
-        <InputField name="password" />
-        <Button type='submit'>Submit</Button>
-      </form>
-    </div>
+      }} 
+      style={{ 
+        backgroundColor: primary, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 20 
+      }} 
+    >
+      <h1>Login</h1>
+      <InputField name="email" />
+      <InputField name="username" />
+      <InputField name="password" />
+      <Button full size="large" type="submit">Submit</Button>
+    </form>
   )
 }
 
