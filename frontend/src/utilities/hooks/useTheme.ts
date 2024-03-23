@@ -1,16 +1,19 @@
 import { Store, useStore } from "@tanstack/react-store";
 
-type TUseTheme = TUseSpecificStoreTuple<TCustomStore<typeof theme>>
+type TUseTheme = TUseSpecificStoreTuple<TCustomStore<typeof theme>, typeof utilities>
+export type TTheme = TCustomStore<typeof theme>;
 
-const theme = new Store({
+export const theme = new Store({
   backgroundColor: {
     primary: '#2b2d31',
     navbar: '#1e1f22',
     input: '#1e1f22',
+    modal: '#313338',
     button: '#5865f2',
     hover: {
       button: '#4752c4'
-    }
+    },
+    black: '#000000',
   },
   color: {
     primary: '#f2f3f5',
@@ -18,4 +21,11 @@ const theme = new Store({
   }
 })
 
-export const useTheme: TUseTheme = (selector) => [useStore(theme, selector), theme.setState]
+const utilities = {
+  opacity: (color: string, opacity: number) => {
+    const [r, g, b] = color.match(/\w\w/g)!.map((hex) => parseInt(hex, 16))
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`
+  }
+}
+
+export const useTheme: TUseTheme = (selector) => [useStore(theme, selector), utilities, theme.setState]

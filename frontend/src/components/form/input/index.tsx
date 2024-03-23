@@ -1,7 +1,7 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, useField } from "@tanstack/react-form";
 import { zodValidator } from '@tanstack/zod-form-adapter'
-import { InputHTMLAttributes, useMemo } from "react";
+import { InputHTMLAttributes } from "react";
 import classNames from "classnames";
 
 /***** HOOKS *****/
@@ -59,12 +59,4 @@ export const generateInputField = <TData extends any extends FormApi<infer _TDat
   };
 
   return InputField;
-}
-
-export const useFormFields = <TData extends any extends FormApi<infer _TData, any> ? _TData : never>(form: FormApi<TData>) => {
-  const InputField = useMemo(() => generateInputField(form), []);
-
-  return {
-    InputField,
-  }
 }

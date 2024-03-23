@@ -5,12 +5,12 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 /***** QUERY IMPORTS *****/
 import { API } from "../api/queries";
-import { Sidebar } from "../components/InnerNavbar"
+import { Sidebar } from "../components/innerNavbar"
 
 /***** SHARED *****/
-import { RouteFallbackComponents } from "../components/RouteFallbackComponents";
+import { RouteFallbackComponents } from "../components/routeFallbackComponents";
 import { Navbar } from "../components/navbar";
-import { Button } from "../components/Button";
+import { Button } from "../components/button";
 
 /***** UTILITIES *****/
 import { useSocket } from "../utilities/hooks/useSocket";

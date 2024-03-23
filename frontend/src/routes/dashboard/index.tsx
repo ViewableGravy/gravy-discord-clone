@@ -2,7 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 /***** SHARED *****/
-import { Button } from "../../components/Button"
+import { Button } from "../../components/button"
 
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"

@@ -1,0 +1,86 @@
+.Padding {
+  --padding-top: 0;
+  --padding-right: 0;
+  --padding-bottom: 0;
+  --padding-left: 0;
+
+  &--inline {
+    &:not(.Padding--margin) {
+      padding-right: var(--padding-right);
+      padding-left: var(--padding-left);
+    }
+  
+    &.Padding--margin {
+      margin-left: var(--padding-left);
+      margin-right: var(--padding-right);
+    }
+  }
+
+  &--block {
+    &:not(.Padding--margin) {
+      padding-top: var(--padding-top);
+      padding-bottom: var(--padding-bottom);
+    }
+  
+    &.Padding--margin {
+      margin-top: var(--padding-top);
+      margin-bottom: var(--padding-bottom);
+    }
+  }
+
+  &--all {
+    &:not(.Padding--margin) {
+      padding-top: var(--padding-top);
+      padding-right: var(--padding-right);
+      padding-bottom: var(--padding-bottom);
+      padding-left: var(--padding-left);
+    }
+  
+    &.Padding--margin {
+      margin-top: var(--padding-top);
+      margin-right: var(--padding-right);
+      margin-bottom: var(--padding-bottom);
+      margin-left: var(--padding-left);
+    }
+  }
+
+  &--top {
+    &:not(.Padding--margin) {
+      padding-top: var(--padding-top);
+    }
+  
+    &.Padding--margin {
+      margin-top: var(--padding-top);
+    }
+  }
+
+  &--right {
+    &:not(.Padding--margin) {
+      padding-right: var(--padding-right);
+    }
+  
+    &.Padding--margin {
+      margin-right: var(--padding-right);
+    }
+  }
+
+  &--bottom {
+    &:not(.Padding--margin) {
+      padding-bottom: var(--padding-bottom);
+    }
+  
+    &.Padding--margin {
+      margin-bottom: var(--padding-bottom);
+    }
+  }
+
+  &--left {
+    &:not(.Padding--margin) {
+      padding-left: var(--padding-left);
+    }
+  
+    &.Padding--margin {
+      margin-left: var(--padding-left);
+    }
+  }
+}
