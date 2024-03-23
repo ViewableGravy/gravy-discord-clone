@@ -11,25 +11,12 @@ import { Button } from '../../components/Button'
 /***** CONSTS *****/
 import { useTheme } from '../../utilities/hooks/useTheme'
 
-// Let the document know when the mouse is being used
-document.body.addEventListener('mousedown', () => {
-  document.body.classList.add('using-mouse');
-});
-
-// Re-enable focus styling when Tab is pressed
-document.body.addEventListener('keydown', function(event) {
-  if (event.keyCode === 9) {
-    document.body.classList.remove('using-mouse');
-  }
-});
-
 /***** COMPONENT START *****/
 const Login = () => {
   const [{ primary }] = useTheme((theme) => theme.backgroundColor)
   const form = useForm({
     defaultValues: {
-      email: '',
-      username: '',
+      'user_identifier': '',
       password: ''
     },
     onSubmit: ({ value }) => {
@@ -55,9 +42,8 @@ const Login = () => {
       }} 
     >
       <h1>Login</h1>
-      <InputField name="email" />
-      <InputField name="username" />
-      <InputField name="password" />
+      <InputField name="user_identifier" label="EMAIL OR USERNAME" autoComplete="username webauthn" />
+      <InputField name="password" label="password" autoComplete="current-password webauthn" />
       <Button full size="large" type="submit">Submit</Button>
     </form>
   )

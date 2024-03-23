@@ -1,6 +1,7 @@
+/***** BASE IMPORTS *****/
 import { Store, useStore } from "@tanstack/react-store";
 
-
+/***** STORE *****/
 const _usingKeyboardStore = new Store(false)
 
 // Let the document know when the mouse is being used
@@ -15,4 +16,5 @@ document.body.addEventListener('keydown', ({ key }) => {
   }
 });
 
+/***** HOOK START *****/
 export const useUsingKeyboard = () => useStore(_usingKeyboardStore)
