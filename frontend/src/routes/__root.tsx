@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { Outlet, createRootRoute } from "@tanstack/react-router"
+import { Outlet, createRootRouteWithContext, redirect } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -13,13 +13,13 @@ import { Navbar } from "../components/navbar";
 import { Button } from "../components/button";
 
 /***** UTILITIES *****/
-import { useSocket } from "../utilities/hooks/useSocket";
-import { useApplicationBootProcess } from "./-useApplicationBootProcess";
+import { _socketStore, useSocket } from "../utilities/hooks/useSocket";
 
 /***** CONSTS *****/
 import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
+import { TSocketTypes } from "../utilities/hooks/useSocket/static";
 
 /***** COMPONENT START *****/
 const RenderMain = () => {
@@ -53,9 +53,6 @@ const RenderMain = () => {
 }
 
 const RootRoute = () => {
-  // top level logic to run when application starts up
-  useApplicationBootProcess();
-
   /***** HOOKS *****/
   const { authorization } = useSocket(({ authorization }) => ({ authorization }));
 
@@ -89,7 +86,24 @@ const RootRoute = () => {
   return <RenderMain />
 }
 
-export const Route = createRootRoute({
+type TContext = {
+  applicationLoading: boolean,
+  authorizationLevel: TSocketTypes.TAuthorizationStates
+}
+
+export const Route = createRootRouteWithContext<TContext>()({
   component: RootRoute,
-  notFoundComponent: RouteFallbackComponents.NotFound
+  notFoundComponent: RouteFallbackComponents.NotFound,
+  async beforeLoad({ context, location }) {
+    if (context.authorizationLevel === 'guest') {
+      if (location.pathname !== '/login') {
+        throw redirect({
+          to: '/login',
+          search: {
+            redirect: location.href
+          }
+        })
+      }
+    }
+  }
 })

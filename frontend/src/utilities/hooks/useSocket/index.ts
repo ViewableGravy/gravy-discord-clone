@@ -157,3 +157,13 @@ export const useSocket: TUseSocket = (selector = (s) => s as any) => {
   }
 };
 
+export const isAuthenticated = (minimumLevel: 'guest' | 'user' | 'admin') => {
+  const levels = ['guest', 'user', 'admin'] as const;
+  const level = _socketStore.state.authorization.level;
+
+  if (!level) {
+    return false;
+  }
+
+  return levels.indexOf(level) >= levels.indexOf(minimumLevel)
+}

@@ -20,7 +20,7 @@ export namespace TSocketTypes {
    */
   export type TRooms = Array<TInvalidateRooms>
   export type TSimpleParse = (callback: (message: TSocketTypes.TSimpleMessage) => void) => (message: MessageEvent<any>) => void;
-
+  export type TAuthorizationStates = 'guest' | 'user' | 'admin' | null
 
   export namespace Send {
     type TJoinRoom = {

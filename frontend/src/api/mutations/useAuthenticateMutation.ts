@@ -9,6 +9,7 @@ import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 /***** API IMPORTS *****/
 import { API } from "../api";
 import { TAuthenticationArgs } from "../apis/account";
+import { useNavigate } from "@tanstack/react-router";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.authenticate>>
@@ -19,6 +20,7 @@ export const useAuthenticateMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
   const { id } = useSocket(({ identifier: id }) => ({ id }));
   const [, setRefreshToken] = useRefreshToken();
+  const navigate = useNavigate();
   
   /***** RENDER *****/
   return useMutation({
@@ -35,6 +37,8 @@ export const useAuthenticateMutation = (options: TOptions = {}) => {
       setRefreshToken(data.refreshToken);
 
       globalAxios.defaults.headers.common.Authorization = _socketStore.state.identifier;
+
+      navigate({ to: '/dashboard' })
     },
     ...options
   }); 

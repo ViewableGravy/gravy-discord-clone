@@ -15,7 +15,7 @@ export const useApplicationBootProcess = () => {
   const { readyState, authorization } = useSocket(({ readyState, authorization }) => ({ readyState, authorization }))
 
   /***** QUERIES *****/
-  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
+  const { mutate: refresh, status: refreshStatus } = API.MUTATIONS.account.useRefreshTokenMutation();
   const [status] = API.MUTATIONS.account.useLogoutMutationState()
 
   /***** EFFECTS *****/
@@ -26,4 +26,7 @@ export const useApplicationBootProcess = () => {
     }
   }, [refreshToken, authorization.level, readyState === 'READY'])
 
+  return {
+    applicationLoading: readyState !== 'READY' || refreshStatus === 'pending'
+  }
 }

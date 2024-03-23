@@ -1,6 +1,7 @@
 /***** BASE IMPORTS *****/
 import { useForm } from '@tanstack/react-form'
-import { createFileRoute } from '@tanstack/react-router'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 /***** FORM IMPORTS *****/
 import { useFormFields } from '../../components/form'
@@ -11,18 +12,37 @@ import { Modal } from '../../components/modal'
 import { Text } from '../../components/utility/text'
 import { Padding } from '../../components/utility/padding'
 
+/***** UTILITIES *****/
+import { _socketStore } from '../../utilities/hooks/useSocket'
+
+/***** QUERIES *****/
+import { API } from '../../api/queries'
+
 /***** CONSTS *****/
 import background from '../../assets/login-background.svg';
+import { z } from 'zod'
 
 /***** COMPONENT START *****/
-const Login = () => {
+const Login = () => {  
+  const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
+
   const form = useForm({
     defaultValues: {
       user_identifier: '',
       password: ''
     },
+    validatorAdapter: zodValidator,
+    validators: {
+      onSubmit: z.object({
+        user_identifier: z.string().min(1, 'Email or username is required'),
+        password: z.string().min(1, 'Password is required')
+      })
+    },
     onSubmit: ({ value }) => {
-      console.log(value)
+      authenticate({
+        password: value.password,
+        username: value.user_identifier
+      });
     }
   })
   
@@ -82,5 +102,12 @@ const Login = () => {
 }
 
 export const Route = createFileRoute('/login/')({
-  component: Login
+  component: Login,
+  async beforeLoad({ context }) {
+    if (context.authorizationLevel !== 'guest') {
+      throw redirect({
+        to: '/dashboard'
+      })
+    }
+  }
 })
