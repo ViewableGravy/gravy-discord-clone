@@ -18,8 +18,9 @@ export const theme = new Store({
   color: {
     primary: '#f2f3f5',
     secondary: '#b5bac1',
+    link: '#00a8fc'
   }
-})
+} as const)
 
 const utilities = {
   opacity: (color: string, opacity: number) => {

@@ -1,3 +1,9 @@
 .ButtonLink {
-  color: purple;
+  --color: #5865f2;
+  color: var(--color);
+  text-decoration: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

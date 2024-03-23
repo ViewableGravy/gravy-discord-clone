@@ -7,16 +7,15 @@ import { useFormFields } from '../../components/form'
 
 /***** SHARED *****/
 import { Button } from '../../components/button'
-
-/***** CONSTS *****/
-import { useTheme } from '../../utilities/hooks/useTheme'
 import { Modal } from '../../components/modal'
 import { Text } from '../../components/utility/text'
 import { Padding } from '../../components/utility/padding'
 
+/***** CONSTS *****/
+import background from '../../assets/login-background.svg';
+
 /***** COMPONENT START *****/
 const Login = () => {
-  const [{ primary }] = useTheme((theme) => theme.backgroundColor)
   const form = useForm({
     defaultValues: {
       user_identifier: '',
@@ -31,7 +30,16 @@ const Login = () => {
 
   /***** RENDER *****/
   return (
-    <Modal isOpen>
+    <Modal 
+      isOpen 
+      background={(
+        <img 
+          src={background} 
+          alt="background" 
+          style={{ position: 'absolute', height: '100%' }} 
+        />
+      )}
+    >
       <form 
         onSubmit={(e) => {
           e.preventDefault()
@@ -59,10 +67,15 @@ const Login = () => {
         />
         <Padding margin bottom={20} top={4}>
           <Button.Link to="/forgot-password/">
-            <Text sm secondary>Forgot your password?</Text>
+            Forgot your password?
           </Button.Link>
         </Padding>
         <Button full size="large" type="submit">Submit</Button>
+        <Padding margin top={8}>
+          <Text secondary>
+            Need an account? <Button.Link to="/register">Register</Button.Link>
+          </Text>
+        </Padding>
       </form>
     </Modal>
   )

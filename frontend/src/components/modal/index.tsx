@@ -1,11 +1,9 @@
 /***** CONSTS *****/
-import { CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import { TTheme, theme, useTheme } from '../../utilities/hooks/useTheme';
 import './_Modal.scss';
 import classNames from 'classnames';
 import { Lightbox } from '../lightbox';
-
-import background from '../../assets/login-background.svg';
 
 /***** TYPE DEFINITIONS *****/
 type TModal = React.FC<{
@@ -16,10 +14,15 @@ type TModal = React.FC<{
     modal?: boolean;
     content?: boolean;
   },
+
+  /**
+   * Element that is rendered between the modal content and the lightbox
+   */
+  background?: React.ReactNode
 }>
 
 /***** COMPONENT START *****/
-export const Modal: TModal = ({ children, isOpen, fade, className }) => {
+export const Modal: TModal = ({ children, isOpen, fade, className, background }) => {
   const [{ modal }] = useTheme(({ backgroundColor}) => backgroundColor)
 
   const style = {
@@ -37,8 +40,8 @@ export const Modal: TModal = ({ children, isOpen, fade, className }) => {
   }
 
   return (
-    <Lightbox isOpen={isOpen} backgroundColor={'#5865f2'}>
-      <img src={background} alt="background" style={{ position: 'absolute', height: '100%' }} />
+    <Lightbox isOpen={isOpen}>
+      {!!background && background}
       <div className={classes.content} style={style}>
         {children}
       </div>

@@ -83,7 +83,37 @@ type TWeights = {
    * 700
    */
   bold?: boolean;
+}
+type TStyling = {
+  /**
+   * Whether or not the text should be underlined
+   */
+  underline?: boolean;
 
+  /**
+   * Whether or not the text should be italicized
+   */
+  italic?: boolean;
+
+  /**
+   * Whether or not the text should be uppercase
+   */
+  uppercase?: boolean;
+
+  /**
+   * Whether or not the text should be capitalized
+   */
+  capitalize?: boolean;
+
+  /**
+   * Remove underline
+   */
+  'no-underline'?: boolean;
+
+  /**
+   * Whether or not to fit content or automatically stretch
+   */
+  'fit-content'?: boolean;
 }
 
 export type TTextComponent = React.FC<
@@ -91,6 +121,7 @@ export type TTextComponent = React.FC<
   & TAlignment 
   & TWeights 
   & Partial<Record<keyof TTheme['color'], boolean>> 
+  & TStyling
   & {
     /**
      * Content of the text

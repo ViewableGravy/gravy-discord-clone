@@ -70,4 +70,24 @@
     font-size: 24px;
   }
 
+  // styling
+  &--underline {
+    text-decoration: underline;
+  }
+
+  &--italic {
+    font-style: italic;
+  }
+
+  &--uppercase {
+    text-transform: uppercase;
+  }
+
+  &--capitalize {
+    text-transform: capitalize;
+  }
+
+  &--no-underline {
+    text-decoration: none;
+  }
 }

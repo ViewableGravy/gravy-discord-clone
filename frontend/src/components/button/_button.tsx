@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import React, { CSSProperties } from "react"
 import "./_Button.scss";
 import classNames from "classnames";
-import { useTheme } from "../../utilities/hooks/useTheme";
+import { TTheme, useTheme } from "../../utilities/hooks/useTheme";
 
 /***** TYPE DEFINTIONS *****/
 export namespace NButton {
@@ -19,6 +19,8 @@ export namespace NButton {
      * If true, the button will take up the full width of the parent container
      */
     full?: boolean;
+
+    style?: CSSProperties;
   }
 
   export type OnClickProps = BaseProps & {
@@ -63,22 +65,23 @@ const utilities = {
  * Button component providing the base functionality for a button, link, or anchor tag.
  * The styling for the Anchor and Link tag are provided as compound components to the Button
  */
-export const _Button: React.FC<NButton.Props> = ({ children, className, full, size = 'large', ...props }) => {
+export const _Button: React.FC<NButton.Props> = ({ children, className, style, full, size = 'large', ...props }) => {
   const [{ backgroundColor, color }] = useTheme()
 
-  const style = {
+  const _style = {
     '--height': utilities.getHeight(size),
     '--width': utilities.getWidth(full),
     '--background-color': backgroundColor.button,
     '--background-color--hover': backgroundColor.hover.button,
     '--color': color.primary,
+    ...style
   } as CSSProperties;
 
   switch (true) {
     case "href" in props: {
       const { href } = props
       return (
-        <a href={href} className={className} style={style}>
+        <a href={href} className={className} style={_style}>
           {children}
         </a>
       );
@@ -86,7 +89,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, full, si
     case "to" in props: {
       const { to } = props
       return (
-        <Link to={to} className={className} style={style}>
+        <Link to={to} className={className} style={_style}>
           {children}
         </Link>
       );
@@ -94,7 +97,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, full, si
     case "onClick" in props: {
       const { onClick, type } = props
       return (
-        <button type={type} onClick={onClick} className={classNames("Button", className)} style={style}>
+        <button type={type} onClick={onClick} className={classNames("Button", className)} style={_style}>
           {children}
         </button>
       );
@@ -102,7 +105,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, full, si
     case "type" in props && props.type === 'submit': {
       const { type } = props;
       return (
-        <button type={type} className={classNames("Button", className)} style={style}>
+        <button type={type} className={classNames("Button", className)} style={_style}>
           {children}
         </button>
       )
