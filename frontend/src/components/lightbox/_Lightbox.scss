@@ -22,4 +22,8 @@
   justify-content: center;
   align-items: center;
   z-index: var(--z-index);
+
+  &--fadeIn {
+    animation: fadeIn 2.3s ease-in;
+  }
 }

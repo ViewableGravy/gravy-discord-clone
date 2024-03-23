@@ -9,7 +9,6 @@ import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** API IMPORTS *****/
 import { API } from "../api";
-import { wait } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.refresh>>
@@ -29,8 +28,6 @@ export const useRefreshTokenMutation = (options: TOptions = {}) => {
 
       if (!id)
         throw new Error('No identifier found')
-
-      await wait(3000, undefined)
 
       return await API.ACCOUNT.POST.refresh({ id, refreshToken })
     },

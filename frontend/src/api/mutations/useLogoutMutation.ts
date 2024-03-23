@@ -9,6 +9,7 @@ import { wait } from "../../utilities/functions/wait";
 
 /***** API IMPORTS *****/
 import { API } from "../api";
+import { useMatchRoute, useNavigate } from "@tanstack/react-router";
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.logout>>
@@ -22,6 +23,9 @@ export const useLogoutMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
   const { id } = useSocket(({ identifier: id }) => ({ id }));
   const [refreshToken, setRefreshToken] = useRefreshToken();
+  const navigate = useNavigate();
+  const matchRoute = useMatchRoute()
+
 
   /***** RENDER *****/
   return useMutation({
@@ -37,6 +41,10 @@ export const useLogoutMutation = (options: TOptions = {}) => {
       // wait for the socket to update the authorization level (or timeout after 5 seconds)
       return await Promise.race([
         new Promise<typeof result>((resolve) => {
+          if (_socketStore.state.authorization.level === 'guest') {
+            resolve(result);
+          }
+
           _socketStore.subscribe(() => {
             if (_socketStore.state.authorization.level === 'guest') {
               resolve(result);
@@ -50,6 +58,9 @@ export const useLogoutMutation = (options: TOptions = {}) => {
     onSuccess: async () => {
       globalAxios.defaults.headers.common.Authorization = undefined;
       setRefreshToken(undefined);
+      if (!matchRoute({ to: '/login', pending: true })) {
+        navigate({ to: '/login' })
+      }
     },
     ...options
   }); 
@@ -60,5 +71,8 @@ export const useLogoutMutationState = () => useMutationState({
   filters: { 
     mutationKey: mutationKeys 
   },
-  select: (state) => state.state.status
+  select: ({ state }) => ({ 
+    status: state.status, 
+    hasRunOnce: state.submittedAt !== undefined,
+  })
 })

@@ -4,6 +4,7 @@ import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
 import { _socketStore } from "../../utilities/hooks/useSocket";
+import { wait, waitAtleast } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
 export type TAuthenticationArgs = {
@@ -76,7 +77,8 @@ export const ACCOUNT_API = {
      * Logs in the user using the refresh token stored in local storage
      */
     refresh: async (body: TRefreshArgs) => {
-      const result = await globalAxios.post('/auth/refresh', body);
+      // const result = globalAxios.post('/auth/refresh', body);
+      const result = await waitAtleast(500, globalAxios.post('/auth/refresh', body))
       return ACCOUNT_API_VALIDATORS.refresh.parse(result.data);
     },
 

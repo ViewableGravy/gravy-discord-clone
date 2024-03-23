@@ -33,6 +33,7 @@ export const useAuthenticateMutation = (options: TOptions = {}) => {
         id
       })
     },
+    mutationKey: ['authenticate'],
     onSuccess: async ({ data }) => {
       setRefreshToken(data.refreshToken);
 

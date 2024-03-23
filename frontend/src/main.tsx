@@ -38,23 +38,22 @@ declare module '@tanstack/react-router' {
 const InnerApp = () => {
   const { applicationLoading } = useApplicationBootProcess()
   const { level } = useSocket(({ authorization }) => authorization)
-
-  if (applicationLoading) {
-    return (
-      <Lightbox isOpen>
-        Cooking up some spaghetti
-      </Lightbox>
-    )
-  }
   
   return (
-    <RouterProvider 
-      router={router} 
-      context={{
-        applicationLoading, 
-        authorizationLevel: level 
-      }} 
-    />
+    <>
+      <Lightbox isOpen={applicationLoading}>
+        Cooking up some spaghetti
+      </Lightbox>
+      {!applicationLoading && (
+        <RouterProvider 
+          router={router} 
+          context={{
+            applicationLoading, 
+            authorizationLevel: level 
+          }} 
+        />
+      )}
+    </>
   )
 }
 

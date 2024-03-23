@@ -52,6 +52,7 @@ const Login = () => {
   return (
     <Modal 
       isOpen 
+      fade={{ content: false }}
       background={(
         <img 
           src={background} 
