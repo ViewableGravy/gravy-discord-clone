@@ -26,3 +26,26 @@ body {
 html {
   color-scheme: dark light;
 }
+
+@font-face {
+  font-family: 'gg-sans';
+  src: url('./assets/fonts/gg\ sans\ Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'gg-sans';
+  src: url('./assets/fonts/gg\ sans\ Medium.ttf') format('truetype');
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: 'gg-sans';
+  src: url('./assets/fonts/gg\ sans\ Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'gg-sans';
+  src: url('./assets/fonts/gg\ sans\ Semibold.ttf.ttf') format('truetype');
+  font-weight: 600;
+}
