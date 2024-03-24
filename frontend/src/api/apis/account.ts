@@ -29,9 +29,15 @@ export type TLogoutArgs = {
   id: string
 }
 
+const successObject = z.object({
+  status: z.literal(200),
+  route: z.string(),
+  data: z.any()
+})
+
 /***** VALIDATORS *****/
 export const ACCOUNT_API_VALIDATORS = {
-  authenticate: z.object({ 
+  authenticate: z.intersection(successObject, z.object({ 
     data: z.object({
       level: z.union([
         z.null(), 
@@ -41,12 +47,11 @@ export const ACCOUNT_API_VALIDATORS = {
       ]),
       refreshToken: z.string(),
     })
-  }),
-  create: z.object({
-    status: z.literal(200),
+  })),
+  create: z.intersection(successObject, z.object({
     data: z.string()
-  }),
-  refresh: z.object({
+  })),
+  refresh: z.intersection(successObject, z.object({
     data: z.object({
       level: z.union([
         z.null(), 
@@ -55,7 +60,7 @@ export const ACCOUNT_API_VALIDATORS = {
         z.literal('admin')
       ])
     })
-  })
+  }))
 } as const;
 
 /***** API START *****/

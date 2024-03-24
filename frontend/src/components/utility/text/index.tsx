@@ -25,7 +25,7 @@ export const Text: TTextComponent = ({ children, className, span, div, ...props 
   );
 
   const style = {
-    '--color': _color
+    '--color': _color ?? 'inherit'
   } as CSSProperties
 
   const _props = {

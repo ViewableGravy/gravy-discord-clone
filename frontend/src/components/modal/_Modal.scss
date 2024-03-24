@@ -7,6 +7,17 @@
   }
 }
 
+@keyframes fadeDown {
+  from {
+    opacity: 0.4;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .Modal {
   --modal-content-background-color: #313338;
 
@@ -18,10 +29,14 @@
     background-color: var(--modal-content-background-color);
     padding: 30px;
     border-radius: 8px;
-    width: 500px;
+    width: fit-content;
 
     &--fadeIn {
       animation: fadeIn 0.3s ease-in; /* Fade in animation */
+    }
+
+    &--fadeDown {
+      animation: fadeDown 0.4s cubic-bezier(0.48, 1.55, 0.74, 0.91);
     }
   }
 }

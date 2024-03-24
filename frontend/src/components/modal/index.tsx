@@ -35,12 +35,12 @@ export const Modal: TModal = ({ children, isOpen, fade, className, background })
       'Modal--fadeIn': fade?.modal ?? true,
     }),
     content: classNames('Modal__content', {
-      'Modal__content--fadeIn': fade?.content ?? true,
+      'Modal__content--fadeDown': fade?.content ?? true,
     })
   }
 
   return (
-    <Lightbox isOpen={isOpen}>
+    <Lightbox isOpen={isOpen} className={classes.modal}>
       {!!background && background}
       <div className={classes.content} style={style}>
         {children}
