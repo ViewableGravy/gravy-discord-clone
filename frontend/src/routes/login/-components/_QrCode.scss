@@ -1,0 +1,11 @@
+.QRCode {
+  width: 240px;
+
+  &__placeholder {
+    width: 176px;
+    height: 176px;
+    background: white;
+    margin-inline: 30px;
+    border-radius: 5px;
+  }
+}

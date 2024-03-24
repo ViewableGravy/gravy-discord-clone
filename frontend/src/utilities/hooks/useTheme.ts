@@ -18,6 +18,7 @@ export const theme = new Store({
   color: {
     primary: '#f2f3f5',
     secondary: '#b5bac1',
+    tertiary: '#949ba4',
     link: '#00a8fc',
     error: '#fa777c',
   }

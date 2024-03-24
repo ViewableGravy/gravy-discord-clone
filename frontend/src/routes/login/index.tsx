@@ -2,6 +2,9 @@
 import { useForm } from '@tanstack/react-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import { z } from 'zod'
+import { AxiosError } from 'axios'
+import classNames from 'classnames'
 
 /***** FORM IMPORTS *****/
 import { useFormFields } from '../../components/form'
@@ -11,23 +14,27 @@ import { Button } from '../../components/button'
 import { Modal } from '../../components/modal'
 import { Text } from '../../components/utility/text'
 import { Padding } from '../../components/utility/padding'
+import { Anchor } from '../../components/Anchor'
+import { Flex } from '../../components/utility/flex'
 
 /***** UTILITIES *****/
 import { _socketStore } from '../../utilities/hooks/useSocket'
+import { useMatchMedia } from '../../utilities/hooks/useMatchMedia'
 
 /***** QUERIES *****/
 import { API } from '../../api/queries'
+
+/***** LOCAL COMPONENTS *****/
+import { QRCode } from './-components/qrCode'
 
 /***** CONSTS *****/
 import background from '../../assets/login-background.svg';
 import './_Login.scss';
 
-import { z } from 'zod'
-import { Anchor } from '../../components/Anchor'
-import { AxiosError } from 'axios'
-import { Flex } from '../../components/utility/flex'
-import { useMatchMedia } from '../../utilities/hooks/useMatchMedia'
-import classNames from 'classnames'
+const validators = {
+  login: z.string().min(1, 'Login is required'),
+  password: z.string().min(1, 'Password is required'),
+}
 
 /***** COMPONENT START *****/
 const Login = () => {  
@@ -63,13 +70,15 @@ const Login = () => {
       }
     }
   })
-  
   const { InputField } = useFormFields(form)
   const { isSubmitting } = form.state;
+  
   const classes = {
     modal: classNames({
       'LoginModal--mobile': isMobile
-    })
+    }),
+    background: "LoginModal__background",
+    form: "Login__form",
   }
 
   /***** RENDER *****/
@@ -77,55 +86,55 @@ const Login = () => {
     <Modal 
       isOpen 
       fade={{ content: !isMobile, modal: false }}
+      className={classes.modal}
       background={(
         <img 
           src={background} 
           alt="background" 
-          style={{ position: 'absolute', height: '100%' }} 
+          className={classes.background}
         />
       )}
-      className={classes.modal}
     >
       <Flex>
         <form 
+          className={classes.form}
           onSubmit={(e) => {
             e.preventDefault()
             e.stopPropagation()
             form.handleSubmit()
           }} 
-          style={{ width: 400 }}
         >
           <Padding bottom={8} margin>
-            <Text xxxl align-center primary>Welcome back!</Text>
+            <Text xxxl align-center primary>
+              Welcome back!
+            </Text>
           </Padding>
           <Padding bottom={20} margin>
-            <Text lg align-center secondary>We're so excited to see you again!</Text>
+            <Text lg align-center secondary>
+              We're so excited to see you again!
+            </Text>
           </Padding>
           <Padding margin bottom={20}>
             <InputField 
               name="login" 
+              intrinsic={{ autoComplete: "username webauthn" }}
+              validators={{ onChange: validators.login }} 
               label={(
                 <Text span sm bold>
                   EMAIL OR USERNAME <Text span error>*</Text>
                 </Text>
               )} 
-              intrinsic={{ autoComplete: "username webauthn" }}
-              validators={{ 
-                onChange: z.string().min(1, 'Login is required'),
-              }} 
             />
           </Padding>
           <InputField 
             name="password" 
+            intrinsic={{ autoComplete: "current-password webauthn" }}
+            validators={{ onChange: validators.password }}
             label={(
               <Text span sm bold>
                 PASSWORD <Text error span>*</Text>
               </Text>
             )} 
-            intrinsic={{ autoComplete: "current-password webauthn" }}
-            validators={{ 
-              onChange: z.string().min(1, 'Password is required'),
-            }}
           />
           <Padding margin bottom={20} top={4}>
             <Anchor.Link to="/forgot-password/">
@@ -136,25 +145,15 @@ const Login = () => {
             {isSubmitting ? 'Loading...' : "Login"}
           </Button>
           <Padding margin top={8}>
-            <Text secondary>
+            <Text tertiary>
               Need an account? <Anchor.Link to="/register">Register</Anchor.Link>
             </Text>
           </Padding>
         </form>
         {showQR && (
           <>
-            <div style={{ margin: 30 }} />
-            <div style={{ width: 240 }}>
-              <Flex column align="center">
-                <Padding margin top={30} bottom={30}>
-                  <div style={{ width: 176, height: 176, background: '#cecece', marginInline: 30, borderRadius: 5 }}></div>
-                </Padding>
-                <Padding margin bottom={8}>
-                  <Text xxxl>Log in with QR Code</Text>
-                </Padding>
-                <Text lg secondary align-center>Scan this with the <Text lg span secondary semiBold>Discord mobile app</Text> to log in instantly.</Text>
-              </Flex>
-            </div>
+            <Padding margin all={30} />
+            <QRCode />
           </>
         )}
       </Flex>

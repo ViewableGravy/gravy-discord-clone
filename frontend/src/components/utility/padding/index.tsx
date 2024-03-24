@@ -13,12 +13,12 @@ type TPadding = React.FC<{
   left?: number;
   right?: number;
   bottom?: number;
+  all?: number;
   inline?: boolean;
   block?: boolean;
-  all?: boolean;
 
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }>
 
 /***** COMPONENT START *****/
@@ -36,10 +36,10 @@ export const Padding: TPadding = ({ margin, top, left, right, bottom, inline, bl
   })
 
   const styles = {
-    ...( top && { '--padding-top': `${top}px` }),
-    ...( left && { '--padding-left': `${left}px` }),
-    ...( right && { '--padding-right': `${right}px` }),
-    ...( bottom && { '--padding-bottom': `${bottom}px` }),
+    ...( (top || all) && { '--padding-top': `${top ?? all ?? 0}px` }),
+    ...( (left || all) && { '--padding-left': `${left ?? all ?? 0}px` }),
+    ...( (right || all) && { '--padding-right': `${right ?? all ?? 0}px` }),
+    ...( (bottom || all) && { '--padding-bottom': `${bottom ?? all ?? 0}px` }),
   } as React.CSSProperties
 
   /***** RENDER *****/

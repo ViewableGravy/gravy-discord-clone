@@ -8,7 +8,6 @@ import './_global.scss';
 import { routeTree } from './routeTree.gen'
 import { useApplicationBootProcess } from './routes/-useApplicationBootProcess';
 import { useSocket } from './utilities/hooks/useSocket';
-import { TSocketTypes } from './utilities/hooks/useSocket/static';
 import { Lightbox } from './components/lightbox';
 
 export const queryClient = new QueryClient({
