@@ -21,6 +21,7 @@ import { API } from '../../api/queries'
 /***** CONSTS *****/
 import background from '../../assets/login-background.svg';
 import { z } from 'zod'
+import { Anchor } from '../../components/Anchor'
 
 /***** COMPONENT START *****/
 const Login = () => {  
@@ -77,24 +78,32 @@ const Login = () => {
         <Padding margin bottom={20}>
           <InputField 
             name="user_identifier" 
-            label={<Text sm secondary bold>EMAIL OR USERNAME</Text>} 
+            label={(
+              <Text sm secondary bold>
+                EMAIL OR USERNAME <Text error span>*</Text>
+              </Text>
+            )} 
             autoComplete="username webauthn" 
           />
         </Padding>
         <InputField 
           name="password" 
-          label={<Text sm secondary bold>PASSWORD</Text>} 
+          label={(
+            <Text sm secondary bold>
+              PASSWORD <Text error span>*</Text>
+            </Text>
+          )} 
           autoComplete="current-password webauthn" 
         />
         <Padding margin bottom={20} top={4}>
-          <Button.Link to="/forgot-password/">
+          <Anchor.Link to="/forgot-password/">
             Forgot your password?
-          </Button.Link>
+          </Anchor.Link>
         </Padding>
         <Button full size="large" type="submit">Submit</Button>
         <Padding margin top={8}>
           <Text secondary>
-            Need an account? <Button.Link to="/register">Register</Button.Link>
+            Need an account? <Anchor.Link to="/register">Register</Anchor.Link>
           </Text>
         </Padding>
       </form>

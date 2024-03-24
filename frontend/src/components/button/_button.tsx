@@ -56,7 +56,7 @@ const utilities = {
     }
   },
   getWidth(full: NButton.Props['full']){
-    return full ? '100%' : 'auto';
+    return full ? '100%' : `${200}px`;
   }
 }
 
@@ -81,7 +81,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     case "href" in props: {
       const { href } = props
       return (
-        <a href={href} className={className} style={_style}>
+        <a href={href} className={classNames("Button", className)} style={_style}>
           {children}
         </a>
       );
@@ -89,7 +89,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     case "to" in props: {
       const { to } = props
       return (
-        <Link to={to} className={className} style={_style}>
+        <Link to={to} className={classNames("Button", className)} style={_style}>
           {children}
         </Link>
       );

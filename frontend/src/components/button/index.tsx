@@ -1,5 +1,5 @@
-import { _ButtonAnchor } from "./Anchor";
-import { _ButtonLink } from "./Link";
+import { _ButtonAnchor } from "./anchorButton";
+import { _ButtonLink } from "./linkButton";
 import { _Button } from "./_button";
 
 export const Button = Object.assign(_Button, {
