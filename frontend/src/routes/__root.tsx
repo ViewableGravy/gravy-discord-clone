@@ -99,14 +99,16 @@ export const Route = createRootRouteWithContext<TContext>()({
   component: RootRoute,
   notFoundComponent: RouteFallbackComponents.NotFound,
   async beforeLoad({ context, location }) {
-    if (context.authorizationLevel === 'guest') {
-      if (location.pathname !== '/login') {
-        throw redirect({
-          to: '/login',
-          search: {
-            redirect: location.href
-          }
-        })
+    if (location.pathname.startsWith('/authed')) {
+      if (context.authorizationLevel === 'guest') {
+        if (location.pathname !== '/login') {
+          throw redirect({
+            to: '/login',
+            search: {
+              redirect: location.href
+            }
+          })
+        }
       }
     }
   }

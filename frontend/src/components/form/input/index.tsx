@@ -25,7 +25,6 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
     defaultMeta?: Partial<FieldMeta>;
     asyncDebounceMs?: number;
     validators?: TValidators;
-    required?: boolean;
     className?: string;
     intrinsic?: InputHTMLAttributes<HTMLInputElement>
   }>
