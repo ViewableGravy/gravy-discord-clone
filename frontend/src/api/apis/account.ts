@@ -4,6 +4,7 @@ import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
 import { _socketStore } from "../../utilities/hooks/useSocket";
+import { waitAtleast } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
 export type TAuthenticationArgs = {
@@ -28,9 +29,15 @@ export type TLogoutArgs = {
   id: string
 }
 
+const successObject = z.object({
+  status: z.literal(200),
+  route: z.string(),
+  data: z.any()
+})
+
 /***** VALIDATORS *****/
 export const ACCOUNT_API_VALIDATORS = {
-  authenticate: z.object({ 
+  authenticate: z.intersection(successObject, z.object({ 
     data: z.object({
       level: z.union([
         z.null(), 
@@ -40,12 +47,11 @@ export const ACCOUNT_API_VALIDATORS = {
       ]),
       refreshToken: z.string(),
     })
-  }),
-  create: z.object({
-    status: z.literal(200),
+  })),
+  create: z.intersection(successObject, z.object({
     data: z.string()
-  }),
-  refresh: z.object({
+  })),
+  refresh: z.intersection(successObject, z.object({
     data: z.object({
       level: z.union([
         z.null(), 
@@ -54,7 +60,7 @@ export const ACCOUNT_API_VALIDATORS = {
         z.literal('admin')
       ])
     })
-  })
+  }))
 } as const;
 
 /***** API START *****/
@@ -76,7 +82,8 @@ export const ACCOUNT_API = {
      * Logs in the user using the refresh token stored in local storage
      */
     refresh: async (body: TRefreshArgs) => {
-      const result = await globalAxios.post('/auth/refresh', body);
+      // const result = globalAxios.post('/auth/refresh', body);
+      const result = await waitAtleast(500, globalAxios.post('/auth/refresh', body))
       return ACCOUNT_API_VALIDATORS.refresh.parse(result.data);
     },
 

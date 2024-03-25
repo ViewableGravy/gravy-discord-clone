@@ -1,0 +1,29 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.Lightbox {
+  --lightbox-background-color: #fff;
+  --z-index: 9999;
+
+  isolation: isolate;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--lightbox-background-color); /* Darken the background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-index);
+
+  &--fadeIn {
+    animation: fadeIn 2.3s ease-in;
+  }
+}

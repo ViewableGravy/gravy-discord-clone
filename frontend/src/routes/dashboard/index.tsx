@@ -1,12 +1,13 @@
 /***** BASE IMPORTS *****/
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 
 /***** SHARED *****/
-import { Button } from "../../components/Button"
+import { Button } from "../../components/button"
 
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
 import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
+import { _socketStore } from "../../utilities/hooks/useSocket"
 
 /***** COMPONENT START *****/
 const Dashboard = () => {    
@@ -28,7 +29,7 @@ const Dashboard = () => {
                 Root
             </Button>
             <br/>
-            <Button.Link to="/">
+            <Button.Link to="/" >
                 Trunk
             </Button.Link>
 
@@ -40,5 +41,15 @@ const Dashboard = () => {
 }
 
 export const Route = createFileRoute('/dashboard/')({
-    component: Dashboard
+    component: Dashboard,
+    async beforeLoad({ context, location }) {
+        if (context.authorizationLevel === 'guest') {
+            throw redirect({
+                to: '/login',
+                search: {
+                    redirect: location.href
+                }
+            })
+        }
+    }
 })

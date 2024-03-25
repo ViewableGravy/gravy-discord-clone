@@ -1,12 +1,10 @@
-/***** BASE IMPORTS *****/
-import { useEffect } from "react";
-
 /***** QUERY IMPORTS *****/
 import { API } from "../api/queries";
 
 /***** HOOKS *****/
 import { useRefreshToken } from "../utilities/hooks/useRefreshToken";
 import { useSocket } from "../utilities/hooks/useSocket";
+import { useFirstEffect } from "../utilities/hooks/useFirstEffect";
 
 /***** COMPONENT START *****/
 export const useApplicationBootProcess = () => {
@@ -15,15 +13,17 @@ export const useApplicationBootProcess = () => {
   const { readyState, authorization } = useSocket(({ readyState, authorization }) => ({ readyState, authorization }))
 
   /***** QUERIES *****/
-  const { mutate: refresh } = API.MUTATIONS.account.useRefreshTokenMutation();
-  const [status] = API.MUTATIONS.account.useLogoutMutationState()
+  const { mutate: refresh, status: refreshStatus } = API.MUTATIONS.account.useRefreshTokenMutation();
+  const [logoutState] = API.MUTATIONS.account.useLogoutMutationState()
+  const { hasRunOnce: hasLoggedOutOnce } = logoutState ?? {}
 
   /***** EFFECTS *****/
-  useEffect(() => {
-    // make api request when application is ready and a refresh token is present
-    if (refreshToken && authorization.level === 'guest' && status !== 'pending') {
-      refresh();
-    }
-  }, [refreshToken, authorization.level, readyState === 'READY'])
+  useFirstEffect(() => {
+    refresh()
+  }, !!refreshToken && authorization.level === 'guest' && !hasLoggedOutOnce)
 
+  /***** RENDER *****/
+  return {
+    applicationLoading: readyState !== 'READY' || refreshStatus === 'pending' && !hasLoggedOutOnce,
+  }
 }

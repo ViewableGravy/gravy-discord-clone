@@ -1,0 +1,93 @@
+.Text {
+  --color: #f2f3f5;
+
+  font-family: 'gg-sans';
+  color: var(--color);
+  text-align: left;
+  font-weight: 400;
+  font-size: 14px;
+
+  // Alignment
+  &--align-left {
+    text-align: left;
+  }
+
+  &--align-center {
+    text-align: center;
+  }
+
+  &--align-right {
+    text-align: right;
+  }
+
+  // Font Weights
+  &--normal {
+    font-weight: 400;
+  }
+
+  &--medium {
+    font-weight: 500;
+  }
+
+  &--semiBold {
+    font-weight: 600;
+  }
+
+  &--bold {
+    font-weight: 700;
+  }
+
+  // Font Sizes
+  &--xxs {
+    font-size: 10px;
+  }
+
+  &--xs {
+    font-size: 11px;
+  }
+
+  &--sm {
+    font-size: 12px;
+  }
+
+  &--md {
+    font-size: 14px;
+  }
+
+  &--lg {
+    font-size: 16px;
+  }
+
+  &--xl {
+    font-size: 18px;
+  }
+
+  &--xxl {
+    font-size: 20px;
+  }
+
+  &--xxxl {
+    font-size: 24px;
+  }
+
+  // styling
+  &--underline {
+    text-decoration: underline;
+  }
+
+  &--italic {
+    font-style: italic;
+  }
+
+  &--uppercase {
+    text-transform: uppercase;
+  }
+
+  &--capitalize {
+    text-transform: capitalize;
+  }
+
+  &--no-underline {
+    text-decoration: none;
+  }
+}

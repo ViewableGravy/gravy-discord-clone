@@ -17,7 +17,7 @@ const mediaStore = new Store({
 
 type TUseMedia = <Match extends TViewport[] | undefined = undefined>(match?: Match) => Match extends undefined ? TViewport : boolean;
 
-export const useMedia: TUseMedia = (match?: Array<TViewport>) => {
+export const useAppViewport: TUseMedia = (match?: Array<TViewport>) => {
   const { viewport } = useStore(mediaStore);
 
   if (!match) 

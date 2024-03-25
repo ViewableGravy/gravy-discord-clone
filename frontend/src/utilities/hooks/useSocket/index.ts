@@ -1,9 +1,15 @@
+/***** BASE IMPORTS *****/
 import { Store, useStore } from "@tanstack/react-store";
 import React, { useEffect } from "react";
+
+/***** UTILITIES *****/
 import { RouteHandlers } from "./handlers";
 import { socketValidators } from "./validators";
-import { TSocketTypes } from "./static";
 
+/***** TYPE DEFINITIONS *****/
+import { type TSocketTypes } from "./static";
+
+/***** TYPE DEFINITIONS *****/
 type TUseSocket = TUseSpecificStore<TCustomStore<typeof _socketStore>, {
   joinRoom: typeof joinRoom,
   leaveRoom: typeof leaveRoom,
@@ -143,6 +149,17 @@ const useJoinRoomEffect = (rooms: TSocketTypes.TRooms, dependencies: React.Depen
   }, dependencies)
 }
 
+export const isAuthenticated = (minimumLevel: 'guest' | 'user' | 'admin' = 'user') => {
+  const levels = ['guest', 'user', 'admin'] as const;
+  const level = _socketStore.state.authorization.level;
+
+  if (!level) {
+    return false;
+  }
+
+  return levels.indexOf(level) >= levels.indexOf(minimumLevel)
+}
+
 /**
  * This hook provides a set of standard methods to interact with the socket shared for the application. This includes joining "rooms", sending messages, and listening for messages.
  */
@@ -153,7 +170,7 @@ export const useSocket: TUseSocket = (selector = (s) => s as any) => {
     joinRoom,
     leaveRoom,
     useJoinRoomEffect,
+    isAuthenticated,
     ...state
   }
 };
-

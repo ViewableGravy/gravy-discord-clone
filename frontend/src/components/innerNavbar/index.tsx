@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from '../../utilities/hooks/useTheme';
 
 /***** CONSTS *****/
-import './InnerNavbar.scss';
+import './_InnerNavbar.scss';
 
 /***** TYPE DEFINITIONS *****/
 type TSidebar = React.FC<{
@@ -14,13 +14,14 @@ type TSidebar = React.FC<{
 
 export const Sidebar: TSidebar = ({ children }) => {
   /***** HOOKS *****/
-  const [{ sidebar }] = useTheme((theme) => theme.backgroundColor);
+  const [{ primary }] = useTheme((theme) => theme.backgroundColor);
 
   /***** RENDER HELPERS *****/
   const style = {
-    '--sidebar-background-color': sidebar
+    '--sidebar-background-color': primary
   } as React.CSSProperties;
 
+  /***** RENDER *****/
   return (
     <div style={style} className="SideBar">
       {children}

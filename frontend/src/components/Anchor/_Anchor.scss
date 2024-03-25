@@ -1,0 +1,12 @@
+.Anchor {
+  all: unset;
+  
+  text-decoration: inherit;
+  cursor: pointer;
+  display: inline;
+
+  &:hover {
+    background-color: unset;
+    text-decoration: underline;
+  }
+}
