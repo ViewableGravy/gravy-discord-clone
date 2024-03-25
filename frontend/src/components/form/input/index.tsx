@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, UseField, useField } from "@tanstack/react-form";
-import { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes } from "react";
 import classNames from "classnames";
 
 
@@ -12,7 +12,6 @@ import './_Input.scss';
 import { Text } from "../../utility/text";
 
 /***** COMPONENT START *****/
-// export const generateInputField = <TData extends any extends FormApi<infer _TData, infer _TValidator> ? _TData : never>(form: FormApi<TData>) => {
 export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
   type TData = T extends FormApi<infer _TData, any> ? _TData : never;
   type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
