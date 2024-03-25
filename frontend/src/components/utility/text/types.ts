@@ -120,7 +120,7 @@ export type TTextComponent = React.FC<
   TSizes 
   & TAlignment 
   & TWeights 
-  & Partial<Record<keyof TTheme['color'], boolean>> 
+  & Partial<Record<keyof TTheme['color'], boolean>> & { inherit?: boolean }
   & TStyling
   & {
     /**

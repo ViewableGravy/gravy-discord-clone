@@ -52,6 +52,7 @@ const RenderMain = () => {
   )
 }
 
+/***** COMPONENT START *****/
 const RootRoute = () => {
   /***** HOOKS *****/
   const { authorization } = useSocket(({ authorization }) => ({ authorization }));
@@ -91,6 +92,9 @@ type TContext = {
   authorizationLevel: TSocketTypes.TAuthorizationStates
 }
 
+/**
+ * Context must be exposed in the root route as this is used to generate the context for all other routes
+ */
 export const Route = createRootRouteWithContext<TContext>()({
   component: RootRoute,
   notFoundComponent: RouteFallbackComponents.NotFound,

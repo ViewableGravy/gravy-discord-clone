@@ -9,15 +9,21 @@ import { CSSProperties } from 'react';
 
 /***** COMPONENT START *****/
 export const Text: TTextComponent = ({ children, className, span, div, ...props }) => {
+  /***** HOOKS *****/
   const [_color] = useTheme((theme) => {
     const colorKey = Object
       .entries(props)
       .filter(([,value]) => Boolean(value))
       .find(([key]) => Object.keys(theme.color).includes(key))?.[0] as keyof typeof theme.color | undefined
 
+    if (props.inherit) {
+      return 'inherit'
+    }
+
     return colorKey ? theme.color[colorKey] : undefined
   })
   
+  /***** RENDER HELPERS *****/
   const classes = classNames('Text', classNames, Object
     .entries(props)
     .filter(([,value]) => Boolean(value))
@@ -33,6 +39,7 @@ export const Text: TTextComponent = ({ children, className, span, div, ...props 
     style
   }
 
+  /***** RENDER *****/
   switch (true) {
     case span:
       return <span {..._props}>{children}</span>

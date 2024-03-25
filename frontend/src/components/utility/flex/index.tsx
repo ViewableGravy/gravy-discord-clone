@@ -1,8 +1,11 @@
+/***** BASE IMPORTS *****/
 import classNames from "classnames";
 import React from "react"
 
+/***** CONSTS *****/
 import './_Flex.scss';
 
+/***** TYPE DEFINITIONS *****/
 type TFlexDirections = {
   row?: boolean;
   column?: boolean;
@@ -23,8 +26,9 @@ type TBaseFlexProps = {
 
 type TFlex = React.FC<TFlexDirections & TFlexWrap & TBaseFlexProps>
 
-
+/***** COMPONENT START *****/
 export const Flex: TFlex = ({ className, style, children, align, justify, ...props }) => {
+  /***** RENDER HELPERS *****/
   const classes = classNames('Flex', className, Object
     .entries(props)
     .filter(([,value]) => Boolean(value))
@@ -34,6 +38,7 @@ export const Flex: TFlex = ({ className, style, children, align, justify, ...pro
     }
   );
 
+  /***** RENDER *****/
   return (
     <div className={classes} style={style}>
       {children}

@@ -1,8 +1,11 @@
+/***** BASE IMPORTS *****/
 import { Store, useStore } from "@tanstack/react-store";
 
+/***** TYPE DEFINITIONS *****/
 type TUseTheme = TUseSpecificStoreTuple<TCustomStore<typeof theme>, typeof utilities>
 export type TTheme = TCustomStore<typeof theme>;
 
+/***** STORE *****/
 export const theme = new Store({
   backgroundColor: {
     primary: '#2b2d31',
@@ -24,6 +27,7 @@ export const theme = new Store({
   }
 } as const)
 
+/***** UTILITIES *****/
 const utilities = {
   opacity: (color: string, opacity: number) => {
     const [r, g, b] = color.match(/\w\w/g)!.map((hex) => parseInt(hex, 16))

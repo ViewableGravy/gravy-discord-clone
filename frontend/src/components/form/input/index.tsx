@@ -3,21 +3,21 @@ import { DeepKeys, FieldMeta, FormApi, UseField, useField } from "@tanstack/reac
 import React, { InputHTMLAttributes } from "react";
 import classNames from "classnames";
 
-
 /***** HOOKS *****/
 import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 
+/***** UTILITIES *****/
+import { Text } from "../../utility/text";
+
 /***** CONSTS *****/
 import './_Input.scss';
-import { Text } from "../../utility/text";
 
 /***** COMPONENT START *****/
 export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
+  /***** TYPE DEFINITIONS *****/
   type TData = T extends FormApi<infer _TData, any> ? _TData : never;
   type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
   type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators']
-
-  /***** TYPE DEFINITIONS *****/
   type TInputField = React.FC<{
     name: DeepKeys<TData>;
     label?: React.ReactNode;
@@ -38,7 +38,6 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
   const InputField: TInputField = ({ name, label, placeholder, defaultMeta, asyncDebounceMs, className, validators, intrinsic = {} }) => {
     /***** HOOKS *****/
     const isUsingKeyboard = useUsingKeyboard();
-
     const { state, handleBlur, handleChange } = useField({
       form,
       name, // typescript is going to think that name can be an object key but tanstack expects a string

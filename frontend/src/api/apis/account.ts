@@ -4,7 +4,7 @@ import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
 import { _socketStore } from "../../utilities/hooks/useSocket";
-import { wait, waitAtleast } from "../../utilities/functions/wait";
+import { waitAtleast } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
 export type TAuthenticationArgs = {

@@ -17,10 +17,12 @@ export const useApplicationBootProcess = () => {
   const [logoutState] = API.MUTATIONS.account.useLogoutMutationState()
   const { hasRunOnce: hasLoggedOutOnce } = logoutState ?? {}
 
+  /***** EFFECTS *****/
   useFirstEffect(() => {
     refresh()
   }, !!refreshToken && authorization.level === 'guest' && !hasLoggedOutOnce)
 
+  /***** RENDER *****/
   return {
     applicationLoading: readyState !== 'READY' || refreshStatus === 'pending' && !hasLoggedOutOnce,
   }

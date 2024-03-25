@@ -1,8 +1,11 @@
+/***** BASE IMPORTS *****/
 import { useLayoutEffect, useState } from "react";
 
+/***** TYPE DEFINITIONS *****/
 type TUseMatchMediaProps = { min?: number, max?: number }
 type TUseMatchMedia = (props: TUseMatchMediaProps) => boolean
 
+/***** COMPONENT START *****/
 /**
  * hook returning a boolean based on the current viewport size. 
  * If no min or max is provided, it will always return true

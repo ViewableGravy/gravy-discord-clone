@@ -21,6 +21,7 @@ export const Sidebar: TSidebar = ({ children }) => {
     '--sidebar-background-color': primary
   } as React.CSSProperties;
 
+  /***** RENDER *****/
   return (
     <div style={style} className="SideBar">
       {children}

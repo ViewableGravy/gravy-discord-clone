@@ -1,9 +1,15 @@
-/***** CONSTS *****/
-import React, { CSSProperties } from 'react';
-import { TTheme, theme, useTheme } from '../../utilities/hooks/useTheme';
-import './_Modal.scss';
+/***** BASE IMPORTS *****/
 import classNames from 'classnames';
+import React, { CSSProperties } from 'react';
+
+/***** UTILITIES *****/
+import { useTheme } from '../../utilities/hooks/useTheme';
+
+/***** SHARED *****/
 import { Lightbox } from '../lightbox';
+
+/***** CONSTS *****/
+import './_Modal.scss';
 
 /***** TYPE DEFINITIONS *****/
 type TModal = React.FC<{
@@ -23,8 +29,10 @@ type TModal = React.FC<{
 
 /***** COMPONENT START *****/
 export const Modal: TModal = ({ children, isOpen, fade, className, background }) => {
+  /***** HOOKS *****/
   const [{ modal }] = useTheme(({ backgroundColor}) => backgroundColor)
 
+  /***** RENDER HELPERS *****/
   const style = {
     '--modal-content-background-color': modal,
     zIndex: 2
@@ -39,6 +47,7 @@ export const Modal: TModal = ({ children, isOpen, fade, className, background })
     })
   }
 
+  /***** RENDER *****/
   return (
     <Lightbox isOpen={isOpen} className={classes.modal}>
       {!!background && background}

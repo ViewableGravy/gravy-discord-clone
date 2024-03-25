@@ -1,8 +1,13 @@
-import { Link } from "@tanstack/react-router";
+/***** BASE IMPORTS *****/
 import React, { CSSProperties } from "react"
-import "./_Button.scss";
+import { Link } from "@tanstack/react-router";
 import classNames from "classnames";
-import { TTheme, useTheme } from "../../utilities/hooks/useTheme";
+
+/***** UTILITIES *****/
+import { useTheme } from "../../utilities/hooks/useTheme";
+
+/***** CONSTS *****/
+import "./_Button.scss";
 
 /***** TYPE DEFINTIONS *****/
 export namespace NButton {
@@ -44,7 +49,7 @@ export namespace NButton {
 }
 
 const utilities = {
-  getHeight(size: NButton.Props['size']){
+  getHeight(size: NButton.Props['size']) {
     switch (size) {
       case 'small':
         return '38px';
@@ -55,7 +60,7 @@ const utilities = {
         return '44px';
     }
   },
-  getWidth(full: NButton.Props['full']){
+  getWidth(full: NButton.Props['full']) {
     return full ? '100%' : `${200}px`;
   }
 }
@@ -66,8 +71,10 @@ const utilities = {
  * The styling for the Anchor and Link tag are provided as compound components to the Button
  */
 export const _Button: React.FC<NButton.Props> = ({ children, className, style, full, size = 'large', ...props }) => {
+  /***** HOOKS *****/
   const [{ backgroundColor, color }] = useTheme()
 
+  /***** RENDER HELPERS *****/
   const _style = {
     '--height': utilities.getHeight(size),
     '--width': utilities.getWidth(full),
@@ -77,6 +84,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     ...style
   } as CSSProperties;
 
+  /***** RENDER *****/
   switch (true) {
     case "href" in props: {
       const { href } = props
