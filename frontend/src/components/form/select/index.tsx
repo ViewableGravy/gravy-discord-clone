@@ -1,6 +1,6 @@
 import { DeepKeys, FieldMeta, FormApi, useField, UseField } from "@tanstack/react-form";
 import React, { InputHTMLAttributes } from "react";
-import { Text } from "../../utility/text";
+import { FieldLabel } from "../general/label";
 
 /**
  * SelectField Implementation overview:
@@ -61,13 +61,9 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
 
     return (
       <div>
-       {!!label && (
-          <label className="InputField__label" htmlFor={name}>
-            <Text span secondary={!errors.length} error={!!errors.length} >
-              {label} <Text italic span sm>{!!errors.length && `- ${errors[0]}`}</Text>
-            </Text>
-          </label>
-        )}
+        <FieldLabel errors={errors} className={className} name={name}>
+          {label}
+        </FieldLabel>
         <select 
           className={className}
           value={state.value} 

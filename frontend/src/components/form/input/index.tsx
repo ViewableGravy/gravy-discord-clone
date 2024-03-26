@@ -11,6 +11,7 @@ import { Text } from "../../utility/text";
 
 /***** CONSTS *****/
 import './_Input.scss';
+import { FieldLabel } from "../general/label";
 
 /***** COMPONENT START *****/
 export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
@@ -50,13 +51,9 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
     /***** RENDER *****/
     return (
       <div className={classNames("InputField", className)}>
-        {!!label && (
-          <label className="InputField__label" htmlFor={name}>
-            <Text span secondary={!errors.length} error={!!errors.length} >
-              {label} <Text italic span sm>{!!errors.length && `- ${errors[0]}`}</Text>
-            </Text>
-          </label>
-        )}
+        <FieldLabel errors={errors} name={name} className="InputField__label">
+          {label}
+        </FieldLabel>
         <input
           {...intrinsic}
           type="text"
