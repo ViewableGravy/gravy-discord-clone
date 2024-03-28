@@ -37,7 +37,7 @@ const RegistrationRoute = () => {
     validatorAdapter: zodValidator,
   })
 
-  const { InputField } = useFormFields(form)
+  const { InputField, SelectField } = useFormFields(form)
 
   const renderLabel = (label: string) => (
     <Text span sm bold>
@@ -76,6 +76,12 @@ const RegistrationRoute = () => {
         validators={{ onChange: validators.email }} 
         label={renderLabel('PASSWORD')} 
       />
+
+      <SelectField name='dob.day' label="Day">
+        <SelectField.Option value="1">One</SelectField.Option>
+        <SelectField.Option value="2">Two</SelectField.Option>
+        <SelectField.Option value="3">Three</SelectField.Option>
+      </SelectField>
     </Modal>
   )
 }

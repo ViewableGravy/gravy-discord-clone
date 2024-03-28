@@ -6,12 +6,11 @@ import classNames from "classnames";
 /***** HOOKS *****/
 import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 
-/***** UTILITIES *****/
-import { Text } from "../../utility/text";
+/***** SHARED *****/
+import { FieldLabel } from "../general/label";
 
 /***** CONSTS *****/
 import './_Input.scss';
-import { FieldLabel } from "../general/label";
 
 /***** COMPONENT START *****/
 export const generateInputField = <T extends FormApi<any, any>>(form: T) => {

@@ -1,0 +1,25 @@
+.SelectField {
+  --background-color: #1e1f22;
+  --color: #dbdee1;
+  
+  display: flex;
+  flex-direction: column;
+  
+  &__select {
+    border-radius: 4px;
+    height: 40px;
+    padding: 10px;
+    border: none;
+    background-color: var(--background-color);
+
+    color: var(--color);
+
+    outline: 0;
+    box-shadow: none;
+
+    &--using-keyboard:focus-visible {
+      outline: 1px solid #5865f2;
+      box-shadow: none;
+    }
+  }
+}

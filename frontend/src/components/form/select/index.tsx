@@ -1,6 +1,21 @@
+/***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, useField, UseField } from "@tanstack/react-form";
-import React, { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useContext } from "react";
+import classNames from "classnames";
+
+/***** SHARED *****/
 import { FieldLabel } from "../general/label";
+
+/***** CONSTS *****/
+import './_Select.scss';
+import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
+
+const SelectContext = React.createContext({
+  name: ''
+})
+const useSelectContext = () => {
+  return useContext(SelectContext)
+}
 
 /**
  * SelectField Implementation overview:
@@ -43,12 +58,19 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     children: React.ReactNode
   }>
 
-  const Option: TOption = ({}) => {
-
-    return null;
+  /***** COMPONENT START *****/
+  const Option: TOption = ({ children, value }) => {
+    return (
+      <option value={value}>
+        {children}
+      </option>
+    )
   }
 
+  /***** COMPONENT START *****/
   const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, intrinsic, label, children }) => {
+    const isUsingKeyboard = useUsingKeyboard();
+
     const { state, handleBlur, handleChange } = useField({
       form,
       name, // typescript is going to think that name can be an object key but tanstack expects a string
@@ -60,20 +82,24 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     const { errors } = state.meta;
 
     return (
-      <div>
-        <FieldLabel errors={errors} className={className} name={name}>
-          {label}
-        </FieldLabel>
-        <select 
-          className={className}
-          value={state.value} 
-          onBlur={handleBlur}
-          onChange={(e) => handleChange(e.target.value as any)} 
-          {...intrinsic}
-        >
-          {children}
-        </select>
-      </div>
+      <SelectContext.Provider value={{ name }}>
+        <div className={classNames("SelectField", className)}>
+          <FieldLabel errors={errors} className={className} name={name}>
+            {label}
+          </FieldLabel>
+          <select 
+            value={state.value}
+            onBlur={handleBlur}
+            onChange={(e) => handleChange(e.target.value as any)} 
+            className={classNames("SelectField__select", {
+              "SelectField__select--using-keyboard": isUsingKeyboard
+            })}
+            {...intrinsic}
+          >
+            {children}
+          </select>
+        </div>
+      </SelectContext.Provider>
     );
   }
 
