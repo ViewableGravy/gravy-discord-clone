@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import classNames from "classnames";
-import React from "react"
+import React, { CSSProperties } from "react"
 
 /***** CONSTS *****/
 import './_Flex.scss';
@@ -16,6 +16,12 @@ type TFlexWrap = {
   nowrap?: boolean;
 }
 
+type TFlexGap = {
+  gap?: number;
+  rowGap?: number;
+  columnGap?: number;
+}
+
 type TBaseFlexProps = {
   className?: string;
   style?: React.CSSProperties;
@@ -24,10 +30,10 @@ type TBaseFlexProps = {
   justify?: 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
 }
 
-type TFlex = React.FC<TFlexDirections & TFlexWrap & TBaseFlexProps>
+type TFlex = React.FC<TFlexDirections & TFlexWrap & TFlexGap & TBaseFlexProps>
 
 /***** COMPONENT START *****/
-export const Flex: TFlex = ({ className, style, children, align, justify, ...props }) => {
+export const Flex: TFlex = ({ className, style, children, align, justify, gap, columnGap, rowGap, ...props }) => {
   /***** RENDER HELPERS *****/
   const classes = classNames('Flex', className, Object
     .entries(props)
@@ -38,9 +44,15 @@ export const Flex: TFlex = ({ className, style, children, align, justify, ...pro
     }
   );
 
+  const styles = {
+    '--gap': gap ? `${gap}px` : 'unset',
+    '--column-gap': columnGap ? `${columnGap}px` : 'unset',
+    '--row-gap': rowGap ? `${rowGap}px` : 'unset'
+  } as CSSProperties
+
   /***** RENDER *****/
   return (
-    <div className={classes} style={style}>
+    <div className={classes} style={{ ...style, ...styles }}>
       {children}
     </div>
   );

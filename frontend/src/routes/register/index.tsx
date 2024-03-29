@@ -8,6 +8,11 @@ import { Text } from '../../components/utility/text';
 import { useFormFields } from '../../components/form';
 import { z } from 'zod';
 
+import './_Register.scss';
+import { FieldLabel } from '../../components/form/general/label/label';
+import { Padding } from '../../components/utility/padding';
+import { Flex } from '../../components/utility/flex';
+
 const validators = {
   email: z.string().min(1, 'An email must be provided'),
   username: z.string().min(1, 'A username must be provided'),
@@ -39,12 +44,6 @@ const RegistrationRoute = () => {
 
   const { InputField, SelectField } = useFormFields(form)
 
-  const renderLabel = (label: string) => (
-    <Text span sm bold>
-      {label} <Text error span>*</Text>
-    </Text>
-  )
-
   return (
     <Modal 
       isOpen 
@@ -57,31 +56,59 @@ const RegistrationRoute = () => {
         />
       )}
     >
-      <Text xxxl semiBold>Create an account</Text>
+      <Padding margin bottom={20}>
+        <Text xxxl semiBold align-center>Create an account</Text>
+      </Padding>
       <InputField 
+        className="Register__field"
         name="email"
         intrinsic={{ autoComplete: 'email webauthn' }} 
         validators={{ onChange: validators.email }} 
-        label={renderLabel('EMAIL')}
+        label={<FieldLabel.Required label="email" uppercase />}
       />
       <InputField 
+        className="Register__field"
         name="username" 
         intrinsic={{ autoComplete: 'username webauthn' }}
         validators={{ onChange: validators.username }} 
-        label={renderLabel('USERNAME')} 
+        label={<FieldLabel.Required label="username" uppercase />} 
       />
       <InputField 
+        className="Register__field"
         name="password" 
         intrinsic={{ autoComplete: 'new-password webauthn' }}
         validators={{ onChange: validators.email }} 
-        label={renderLabel('PASSWORD')} 
+        label={<FieldLabel.Required label="password" uppercase />} 
       />
 
-      <SelectField name='dob.day' label="Day">
-        <SelectField.Option value="1">One</SelectField.Option>
-        <SelectField.Option value="2">Two</SelectField.Option>
-        <SelectField.Option value="3">Three</SelectField.Option>
-      </SelectField>
+      <Flex align='flex-end' justify='space-between' columnGap={10}>
+        <SelectField name='dob.day' label={<FieldLabel.Required label="Date of birth" uppercase />}>
+          <SelectField.Option value="1">One</SelectField.Option>
+          <SelectField.Option value="2">Two</SelectField.Option>
+          <SelectField.Option value="3">Three</SelectField.Option>
+        </SelectField>
+
+        <SelectField name='dob.month'>
+          <SelectField.Option value="1">January</SelectField.Option>
+          <SelectField.Option value="2">February</SelectField.Option>
+          <SelectField.Option value="3">March</SelectField.Option>
+          <SelectField.Option value="4">April</SelectField.Option>
+          <SelectField.Option value="5">May</SelectField.Option>
+          <SelectField.Option value="6">June</SelectField.Option>
+          <SelectField.Option value="7">July</SelectField.Option>
+          <SelectField.Option value="8">August</SelectField.Option>
+          <SelectField.Option value="9">September</SelectField.Option>
+          <SelectField.Option value="10">October</SelectField.Option>
+          <SelectField.Option value="11">November</SelectField.Option>
+          <SelectField.Option value="12">December</SelectField.Option>
+        </SelectField>
+
+        <SelectField name='dob.year'>
+          <SelectField.Option value="1">One</SelectField.Option>
+          <SelectField.Option value="2">Two</SelectField.Option>
+          <SelectField.Option value="3">Three</SelectField.Option>
+        </SelectField>
+      </Flex>
     </Modal>
   )
 }

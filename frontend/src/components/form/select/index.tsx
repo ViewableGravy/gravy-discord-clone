@@ -1,10 +1,10 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, useField, UseField } from "@tanstack/react-form";
-import React, { createContext, InputHTMLAttributes, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, CSSProperties, InputHTMLAttributes, useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
 /***** SHARED *****/
-import { FieldLabel } from "../general/label";
+import { FieldLabel } from "../general/label/label";
 
 /***** CONSTS *****/
 import './_Select.scss';
@@ -12,17 +12,22 @@ import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 import { useToggleState } from "../../../utilities/hooks/useToggleState";
 import { generateInputField } from "../input";
 import { ChevronRight } from "../../../assets/icons/chevron-right";
+import { useClickAway } from "../../../utilities/hooks/useClickAway";
 
 type TSelectContext = {
   name: string;
+  form: FormApi<any, any>;
   handleChange: (value: unknown) => void;
   value: any;
+  isSearching: boolean;
 }
 
 const SelectContext = createContext<TSelectContext>({
   name: '',
   handleChange: () => {},
-  value: ''
+  value: '',
+  form: {} as any,
+  isSearching: false
 });
 
 const useSelectContext = (_value: unknown) => {  
@@ -62,7 +67,6 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
   //   asyncDebounceMs?: number;
   //   validators?: TValidators;
   //   className?: string;
-  //   intrinsic?: InputHTMLAttributes<HTMLSelectElement>;
   //   children: React.ReactNode;
   // }>
 
@@ -72,28 +76,41 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
      * should probably just be anything for now
      */
     value: any; 
-    children: React.ReactNode
+    children: string;
   }>
 
   /***** COMPONENT START *****/
   const Option: TOption = ({ children, value }) => {
-    const { handleChange, isSelected } = useSelectContext(value);
+    /***** HOOKS *****/
+    const { handleChange, isSelected, form, name, isSearching } = useSelectContext(value);
+    const { state } = useField({ form, name: `${name}--search` })
     
+    /***** RENDER HELPERS *****/
+    const matchesSearch = state.value?.toLowerCase().includes(children.toLowerCase());
     const classes = classNames("SelectField__option", {
       "SelectField__option--selected": isSelected 
     })
-
+    
+    /***** RENDER *****/
     return (
-      <button className={classes} onClick={() => handleChange(value)}>
-        {children}
-      </button>
+      <>
+        {isSearching && !matchesSearch ? null : (
+          <button className={classes} onClick={() => handleChange(value)}>
+            {children}
+          </button>
+        )}
+      </>
     );
   }
 
   /***** COMPONENT START *****/
-  const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, intrinsic, label, children }) => {
-    const isUsingKeyboard = useUsingKeyboard();
+  const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, label, children }) => {
     const [isOpen, toggleIsOpen] = useToggleState()
+    const [isSearching, toggleIsSearching] = useToggleState()
+    const clickawayRef = useClickAway<HTMLDivElement>((e) => {
+      toggleIsOpen(false)
+      toggleIsSearching(false)
+    });
 
     const { state, handleBlur, handleChange } = useField({
       form,
@@ -102,39 +119,53 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
       defaultMeta,
       validators
     });
+
     const { errors } = state.meta;
 
-    const InputField = generateInputField(form)
+    const InputField = useMemo(() => generateInputField(form), [form])
 
+    const dropdownStyle = {
+      '--display-dropdown': isOpen ? 'block' : 'none'
+    } as CSSProperties
+
+    const context = {
+      name,
+      form,
+      handleChange,
+      value: state.value,
+      isSearching
+    }
 
     return (
-      <SelectContext.Provider value={{ name, handleChange, value: state.value }}>
+      <SelectContext.Provider value={context}>
         <div className={classNames("SelectField", className)}>
           <FieldLabel errors={errors} className={className} name={name}>
             {label}
           </FieldLabel>
-
-          {/* Native element for accessibility */}
-          {/* <select 
-            value={state.value}
-            onBlur={handleBlur}
-            onChange={(e) => handleChange(e.target.value as any)} 
-            className={classNames("SelectField__nativeSelect", {
-              "SelectField__nativeSelect--using-keyboard": isUsingKeyboard
-            })}
-            {...intrinsic}
-          >
-            {children}
-          </select> */}
-
-          {/* Rendered Content */}
-          <div className="SelectField__select">
+          <div ref={clickawayRef} className="SelectField__select">
             <InputField
               className="SelectField__input"
               name={`${name}--search` as any}
               intrinsic={{
-                onClick: () => toggleIsOpen(),
-                onKeyDown: (e) => e.key === 'Enter' && toggleIsOpen(),
+                onClick: () => {
+                  toggleIsOpen();
+                  toggleIsSearching(false);
+                },
+                onKeyDown: (e) => {
+                  switch(e.key) {
+                    case 'Tab': {
+                      return toggleIsSearching(false);
+                    }
+                    case 'Enter': {
+                      toggleIsOpen();
+                      toggleIsSearching(false);
+                      break;
+                    }
+                    default: {
+                      return toggleIsSearching(true);
+                    }
+                  }
+                },
                 autoComplete: "off"
               }}
             />
@@ -144,7 +175,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
               <ChevronRight height={16} />
             </div>
           </div>
-          <div style={{ display: isOpen ? 'none' : undefined }}>
+          <div className="SelectField__dropdown" style={dropdownStyle}>
             {children}
           </div>
         </div>

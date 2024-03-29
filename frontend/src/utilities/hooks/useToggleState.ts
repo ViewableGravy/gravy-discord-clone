@@ -65,7 +65,7 @@ export const useToggleState: TToggleState = (states, options) => {
 
     type TStates = typeof states;
     const toggle = (state?: TStates extends Array<any> ? TStates[number] : boolean) => setState((_state) => {
-        if (state && _states.includes(state as any)) {
+        if ((state || state === false)  && _states.includes(state as any)) {
           onChange?.(state as any);
           return state;
         }

@@ -3,7 +3,11 @@ import { ValidationError } from "@tanstack/react-form";
 import classNames from "classnames";
 
 /***** UTILITIES *****/
-import { Text } from "../../utility/text";
+import { Text } from "../../../utility/text";
+
+/***** CONSTS *****/
+import './_FieldLabel.scss';
+import { _Required } from "./required";
 
 /***** TYPE DEFINITIONS *****/
 type TFieldLabel = React.FC<{
@@ -14,7 +18,7 @@ type TFieldLabel = React.FC<{
 }>
 
 /***** COMPONENT START *****/
-export const FieldLabel: TFieldLabel = ({ children, errors, className, name }) => {
+const _FieldLabel: TFieldLabel = ({ children, errors, className, name }) => {
   return (
     <>
       {!!children && (
@@ -27,3 +31,7 @@ export const FieldLabel: TFieldLabel = ({ children, errors, className, name }) =
     </>
   )
 }
+
+export const FieldLabel = Object.assign(_FieldLabel, {
+  Required: _Required
+});

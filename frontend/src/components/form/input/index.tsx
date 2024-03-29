@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 
 /***** SHARED *****/
-import { FieldLabel } from "../general/label";
+import { FieldLabel } from "../general/label/label";
 
 /***** CONSTS *****/
 import './_Input.scss';

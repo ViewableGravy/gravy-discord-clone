@@ -1,5 +1,13 @@
 .Flex {
+  --gap: unset;
+  --column-gap: unset;
+  --row-gap: unset;
+
   display: flex;
+  
+  gap: var(--gap);
+  column-gap: var(--column-gap);
+  row-gap: var(--row-gap);
 
   &--row {
     flex-direction: row;
