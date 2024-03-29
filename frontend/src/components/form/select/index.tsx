@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, useField, UseField } from "@tanstack/react-form";
-import React, { InputHTMLAttributes, useContext } from "react";
+import React, { createContext, InputHTMLAttributes, useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
 /***** SHARED *****/
@@ -9,13 +9,30 @@ import { FieldLabel } from "../general/label";
 /***** CONSTS *****/
 import './_Select.scss';
 import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
+import { useToggleState } from "../../../utilities/hooks/useToggleState";
+import { generateInputField } from "../input";
+import { ChevronRight } from "../../../assets/icons/chevron-right";
 
-const SelectContext = React.createContext({
-  name: ''
-})
-const useSelectContext = () => {
-  return useContext(SelectContext)
+type TSelectContext = {
+  name: string;
+  handleChange: (value: unknown) => void;
+  value: any;
 }
+
+const SelectContext = createContext<TSelectContext>({
+  name: '',
+  handleChange: () => {},
+  value: ''
+});
+
+const useSelectContext = (_value: unknown) => {  
+  const { value, ...rest } =  useContext(SelectContext);
+
+  return {
+    ...rest,
+    isSelected: value === _value
+  }
+};
 
 /**
  * SelectField Implementation overview:
@@ -35,19 +52,19 @@ const useSelectContext = () => {
  */
 export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
   /***** TYPE DEFINITIONS *****/
-  type TData = T extends FormApi<infer _TData, any> ? _TData : never;
-  type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
-  type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
-  type TSelectField = React.FC<{
-    name: DeepKeys<TData>;
-    label?: React.ReactNode;
-    defaultMeta?: Partial<FieldMeta>;
-    asyncDebounceMs?: number;
-    validators?: TValidators;
-    className?: string;
-    intrinsic?: InputHTMLAttributes<HTMLSelectElement>;
-    children: React.ReactNode;
-  }>
+  // type TData = T extends FormApi<infer _TData, any> ? _TData : never;
+  // type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
+  // type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
+  // type TSelectField = React.FC<{
+  //   name: DeepKeys<TData>;
+  //   label?: React.ReactNode;
+  //   defaultMeta?: Partial<FieldMeta>;
+  //   asyncDebounceMs?: number;
+  //   validators?: TValidators;
+  //   className?: string;
+  //   intrinsic?: InputHTMLAttributes<HTMLSelectElement>;
+  //   children: React.ReactNode;
+  // }>
 
   type TOption = React.FC<{
     /**
@@ -60,16 +77,23 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
 
   /***** COMPONENT START *****/
   const Option: TOption = ({ children, value }) => {
+    const { handleChange, isSelected } = useSelectContext(value);
+    
+    const classes = classNames("SelectField__option", {
+      "SelectField__option--selected": isSelected 
+    })
+
     return (
-      <option value={value}>
+      <button className={classes} onClick={() => handleChange(value)}>
         {children}
-      </option>
-    )
+      </button>
+    );
   }
 
   /***** COMPONENT START *****/
   const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, intrinsic, label, children }) => {
     const isUsingKeyboard = useUsingKeyboard();
+    const [isOpen, toggleIsOpen] = useToggleState()
 
     const { state, handleBlur, handleChange } = useField({
       form,
@@ -77,27 +101,52 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
       asyncDebounceMs: asyncDebounceMs ?? 200,
       defaultMeta,
       validators
-    })
-
+    });
     const { errors } = state.meta;
 
+    const InputField = generateInputField(form)
+
+
     return (
-      <SelectContext.Provider value={{ name }}>
+      <SelectContext.Provider value={{ name, handleChange, value: state.value }}>
         <div className={classNames("SelectField", className)}>
           <FieldLabel errors={errors} className={className} name={name}>
             {label}
           </FieldLabel>
-          <select 
+
+          {/* Native element for accessibility */}
+          {/* <select 
             value={state.value}
             onBlur={handleBlur}
             onChange={(e) => handleChange(e.target.value as any)} 
-            className={classNames("SelectField__select", {
-              "SelectField__select--using-keyboard": isUsingKeyboard
+            className={classNames("SelectField__nativeSelect", {
+              "SelectField__nativeSelect--using-keyboard": isUsingKeyboard
             })}
             {...intrinsic}
           >
             {children}
-          </select>
+          </select> */}
+
+          {/* Rendered Content */}
+          <div className="SelectField__select">
+            <InputField
+              className="SelectField__input"
+              name={`${name}--search` as any}
+              intrinsic={{
+                onClick: () => toggleIsOpen(),
+                onKeyDown: (e) => e.key === 'Enter' && toggleIsOpen(),
+                autoComplete: "off"
+              }}
+            />
+            <div className={classNames("SelectField__chevron", {
+              "SelectField__chevron--open": isOpen,
+            })}>
+              <ChevronRight height={16} />
+            </div>
+          </div>
+          <div style={{ display: isOpen ? 'none' : undefined }}>
+            {children}
+          </div>
         </div>
       </SelectContext.Provider>
     );

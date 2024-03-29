@@ -4,22 +4,50 @@
   
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  width: 200px;
   
-  &__select {
+  &__button {
     border-radius: 4px;
     height: 40px;
-    padding: 10px;
     border: none;
     background-color: var(--background-color);
-
-    color: var(--color);
-
+    
+    padding: 0;
+    background-color: transparent;
+    border: none;
     outline: 0;
     box-shadow: none;
+
+    color: var(--color);
 
     &--using-keyboard:focus-visible {
       outline: 1px solid #5865f2;
       box-shadow: none;
+    }
+  }
+
+  &__input {
+    .InputField__input {
+      cursor: pointer;
+    }
+  }
+
+  &__select {
+    position: relative;
+  }
+
+  &__chevron {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: transform 0.2s ease-in-out;
+
+    &--open {
+      transform: translateY(-50%) rotate(90deg);
     }
   }
 }

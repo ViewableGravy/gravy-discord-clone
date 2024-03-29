@@ -13,7 +13,7 @@ import { Navbar } from "../components/navbar";
 import { Button } from "../components/button";
 
 /***** UTILITIES *****/
-import { _socketStore, useSocket } from "../utilities/hooks/useSocket";
+import { useSocket } from "../utilities/hooks/useSocket";
 
 /***** CONSTS *****/
 import discord from '../assets/discord.jpg';

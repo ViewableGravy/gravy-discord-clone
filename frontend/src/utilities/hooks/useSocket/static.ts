@@ -59,3 +59,11 @@ export const ROOMS = {
   },
   [TYPES.AUTHORIZATION]: {}
 } as const;
+
+export const url = new URL('ws://localhost:3000/api/socket')
+export const READY_STATE: Record<number, 'CONNECTING' | 'OPEN' | 'CLOSING' | 'CLOSED'> = {
+  0: 'CONNECTING',
+  1: 'OPEN',
+  2: 'CLOSING',
+  3: 'CLOSED'
+}

@@ -3,7 +3,7 @@ import { UseMutationOptions, useMutation } from "@tanstack/react-query";
 import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
-import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
+import { useSocket, authSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** API IMPORTS *****/
@@ -37,7 +37,7 @@ export const useAuthenticateMutation = (options: TOptions = {}) => {
     onSuccess: async ({ data }) => {
       setRefreshToken(data.refreshToken);
 
-      globalAxios.defaults.headers.common.Authorization = _socketStore.state.identifier;
+      globalAxios.defaults.headers.common.Authorization = authSocket.store.state.identifier;
 
       navigate({ to: '/dashboard' })
     },
