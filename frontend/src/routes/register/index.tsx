@@ -12,6 +12,8 @@ import './_Register.scss';
 import { FieldLabel } from '../../components/form/general/label/label';
 import { Padding } from '../../components/utility/padding';
 import { Flex } from '../../components/utility/flex';
+import { Button } from '../../components/button';
+import { Anchor } from '../../components/Anchor';
 
 const validators = {
   email: z.string().min(1, 'An email must be provided'),
@@ -34,8 +36,6 @@ const RegistrationRoute = () => {
       password: '',
       dob: {
         day: '',
-        'day--search': '',
-        'day--human': '',
         month: '',
         year: ''
       },
@@ -84,13 +84,13 @@ const RegistrationRoute = () => {
       />
 
       <Flex align='flex-end' justify='space-between' columnGap={10}>
-        <SelectField name='dob.day' label={<FieldLabel.Required label="Date of birth" uppercase />}>
+        <SelectField placeholder="Day" name='dob.day' label={<FieldLabel.Required label="Date of birth" uppercase />}>
           {Array.from({ length: 31 }).map((_, i) => (
-            <SelectField.Option key={i} value={i}>{i}</SelectField.Option>
+            <SelectField.Option key={i} value={i + 1}>{i + 1}</SelectField.Option>
           ))}
         </SelectField>
 
-        <SelectField name='dob.month'>
+        <SelectField name='dob.month' placeholder="Month">
           <SelectField.Option value="1">January</SelectField.Option>
           <SelectField.Option value="2">February</SelectField.Option>
           <SelectField.Option value="3">March</SelectField.Option>
@@ -105,12 +105,24 @@ const RegistrationRoute = () => {
           <SelectField.Option value="12">December</SelectField.Option>
         </SelectField>
 
-        <SelectField name='dob.year'>
-          <SelectField.Option value="1">One</SelectField.Option>
-          <SelectField.Option value="2">Two</SelectField.Option>
-          <SelectField.Option value="3">Three</SelectField.Option>
+        <SelectField name='dob.year' placeholder="Year">
+          {Array.from({ length: 100 }).map((_, i) => (
+            <SelectField.Option key={i} value={new Date().getFullYear() - i}>{new Date().getFullYear() - i}</SelectField.Option>
+          ))}
         </SelectField>
       </Flex>
+      <Padding margin top={20} bottom={8}>
+        <Button full type="submit">Continue</Button>
+      </Padding>
+      <Text tertiary sm>
+        By registering, you agree to Tancord's
+        <Anchor.Link to="/login"><Text sm span link> Terms of Service </Text></Anchor.Link>
+        and 
+        <Anchor.Link to="/login"><Text sm span link> Privacy Policy</Text></Anchor.Link>
+      </Text>
+      <Padding margin top={20}>
+        <Anchor.Link to="/login">Already have an account?</Anchor.Link>
+      </Padding>
     </Modal>
   )
 }

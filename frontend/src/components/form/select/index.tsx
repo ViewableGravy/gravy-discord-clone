@@ -140,10 +140,10 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
             style={styles}
             className={classes}
             onClick={() => {
-              toggleIsSearching(false)
-              toggleIsOpen(false)
               handleValueChange(value)
               handleHumanChange(children)
+              toggleIsSearching(false)
+              toggleIsOpen(false)
             }}
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
@@ -151,10 +151,10 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                 toggleIsOpen(false)
               }
               if (e.key === 'Enter') {
-                toggleIsSearching(false)
-                toggleIsOpen(false)
                 handleValueChange(value)
                 handleHumanChange(children)
+                toggleIsSearching(false)
+                toggleIsOpen(false)
               }
             }}
           >
@@ -168,7 +168,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
   }
 
   /***** COMPONENT START *****/
-  const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, label, children, direction }) => {
+  const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, label, children, direction, placeholder }) => {
     /***** HOOKS *****/
     const InputField = useMemo(() => generateInputField(form), [form])
     const clickawayRef = useClickAway<HTMLDivElement>(() => {
@@ -250,6 +250,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
           </FieldLabel>
           <div className={classes.inputWrapper}>
             <InputField
+              placeholder={placeholder}
               key={inputName}
               name={inputName}
               innerRef={inputRef}
@@ -265,7 +266,6 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                   }
                 },
                 onKeyDown(e) {
-                  console.log(e.key)
                   switch(e.key) {
                     case 'Escape': {
                       e.stopPropagation();
@@ -275,13 +275,10 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                     case 'Enter': {
                       e.stopPropagation();
                       toggleIsOpen();
-
-                      if (isOpen) {
-                        toggleIsSearching(false);
-                      } else {
-                        toggleIsSearching(true);
-                      }
-                      return;
+                      toggleIsSearching(!isOpen);
+                      return void setTimeout(() => {
+                        inputRef.current?.focus(); 
+                      });
                     }
                     case 'ArrowDown': {
                       e.stopPropagation();
@@ -298,6 +295,14 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                       toggleIsOpen(false);
                       return toggleIsSearching(false);
                     }
+                    default: {
+                      if (!isOpen) {
+                        toggleIsOpen(true);
+                      }
+                      if (!isSearching) {
+                        toggleIsSearching(true);
+                      }
+                    }
                   }
                 },
                 autoFocus: isSearching || isOpen,
@@ -309,7 +314,6 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
             </div>
           </div>
           <div className={classes.dropdown} style={dropdownStyle}>
-            {React.Children.count(children) === 0 && (<div>No results found</div>)}
             {children}
           </div>
         </div>

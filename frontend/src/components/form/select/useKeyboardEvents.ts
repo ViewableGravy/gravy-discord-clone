@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDownKeys } from "../../../utilities/hooks/useKeysDown";
 import { useSelectContext } from ".";
 
@@ -19,20 +19,16 @@ type TUseSelectFieldKeyboardState = (props: TUseSelectFieldKeyboardStateProps) =
 
 export const useSelectFieldKeyboardState: TUseSelectFieldKeyboardState = ({
   inputRef,
-  clickawayRef,
   isSearching,
   toggleIsSearching,
   toggleIsOpen
 }) => {
   const [keys] = useDownKeys();
-  const [clickedArrow, setClickedArrowDown] = useState(false)
-  const [clickedEnter, setClickedEnter] = useState(false)
 
   /***** EFFECTS *****/
   useEffect(() => {
     if (document.activeElement !== inputRef.current)
       return;
-
 
     if (keys.Tab && keys.Shift) {
       toggleIsOpen(false);
@@ -41,12 +37,6 @@ export const useSelectFieldKeyboardState: TUseSelectFieldKeyboardState = ({
     }
 
     if (keys.Tab) {
-      return;
-    }
-
-    if (keys.Enter) {
-      toggleIsOpen();
-      toggleIsSearching(false);
       return;
     }
 
