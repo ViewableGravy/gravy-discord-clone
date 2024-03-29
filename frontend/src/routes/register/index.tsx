@@ -34,6 +34,8 @@ const RegistrationRoute = () => {
       password: '',
       dob: {
         day: '',
+        'day--search': '',
+        'day--human': '',
         month: '',
         year: ''
       },
@@ -83,9 +85,9 @@ const RegistrationRoute = () => {
 
       <Flex align='flex-end' justify='space-between' columnGap={10}>
         <SelectField name='dob.day' label={<FieldLabel.Required label="Date of birth" uppercase />}>
-          <SelectField.Option value="1">One</SelectField.Option>
-          <SelectField.Option value="2">Two</SelectField.Option>
-          <SelectField.Option value="3">Three</SelectField.Option>
+          {Array.from({ length: 31 }).map((_, i) => (
+            <SelectField.Option key={i} value={i}>{i}</SelectField.Option>
+          ))}
         </SelectField>
 
         <SelectField name='dob.month'>

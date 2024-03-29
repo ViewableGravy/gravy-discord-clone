@@ -26,7 +26,8 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
     asyncDebounceMs?: number;
     validators?: TValidators;
     className?: string;
-    intrinsic?: InputHTMLAttributes<HTMLInputElement>
+    intrinsic?: InputHTMLAttributes<HTMLInputElement>,
+    innerRef?: React.RefObject<HTMLInputElement>;
   }>
 
   /**
@@ -34,11 +35,10 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
    * 
    * Does not currently support field level validation due to type issues
    */
-  const InputField: TInputField = ({ name, label, placeholder, defaultMeta, asyncDebounceMs, className, validators, intrinsic = {} }) => {
+  const InputField: TInputField = ({ name, label, placeholder, defaultMeta, asyncDebounceMs, className, validators, innerRef, intrinsic = {} }) => {
     /***** HOOKS *****/
     const isUsingKeyboard = useUsingKeyboard();
-    const { state, handleBlur, handleChange } = useField({
-      form,
+    const { state, handleBlur, handleChange } = form.useField({
       name, // typescript is going to think that name can be an object key but tanstack expects a string
       asyncDebounceMs: asyncDebounceMs ?? 200,
       defaultMeta,
@@ -54,10 +54,11 @@ export const generateInputField = <T extends FormApi<any, any>>(form: T) => {
           {label}
         </FieldLabel>
         <input
+          ref={innerRef}
           {...intrinsic}
           type="text"
           placeholder={placeholder}
-          value={state.value}
+          value={state.value ?? ''}
           onBlur={handleBlur}
           onChange={(e) => handleChange(e.target.value as any)}
           name={name}

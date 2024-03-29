@@ -34,6 +34,47 @@
   &__dropdown {
     position: absolute;
     display: var(--display-dropdown);
-    top: 100%;
+    border-radius: 4px;
+    overflow-y: auto;
+    max-height: 200px;
+    width: 100%;
+
+    &--down {
+      top: calc(100% + 5px);
+    }
+
+    &--up {
+      bottom: calc(100% + 5px);
+
+      &.SelectField__dropdown--hasLabel {
+        bottom: calc(100% - 20px);
+      }
+    }
+  }
+
+  &__option {
+    --background-color: #1e1f22;
+    --background-color-hover: #2a2b2e;
+    --background-color-selected: #2a2b2e;
+
+    width: 100%;
+    border: none;
+    height: 100%;
+    color: var(--color);
+    cursor: pointer;
+    padding: 10px;
+    display: block;
+    transition: background-color 0.2s ease-in-out;
+    background-color: var(--background-color);
+
+    &--selected {
+      background-color: var(--background-color-selected);
+    }
+
+    &:hover:not(.SelectField__option--selected),
+    &:focus:not(.SelectField__option--selected) {
+      background-color: var(--background-color-hover);
+      outline: none;
+    }
   }
 }

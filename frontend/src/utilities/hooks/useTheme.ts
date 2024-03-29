@@ -14,7 +14,14 @@ export const theme = new Store({
     modal: '#313338',
     button: '#5865f2',
     hover: {
-      button: '#4752c4'
+      button: '#4752c4',
+    },
+    form: {
+      input: '#1e1f22',
+      select: {
+        selected: '#404249',
+        hover: '#35373c'
+      }
     },
     black: '#000000',
   },

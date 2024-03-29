@@ -3,7 +3,6 @@ import { z } from "zod";
 import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
-import { _socketStore } from "../../utilities/hooks/useSocket";
 import { waitAtleast } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
