@@ -69,6 +69,7 @@ export const generateCheckboxField = <TData extends Record<string, any>, TValida
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleChange(!state.value as any)
               }} 
+              type="button"
               style={style} 
               className={classes.checkbox}
             >

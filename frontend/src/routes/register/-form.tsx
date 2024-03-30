@@ -7,7 +7,6 @@ import { useFormFields } from "../../components/form"
 
 /***** QUERIES *****/
 import { API } from "../../api/queries"
-import { useEffect } from "react"
 
 /***** HOOK START *****/
 export const useRegistrationForm = () => {

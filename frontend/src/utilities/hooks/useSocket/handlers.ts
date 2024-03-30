@@ -6,7 +6,7 @@ import { socketValidators } from "./validators";
 import { authSocket } from "./";
 
 /***** QUERY IMPORTS *****/
-import { queryClient } from "../../../main";
+import { queryClient } from "../../../app";
 
 /***** TYPE DEFINITIONS *****/
 import type { TSocketTypes } from "./static";

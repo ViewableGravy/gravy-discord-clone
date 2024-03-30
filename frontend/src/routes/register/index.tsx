@@ -16,6 +16,7 @@ import { useMatchMedia } from '../../utilities/hooks/useMatchMedia';
 import { useAppViewport } from '../../utilities/hooks/useMedia';
 import { useRegistrationForm } from './-form';
 import { API } from '../../api/queries';
+import { AxiosError } from 'axios';
 
 const validators = {
   email: z.string().email(),
@@ -39,8 +40,20 @@ const RegistrationRoute = () => {
   const isTiny = useAppViewport(['xs'])
   
   /***** QUERIES *****/
-  const result = API.MUTATIONS.account.useCreateAccountMutationState()[0]
-  console.log(result)
+  const [result] = API.MUTATIONS.account.useCreateAccountMutationState()
+
+  //example of how the response from the API should look (for errors)
+  if (result?.error instanceof AxiosError) {
+    const { data } = result.error.response?.data;
+
+    if (data?.fieldErrors) {
+      console.log(data.fieldErrors.email)
+      console.log(data.fieldErrors.username)
+      console.log(data.fieldErrors.displayName)
+      console.log(data.fieldErrors.password)
+      console.log(data.fieldErrors.dob)
+    }
+  }
 
   /***** FORM *****/
   const form = useRegistrationForm();
@@ -50,7 +63,11 @@ const RegistrationRoute = () => {
     <Modal 
       isOpen 
       fade={{ modal: false }} 
-      className={classNames('Register', { "Register--mobile": isMobile, "Register--tiny": isTiny })}
+      className={classNames('Register', { 
+        "Register--mobile": isMobile, 
+        "Register--tiny": isTiny,
+        "Register--error": result?.error
+      })}
       background={(
         <img 
           src={background} 
