@@ -6,16 +6,18 @@ import React from "react"
 import './_Padding.scss';
 
 /***** TYPE DEFINITIONS *****/
+type TSizes = "extra-small" | "small" | "medium" | "large" | number
+
 type TPadding = React.FC<{
   margin?: boolean;
 
-  top?: number;
-  left?: number;
-  right?: number;
-  bottom?: number;
-  all?: number;
-  inline?: boolean;
-  block?: boolean;
+  top?: TSizes;
+  left?: TSizes;
+  right?: TSizes;
+  bottom?: TSizes;
+  all?: TSizes;
+  inline?: TSizes;
+  block?: TSizes;
 
   className?: string;
   children?: React.ReactNode;
@@ -35,11 +37,30 @@ export const Padding: TPadding = ({ margin, top, left, right, bottom, inline, bl
     'Padding--margin': margin
   })
 
+  const castPropToPixel = (prop?: TSizes) => {
+    if (typeof prop === 'number') {
+      return `${prop}px`
+    }
+
+    switch (prop) {
+      case 'extra-small':
+        return '4px';
+      case 'small':
+        return '8px';
+      case 'medium':
+        return '12px';
+      case 'large':
+        return '20px';
+      default:
+        return '0px';
+    }
+  }
+
   const styles = {
-    ...( (top || all) && { '--padding-top': `${top ?? all ?? 0}px` }),
-    ...( (left || all) && { '--padding-left': `${left ?? all ?? 0}px` }),
-    ...( (right || all) && { '--padding-right': `${right ?? all ?? 0}px` }),
-    ...( (bottom || all) && { '--padding-bottom': `${bottom ?? all ?? 0}px` }),
+    ...( (top || all) && { '--padding-top': castPropToPixel(top ?? all) }),
+    ...( (left || all) && { '--padding-left': castPropToPixel(left ?? all) }),
+    ...( (right || all) && { '--padding-right': castPropToPixel(right ?? all) }),
+    ...( (bottom || all) && { '--padding-bottom': castPropToPixel(bottom ?? all) }),
   } as React.CSSProperties
 
   /***** RENDER *****/

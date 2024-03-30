@@ -64,7 +64,7 @@ const RegistrationRoute = () => {
         e.stopPropagation();
         form.handleSubmit()
       }}>
-        <Padding margin bottom={20}>
+        <Padding margin bottom="large">
           <Text xxxl semiBold align-center>Create an account</Text>
         </Padding>
         <form.InputField 
@@ -75,14 +75,6 @@ const RegistrationRoute = () => {
           validators={{ onChange: validators.email }} 
           label={<Text span sm bold uppercase>email</Text>}
         />
-        <form.InputField 
-          required
-          className="Register__field"
-          name="username" 
-          intrinsic={{ autoComplete: 'username webauthn' }}
-          validators={{ onChange: validators.username }} 
-          label={<Text span sm bold uppercase>username</Text>}
-        />
         <form.InputField
           required
           className="Register__field"
@@ -90,6 +82,14 @@ const RegistrationRoute = () => {
           intrinsic={{ autoComplete: 'name' }}
           validators={{ onChange: validators.displayName }} 
           label={<Text span sm bold uppercase>display name</Text>}
+        />
+        <form.InputField 
+          required
+          className="Register__field"
+          name="username" 
+          intrinsic={{ autoComplete: 'username webauthn' }}
+          validators={{ onChange: validators.username }} 
+          label={<Text span sm bold uppercase>username</Text>}
         />
         <form.InputField 
           required
@@ -139,16 +139,18 @@ const RegistrationRoute = () => {
 
           <form.SelectField className="Register__select" name='dob.year' placeholder="Year">
             {Array.from({ length: 100 }).map((_, i) => (
-              <form.SelectField.Option key={i} value={new Date().getFullYear() - i}>{new Date().getFullYear() - i}</form.SelectField.Option>
+              <form.SelectField.Option key={i} value={new Date().getFullYear() - i}>
+                {new Date().getFullYear() - i}
+              </form.SelectField.Option>
             ))}
           </form.SelectField>
         </Flex>
-        <Padding margin top={8}>
+        <Padding margin top="small">
           <form.CheckboxField name="notifications">
             (Optional) it's okay to send me emails with Tancord updates, tips and special offers. You can opt out at any time.
           </form.CheckboxField>
         </Padding>
-        <Padding margin top={20} bottom={12}>
+        <Padding margin top="large" bottom="medium">
           <Button disabled={form.state.isSubmitting} full type="submit">Continue</Button>
         </Padding>
         <Text tertiary sm>
@@ -157,7 +159,7 @@ const RegistrationRoute = () => {
           and 
           <Anchor.Link to="/login"><Text sm span link> Privacy Policy</Text></Anchor.Link>
         </Text>
-        <Padding margin top={20}>
+        <Padding margin top="large">
           <Anchor.Link to="/login">Already have an account?</Anchor.Link>
         </Padding>
       </form>
