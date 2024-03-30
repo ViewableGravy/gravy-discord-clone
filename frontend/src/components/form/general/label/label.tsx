@@ -15,13 +15,14 @@ type TFieldLabel = React.FC<{
   errors: ValidationError[];
   className?: string;
   name: string;
+  render?: boolean;
 }>
 
 /***** COMPONENT START *****/
-const _FieldLabel: TFieldLabel = ({ children, errors, className, name }) => {
+const _FieldLabel: TFieldLabel = ({ children, errors, className, name, render = true }) => {
   return (
     <>
-      {!!children && (
+      {!!render && (
         <label className={classNames("FieldLabel", className)} htmlFor={name}>
           <Text span secondary={!errors.length} error={!!errors.length} >
             {children} <Text italic span sm>{!!errors.length && `- ${errors[0]}`}</Text>

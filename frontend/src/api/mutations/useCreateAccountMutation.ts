@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { UseMutationOptions, useMutation } from "@tanstack/react-query"
+import { UseMutationOptions, useMutation, useMutationState } from "@tanstack/react-query"
 import { API } from "../api"
 import { TCreateAccountArgs } from "../apis/account"
 
@@ -11,6 +11,15 @@ type TOptions  = Omit<UseMutationOptions<TReturnType, Error, TCreateAccountArgs,
 export const useCreateAccountMutation = (options: TOptions = {}) => {
   return useMutation({
     mutationFn: API.ACCOUNT.POST.create,
+    mutationKey: ['application', 'unauthenticted', 'create'],
     ...options
+  })
+}
+
+export const useCreateAccountMutationState = () => {
+  return useMutationState({
+    filters: { 
+      mutationKey: ['application', 'unauthenticated', 'create'] 
+    }
   })
 }

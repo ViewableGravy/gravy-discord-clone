@@ -16,9 +16,11 @@
     min-width: 24px;
     min-height: 24px;
 
+    background: none;
     border: 1px solid lightgray;
     border-radius: 6px;
     border-color: var(--border-color);
+    pointer-events: none;
 
     &--selected {
       background-color: var(--background-color);

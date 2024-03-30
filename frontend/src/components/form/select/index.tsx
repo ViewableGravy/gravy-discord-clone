@@ -17,6 +17,7 @@ import { generateInputField } from "../input";
 /***** CONSTS *****/
 import './_Select.scss';
 import { ChevronRight } from "../../../assets/icons/chevron-right";
+import { Validator } from "@tanstack/form-core";
 
 type TSelectContext = {
   name: string;
@@ -67,16 +68,20 @@ export const useSelectContext = (_value?: unknown) => {
   </SelectField>
  ```
  */
-export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
+export const generateSelectField =  <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
   /***** TYPE DEFINITIONS *****/
-  type TData = T extends FormApi<infer _TData, any> ? _TData : never;
-  type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
-  type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
+  type TValidators = Parameters<UseField<TData, TValidator>>[0]['validators'];
   type TSelectField = React.FC<{
     name: DeepKeys<TData>;
     label?: React.ReactNode;
     defaultMeta?: Partial<FieldMeta>;
     asyncDebounceMs?: number;
+
+    /**
+     * Although this is typed correctly and will be passed through, there are currently issues with this implementation
+     * due to the field implementation. I'll likely want to reconsider the implementation to use a controlled input field
+     * for searching and displaying rather than a single input field.
+     */
     validators?: TValidators;
     className?: string;
     children: React.ReactNode;
@@ -141,6 +146,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
       <>
         {isSearching && !matchesSearch ? null : (
           <button 
+            type="button"
             ref={buttonRef}
             style={styles}
             className={classes}
@@ -261,7 +267,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     return (
       <SelectContext.Provider value={context}>
         <div ref={clickawayRef} className={classes.outer}>
-          <FieldLabel errors={errors} className={className} name={name}>
+          <FieldLabel errors={errors} name={name}>
             {label}
           </FieldLabel>
           <div className={classes.inputWrapper}>
@@ -291,7 +297,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                     case 'Enter': {
                       e.stopPropagation();
                       if (isSearching) {
-                        handleChange(e.currentTarget.value);
+                        handleChange(e.currentTarget.value as any);
                       }
                       toggleIsOpen();
                       toggleIsSearching(isOpen);

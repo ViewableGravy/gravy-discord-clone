@@ -15,7 +15,13 @@ export type TAuthenticationArgs = {
 export type TCreateAccountArgs = {
   username: string,
   password: string,
-  email: string
+  email: string,
+  dob: {
+    day: string,
+    month: string,
+    year: string
+  },
+  notifications: boolean,
 }
 
 export type TRefreshArgs = {

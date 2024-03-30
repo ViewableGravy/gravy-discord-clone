@@ -7,12 +7,11 @@ import './_Checkbox.scss';
 import { Checkmark } from "../../../assets/icons/check";
 import { useTheme } from "../../../utilities/hooks/useTheme";
 import { CSSProperties } from "react";
+import { Validator } from "@tanstack/form-core";
 
-export const generateCheckboxField = <T extends FormApi<any, any>>(form: T) => {
+export const generateCheckboxField = <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
   /***** TYPE DEFINITIONS *****/
-  type TData = T extends FormApi<infer _TData, any> ? _TData : never;
-  type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
-  type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
+  type TValidators = Parameters<UseField<TData, TValidator>>[0]['validators'];
   type TCheckboxField = React.FC<{
     name: DeepKeys<TData>;
     label?: React.ReactNode;
@@ -62,12 +61,19 @@ export const generateCheckboxField = <T extends FormApi<any, any>>(form: T) => {
             <input 
               type="checkbox" 
               className={classes.native} 
-              onChange={(e) => handleChange(e.target.checked)}
+              onChange={(e) => handleChange(e.target.checked as any)}
               onBlur={handleBlur}
+              checked={!!state.value}
             />
-            <span style={style} className={classes.checkbox}>
+            <button 
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleChange(!state.value as any)
+              }} 
+              style={style} 
+              className={classes.checkbox}
+            >
               {!!state.value && <Checkmark />}
-            </span>
+            </button>
             <Text sm tertiary no-select>
               {children}
             </Text>

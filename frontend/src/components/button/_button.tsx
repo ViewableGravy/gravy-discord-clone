@@ -26,6 +26,8 @@ export namespace NButton {
     full?: boolean;
 
     style?: CSSProperties;
+
+    disabled?: boolean;
   }
 
   export type OnClickProps = BaseProps & {
@@ -87,33 +89,54 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
   /***** RENDER *****/
   switch (true) {
     case "href" in props: {
-      const { href } = props
+      const { href, disabled } = props
       return (
-        <a href={href} className={classNames("Button", className)} style={_style}>
+        <a 
+          aria-disabled={disabled} 
+          href={href} 
+          className={classNames("Button", className)} 
+          style={_style}
+        >
           {children}
         </a>
       );
     }
     case "to" in props: {
-      const { to } = props
+      const { to, disabled } = props
       return (
-        <Link to={to} className={classNames("Button", className)} style={_style}>
+        <Link 
+          aria-disabled={disabled} 
+          to={to} 
+          className={classNames("Button", className)} 
+          style={_style}
+        >
           {children}
         </Link>
       );
     }
     case "onClick" in props: {
-      const { onClick, type } = props
+      const { onClick, type, disabled } = props
       return (
-        <button type={type} onClick={onClick} className={classNames("Button", className)} style={_style}>
+        <button 
+          disabled={disabled} 
+          type={type} 
+          onClick={onClick} 
+          className={classNames("Button", className)} 
+          style={_style}
+        >
           {children}
         </button>
       );
     }
     case "type" in props && props.type === 'submit': {
-      const { type } = props;
+      const { type, disabled } = props;
       return (
-        <button type={type} className={classNames("Button", className)} style={_style}>
+        <button 
+          disabled={disabled} 
+          type={type} 
+          className={classNames("Button", className)} 
+          style={_style}
+        >
           {children}
         </button>
       )

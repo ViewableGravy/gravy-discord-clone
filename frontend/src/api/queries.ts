@@ -1,6 +1,6 @@
 /***** QUERY IMPORTS *****/
 import { useAuthenticateMutation } from "./mutations/useAuthenticateMutation";
-import { useCreateAccountMutation } from "./mutations/useCreateAccountMutation";
+import { useCreateAccountMutation, useCreateAccountMutationState } from "./mutations/useCreateAccountMutation";
 import { useLogoutMutation, useLogoutMutationState } from "./mutations/useLogoutMutation";
 import { useRefreshTokenMutation } from "./mutations/useRefreshTokenMutation";
 import { useExampleQuery } from "./queries/useExampleQuery";
@@ -29,6 +29,7 @@ export const API = {
        * Mutation for creating a new account.
        */
       useCreateAccountMutation,
+      useCreateAccountMutationState,
 
       /**
        * Mutation for refreshing the user's token.
