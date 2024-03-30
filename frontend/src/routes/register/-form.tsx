@@ -41,12 +41,6 @@ export const useRegistrationForm = () => {
     },
   })
 
-  useEffect(() => {
-    form.store.subscribe(() => {
-      console.log(form.store.state)
-    })
-  }, [])
-
   const fields = useFormFields(form);
   
   /***** HOOK RESULTS *****/

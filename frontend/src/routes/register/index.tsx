@@ -76,11 +76,9 @@ const RegistrationRoute = () => {
           label={<Text span sm bold uppercase>email</Text>}
         />
         <form.InputField
-          required
           className="Register__field"
           name="displayName" 
-          intrinsic={{ autoComplete: 'name' }}
-          validators={{ onChange: validators.displayName }} 
+          intrinsic={{ autoComplete: 'username' }}
           label={<Text span sm bold uppercase>display name</Text>}
         />
         <form.InputField 
@@ -155,9 +153,9 @@ const RegistrationRoute = () => {
         </Padding>
         <Text tertiary sm>
           By registering, you agree to Tancord's
-          <Anchor.Link to="/login"><Text sm span link> Terms of Service </Text></Anchor.Link>
+          <Anchor.Link to="/terms-of-service"><Text sm span link> Terms of Service </Text></Anchor.Link>
           and 
-          <Anchor.Link to="/login"><Text sm span link> Privacy Policy</Text></Anchor.Link>
+          <Anchor.Link to="/privacy-policy"><Text sm span link> Privacy Policy</Text></Anchor.Link>
         </Text>
         <Padding margin top="large">
           <Anchor.Link to="/login">Already have an account?</Anchor.Link>

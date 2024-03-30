@@ -20,12 +20,13 @@ type TFieldLabel = React.FC<{
 
 /***** COMPONENT START *****/
 const _FieldLabel: TFieldLabel = ({ children, errors, className, name, render = true }) => {
+  const firstError = errors[0]?.toString().split(',')[0];
   return (
     <>
       {!!render && (
         <label className={classNames("FieldLabel", className)} htmlFor={name}>
           <Text span secondary={!errors.length} error={!!errors.length} >
-            {children} <Text italic span sm>{!!errors.length && `- ${errors[0]}`}</Text>
+            {children} <Text italic span sm>{!!errors.length && `- ${firstError}`}</Text>
           </Text>
         </label>
       )}

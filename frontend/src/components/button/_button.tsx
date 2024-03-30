@@ -92,6 +92,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
       const { href, disabled } = props
       return (
         <a 
+          tabIndex={0}
           aria-disabled={disabled} 
           href={href} 
           className={classNames("Button", className)} 
@@ -105,6 +106,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
       const { to, disabled } = props
       return (
         <Link 
+          tabIndex={0}
           aria-disabled={disabled} 
           to={to} 
           className={classNames("Button", className)} 
