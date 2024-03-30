@@ -36,13 +36,11 @@ export const useSelectFieldKeyboardState: TUseSelectFieldKeyboardState = ({
       return;
     }
 
-    if (keys.Tab) {
+    if (keys.Tab)
       return;
-    }
 
-    if (!isSearching) {
+    if (!isSearching)
       toggleIsSearching(true)
-    }
   }, [keys])
 }
 

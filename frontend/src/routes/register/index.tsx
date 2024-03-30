@@ -14,21 +14,29 @@ import { Padding } from '../../components/utility/padding';
 import { Flex } from '../../components/utility/flex';
 import { Button } from '../../components/button';
 import { Anchor } from '../../components/Anchor';
+import { useEffect } from 'react';
+import classNames from 'classnames';
+import { useMatchMedia } from '../../utilities/hooks/useMatchMedia';
+import { useAppViewport } from '../../utilities/hooks/useMedia';
 
 const validators = {
   email: z.string().min(1, 'An email must be provided'),
   username: z.string().min(1, 'A username must be provided'),
   password: z.string().min(1, 'A password must be provided'),
-  dob: z.object({
-    day: z.number().min(1, 'A day must be provided'),
+  dob: {
+    day: z.union([
+      z.number().min(1, 'A day must be provided'),
+      z.string().min(1, 'A day must be provided')
+    ]),
     month: z.number().min(1, 'A month must be provided'),
     year: z.number().min(1, 'A year must be provided')
-  }),
+  },
   notifications: z.boolean()
 }
 
 const RegistrationRoute = () => {
-
+  const isMobile = useMatchMedia({ max: 510 })
+  const isTiny = useAppViewport(['xs'])
   const form = useForm({
     defaultValues: {
       email: '',
@@ -44,12 +52,19 @@ const RegistrationRoute = () => {
     validatorAdapter: zodValidator,
   })
 
-  const { InputField, SelectField } = useFormFields(form)
+  useEffect(() => {
+    form.store.subscribe(() => {
+      console.log(form.store.state.values)
+    })
+  }, [])
+
+  const { InputField, SelectField, CheckboxField } = useFormFields(form)
 
   return (
     <Modal 
       isOpen 
       fade={{ modal: false }} 
+      className={classNames('Register', { "Register--mobile": isMobile, "Register--tiny": isTiny })}
       background={(
         <img 
           src={background} 
@@ -83,14 +98,30 @@ const RegistrationRoute = () => {
         label={<FieldLabel.Required label="password" uppercase />} 
       />
 
-      <Flex align='flex-end' justify='space-between' columnGap={10}>
-        <SelectField placeholder="Day" name='dob.day' label={<FieldLabel.Required label="Date of birth" uppercase />}>
+      <Flex 
+        column={isTiny} 
+        align={isTiny ? 'flex-start' : 'flex-end'} 
+        justify={isTiny ? 'flex-start' : 'space-between'} 
+        gap={10}
+      >
+        <SelectField 
+          className="Register__select" 
+          placeholder="Day" 
+          name='dob.day' 
+          label={(
+            <FieldLabel.Required 
+              label="Date of birth" 
+              uppercase 
+            />
+          )}
+          validators={{ onChange: validators.dob.day }}
+        >
           {Array.from({ length: 31 }).map((_, i) => (
             <SelectField.Option key={i} value={i + 1}>{i + 1}</SelectField.Option>
           ))}
         </SelectField>
 
-        <SelectField name='dob.month' placeholder="Month">
+        <SelectField className="Register__select" name='dob.month' placeholder="Month">
           <SelectField.Option value="1">January</SelectField.Option>
           <SelectField.Option value="2">February</SelectField.Option>
           <SelectField.Option value="3">March</SelectField.Option>
@@ -105,13 +136,18 @@ const RegistrationRoute = () => {
           <SelectField.Option value="12">December</SelectField.Option>
         </SelectField>
 
-        <SelectField name='dob.year' placeholder="Year">
+        <SelectField className="Register__select" name='dob.year' placeholder="Year">
           {Array.from({ length: 100 }).map((_, i) => (
             <SelectField.Option key={i} value={new Date().getFullYear() - i}>{new Date().getFullYear() - i}</SelectField.Option>
           ))}
         </SelectField>
       </Flex>
-      <Padding margin top={20} bottom={8}>
+      <Padding margin top={8}>
+        <CheckboxField name="notifications">
+          (Optional) it's okay to send me emails with Tancord updates, tips and special offers. You can opt out at any time.
+        </CheckboxField>
+      </Padding>
+      <Padding margin top={20} bottom={12}>
         <Button full type="submit">Continue</Button>
       </Padding>
       <Text tertiary sm>

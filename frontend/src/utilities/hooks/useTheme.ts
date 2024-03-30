@@ -37,6 +37,9 @@ export const theme = new Store({
 /***** UTILITIES *****/
 const utilities = {
   opacity: (color: string, opacity: number) => {
+    if (!opacity) 
+      return color
+
     const [r, g, b] = color.match(/\w\w/g)!.map((hex) => parseInt(hex, 16))
     return `rgba(${r}, ${g}, ${b}, ${opacity})`
   }

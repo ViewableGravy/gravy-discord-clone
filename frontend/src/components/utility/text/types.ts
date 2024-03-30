@@ -114,6 +114,11 @@ type TStyling = {
    * Whether or not to fit content or automatically stretch
    */
   'fit-content'?: boolean;
+
+  /**
+   * Applies the user-select: none property on the text
+   */
+  'no-select'?: boolean;
 }
 
 export type TTextComponent = React.FC<

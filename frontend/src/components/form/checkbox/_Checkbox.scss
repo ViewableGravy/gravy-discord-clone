@@ -1,0 +1,27 @@
+.CheckboxField {
+  --background-color: blue;
+  --border-color: gray;
+  display: flex;
+
+  & label {
+    cursor: pointer;
+  }
+
+  &__nativeCheckbox {
+    display: none;
+  }
+  
+  &__checkbox {
+    cursor: pointer;
+    min-width: 24px;
+    min-height: 24px;
+
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    border-color: var(--border-color);
+
+    &--selected {
+      background-color: var(--background-color);
+    }
+  }
+}

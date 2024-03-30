@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { FormApi } from "@tanstack/react-form";
+import { DeepKeys, FieldMeta, FormApi, UseField } from "@tanstack/react-form";
 import React, { createContext, CSSProperties, useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
@@ -11,7 +11,7 @@ import { Text } from "../../utility/text";
 import { useToggleState } from "../../../utilities/hooks/useToggleState";
 import { useClickAway } from "../../../utilities/hooks/useClickAway";
 import { useTheme } from "../../../utilities/hooks/useTheme";
-import { useOptionFieldKeyboardState, useSelectFieldKeyboardState } from "./useKeyboardEvents";
+import { useOptionFieldKeyboardState, useSelectFieldKeyboardState as useSelectFieldKeyboardEffect } from "./useKeyboardEvents";
 import { generateInputField } from "../input";
 
 /***** CONSTS *****/
@@ -25,7 +25,7 @@ type TSelectContext = {
   isSearching: boolean;
   inputRef: React.RefObject<HTMLInputElement>;
   toggleIsSearching: (state?: boolean | undefined) => void;
-  registerNameValueMapping: (mapping: Record<string, string>) => void;
+  registerNameValueMapping: (mapping: Record<string, string | number>) => void;
   unregisterNameValueMapping: (value: string) => void;
   toggleIsOpen: (state?: boolean | undefined) => void;
 }
@@ -69,26 +69,31 @@ export const useSelectContext = (_value?: unknown) => {
  */
 export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
   /***** TYPE DEFINITIONS *****/
-  // type TData = T extends FormApi<infer _TData, any> ? _TData : never;
-  // type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
-  // type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
-  // type TSelectField = React.FC<{
-  //   name: DeepKeys<TData>;
-  //   label?: React.ReactNode;
-  //   defaultMeta?: Partial<FieldMeta>;
-  //   asyncDebounceMs?: number;
-  //   validators?: TValidators;
-  //   className?: string;
-  //   children: React.ReactNode;
-  // }>
+  type TData = T extends FormApi<infer _TData, any> ? _TData : never;
+  type TFormValidator = T extends FormApi<any, infer _TValidator> ? _TValidator : never;
+  type TValidators = Parameters<UseField<TData, TFormValidator>>[0]['validators'];
+  type TSelectField = React.FC<{
+    name: DeepKeys<TData>;
+    label?: React.ReactNode;
+    defaultMeta?: Partial<FieldMeta>;
+    asyncDebounceMs?: number;
+    validators?: TValidators;
+    className?: string;
+    children: React.ReactNode;
+    direction?: 'up' | 'down';
+    placeholder?: string;
+  }>
 
   type TOption = React.FC<{
     /**
-     * will need to update as value does not necessarily have to be a value, it
-     * should probably just be anything for now
+     * This is the value that will be used to update the form value. It can be anything that would want to be submitted
      */
     value: any; 
-    children: string;
+
+    /**
+     * This is the value that will be displayed to the user
+     */
+    children: string | number;
   }>
 
   /***** COMPONENT START *****/
@@ -105,9 +110,9 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
       unregisterNameValueMapping 
     } = useSelectContext(value);
     const [{ primary, form: themedForm }] = useTheme(({ backgroundColor }) => backgroundColor); 
-    const { state: searchState } = form.useField({ name: `${name}--search` })
-    const { handleChange: handleHumanChange } = form.useField({ name: `${name}--human` });
-    const { handleChange: handleValueChange } = form.useField({ name });
+    const { state, handleChange: handleValueChange } = form.useField({ name });
+    const { state: humanState, handleChange: handleHumanChange } = form.useField({ name: `${name}--human`, defaultValue: state.value ?? '' });
+    const { state: searchState, handleChange: handleSearchChange } = form.useField({ name: `${name}--search`, defaultValue: state.value ?? humanState.value ?? '' })
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -121,7 +126,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     useOptionFieldKeyboardState({ buttonRef })
 
     /***** RENDER HELPERS *****/
-    const matchesSearch = !searchState.value ? true : String(children).toLowerCase().includes(searchState.value?.toLowerCase());
+    const matchesSearch = !searchState.value ? true : String(children).toLowerCase().includes(searchState?.value?.toLowerCase?.());
     const classes = classNames("SelectField__option", {
       "SelectField__option--selected": isSelected 
     })
@@ -152,6 +157,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
               }
               if (e.key === 'Enter') {
                 handleValueChange(value)
+                handleSearchChange(children)
                 handleHumanChange(children)
                 toggleIsSearching(false)
                 toggleIsOpen(false)
@@ -168,7 +174,17 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
   }
 
   /***** COMPONENT START *****/
-  const SelectField: TSelectField = ({ asyncDebounceMs, defaultMeta, validators, name, className, label, children, direction, placeholder }) => {
+  const SelectField: TSelectField = ({ 
+    asyncDebounceMs, 
+    defaultMeta, 
+    validators, 
+    name, 
+    className, 
+    label, 
+    children, 
+    direction, 
+    placeholder 
+  }) => {
     /***** HOOKS *****/
     const InputField = useMemo(() => generateInputField(form), [form])
     const clickawayRef = useClickAway<HTMLDivElement>(() => {
@@ -186,10 +202,10 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     const [isOpen, toggleIsOpen] = useToggleState()
     const [isSearching, toggleIsSearching] = useToggleState()
     const inputRef = useRef<HTMLInputElement>(null)
-    const [nameValueMapping, setNameValueMapping] = React.useState<Record<string, string>>({})
+    const [nameValueMapping, setNameValueMapping] = React.useState<Record<string, string | number>>({})
 
     /***** FUNCTIONS *****/
-    const registerNameValueMapping = (mapping: Record<string, string>) => {
+    const registerNameValueMapping = (mapping: Record<string, string | number>) => {
       setNameValueMapping((prev) => ({ ...prev, ...mapping }))
     }
 
@@ -201,7 +217,7 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
     }
 
     /***** EFFECTS *****/
-    useSelectFieldKeyboardState({
+    useSelectFieldKeyboardEffect({
       inputRef,
       clickawayRef,
       isSearching,
@@ -274,12 +290,16 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                     }
                     case 'Enter': {
                       e.stopPropagation();
+                      if (isSearching) {
+                        handleChange(e.currentTarget.value);
+                      }
                       toggleIsOpen();
-                      toggleIsSearching(!isOpen);
+                      toggleIsSearching(isOpen);
                       return void setTimeout(() => {
                         inputRef.current?.focus(); 
                       });
                     }
+                    case 'ArrowUp':
                     case 'ArrowDown': {
                       e.stopPropagation();
                       toggleIsOpen(true);
@@ -290,11 +310,9 @@ export const generateSelectField = <T extends FormApi<any, any>>(form: T) => {
                         }
                       });
                     }
-                    case 'ArrowUp': {
-                      e.stopPropagation();
-                      toggleIsOpen(false);
-                      return toggleIsSearching(false);
-                    }
+                    case 'Tab':
+                    case 'Shift': 
+                      return;
                     default: {
                       if (!isOpen) {
                         toggleIsOpen(true);
