@@ -14,29 +14,59 @@ import { CODES } from './enums';
 export const prisma = new PrismaClient();
 
 /***** TYPE DEFINITIONS *****/
-export type TBuilder = (args: {
-  /**
+type TStandardBuilder = {
+   /**
    * Code representing the response. This may be a custom code to match on the frontend 
    * in case of a specific error, or it may be a standard HTTP status code.
    */
-  code?: string,
+   code?: string,
+
+   /**
+    * The status of the response. This should be a standard HTTP status code.
+    */
+   status: ValueOf<typeof STATUS>;
+ 
+   /**
+    * The data to be sent back to the client. This may be an object, array, or string.
+    */
+   data: Record<TObjectKeys, unknown> | Array<any> | string;
+ 
+   /**
+    * Any additional metadata to be sent back to the client. This may be an object with 
+    * additional information about the request.
+    */
+   meta?: Record<TObjectKeys, unknown>;
+
+   /**
+    * Type to narrow the builder into a Standard Builder
+    */
+   type?: "standard"
+}
+
+type TFieldErrorBuilder = {
+  /**
+   * The Errors for the endpoint to return for the user.
+   */
+  fieldErrors: Record<TObjectKeys, string | undefined>;
 
   /**
    * The status of the response. This should be a standard HTTP status code.
    */
-  status: ValueOf<typeof STATUS>;
-
-  /**
-   * The data to be sent back to the client. This may be an object, array, or string.
-   */
-  data: Record<TObjectKeys, unknown> | Array<any> | string;
+  status: ValueOf<Omit<typeof STATUS, "SUCCESS">>;
 
   /**
    * Any additional metadata to be sent back to the client. This may be an object with 
    * additional information about the request.
    */
   meta?: Record<TObjectKeys, unknown>;
-}) => void;
+
+  /**
+   * Type to narrow the builder into a Field Error Builder
+   */
+  type?: "fieldError"
+}
+
+export type TBuilder = (args: TStandardBuilder | TFieldErrorBuilder) => void;
 
 export type TPrisma = typeof prisma;
 
@@ -78,13 +108,30 @@ export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareAr
     res,
     next,
     prisma,
-    builder: ({ status, data, meta }) => {
-      res.status(status).send({
-        route, 
-        status,
-        data,
-        meta
-      })
+    builder: ({ type = "standard", ...args}) => {
+      if (type === "standard") {
+        const { data, status, code, meta } = args as TStandardBuilder;
+        res.status(status).send({
+          route, 
+          code,
+          status,
+          data,
+          meta
+        });
+      }
+
+      if (type === "fieldError") {
+        const { fieldErrors, status, meta } = args as TFieldErrorBuilder;
+        res.status(status).send({
+          code: "FORM_VALIDATION_ERROR",
+          route,
+          status,
+          meta,
+          data: {
+            fieldErrors
+          }
+        })
+      }
     }
   });
 }
@@ -97,13 +144,30 @@ export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void
     req,
     res,
     prisma,
-    builder: ({ status, data, meta }) => {
-      res.status(status).send({
-        route, 
-        status,
-        data,
-        meta
-      })
+    builder: ({ type = "standard", ...args}) => {
+      if (type === "standard") {
+        const { data, status, code, meta } = args as TStandardBuilder;
+        res.status(status).send({
+          route, 
+          code,
+          status,
+          data,
+          meta
+        });
+      }
+
+      if (type === "fieldError") {
+        const { fieldErrors, status, meta } = args as TFieldErrorBuilder;
+        res.status(status).send({
+          code: "FORM_VALIDATION_ERROR",
+          route,
+          status,
+          meta,
+          data: {
+            fieldErrors
+          }
+        })
+      }
     }
   });
 }
@@ -139,13 +203,30 @@ export const createAuthenticatedRouteCallback = (level: string, callback: (optio
       res,
       prisma,
       user: {} as TUser,
-      builder: ({ status, data, meta }) => {
-        res.status(status).send({
-          status,
-          data,
-          meta,
-          route: req.route.path
-        });
+      builder: ({ type = "standard", ...args}) => {
+        if (type === "standard") {
+          const { data, status, code, meta } = args as TStandardBuilder;
+          res.status(status).send({
+            route: req.route.path,
+            code,
+            status,
+            data,
+            meta
+          });
+        }
+
+        if (type === "fieldError") {
+          const { fieldErrors, status, meta } = args as TFieldErrorBuilder;
+          res.status(status).send({
+            code: "FORM_VALIDATION_ERROR",
+            route: req.route.path,
+            status,
+            meta,
+            data: {
+              fieldErrors
+            }
+          })
+        }
       }
     });
   }

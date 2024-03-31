@@ -18,6 +18,7 @@ import { useSelectFieldKeyboardEffect } from "./useKeyboardEvents";
 /***** CONSTS *****/
 import './_Select.scss';
 import { ChevronRight } from "../../../assets/icons/chevron-right";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 
 /***** TYPE DEFINITIONS *****/
 type TSelectContext = {
@@ -226,7 +227,8 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
       name, // typescript is going to think that name can be an object key but tanstack expects a string
       asyncDebounceMs: asyncDebounceMs ?? 200,
       defaultMeta,
-      validators
+      validatorAdapter: zodValidator,
+      validators,
     });
 
     /***** STATE *****/
@@ -275,7 +277,22 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
         "SelectField__dropdown--hasLabel": label
       })
     }
-    const visibleOptions = !searchValue || searchValue === '' ? true : Object.entries(options).filter(([_, value]) => String(value).toLowerCase().includes(searchValue.toLowerCase()))
+
+    const getVisibleOptions = () => {
+      if (!searchValue || searchValue === '')
+        return true;
+
+      return Object.entries(options).filter(([_, value]) => {
+        if (Number(value) === Number(searchValue))
+          return true;
+
+        if (String(value).toLowerCase().includes(searchValue.toLowerCase()))
+          return true;
+
+        return false;
+      })
+    }
+    const visibleOptions = getVisibleOptions()
     const context = {
       name,
       visibleOptions,
@@ -291,7 +308,15 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     return (
       <SelectContext.Provider value={context}>
         <div ref={clickawayRef} className={classes.outer}>
-          <FieldLabel render={!!label} errors={isSearching || isOpen ? [] : errors} name={name}>
+          <FieldLabel 
+            render={!!label} 
+            errors={isSearching || isOpen ? [] : errors} 
+            name={name} 
+            intrinsic={{ 
+              required: false,
+              onClick: (e) => e.preventDefault()
+            }}
+          >
             {label}
           </FieldLabel>
           <div className={classes.inputWrapper}>
@@ -329,13 +354,19 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
                         toggleIsOpen(false)
                         toggleIsSearching(false)
 
-                        if (typeof visibleOptions === 'boolean') {
+                        if (typeof visibleOptions === 'boolean')
                           return
+
+                        for (const [value] of visibleOptions) {
+                          if (String(value ?? '').toLowerCase() === searchValue.toLowerCase())
+                            return handleChange(value as any)
+
+                          if (Number(value) === Number(searchValue))
+                            return handleChange(String(Number(value)) as any)
                         }
 
-                        if (visibleOptions.length === 0) {
+                        if (visibleOptions.length === 0)
                           return
-                        }
 
                         const value = visibleOptions.at(-1)?.[0]
                         return handleChange(value as any)

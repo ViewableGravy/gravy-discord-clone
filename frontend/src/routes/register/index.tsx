@@ -121,7 +121,6 @@ const RegistrationRoute = () => {
             className="Register__select" 
             placeholder="Day" 
             name='dob.day'
-            validators={{ onChange: validators.dob.day }}
             label={(
               <FieldLabel.Required 
                 label="Date of birth" 
@@ -135,18 +134,18 @@ const RegistrationRoute = () => {
           </form.SelectField>
 
           <form.SelectField className="Register__select" name='dob.month' placeholder="Month">
-            <form.SelectField.Option value="1">January</form.SelectField.Option>
-            <form.SelectField.Option value="2">February</form.SelectField.Option>
-            <form.SelectField.Option value="3">March</form.SelectField.Option>
-            <form.SelectField.Option value="4">April</form.SelectField.Option>
-            <form.SelectField.Option value="5">May</form.SelectField.Option>
-            <form.SelectField.Option value="6">June</form.SelectField.Option>
-            <form.SelectField.Option value="7">July</form.SelectField.Option>
-            <form.SelectField.Option value="8">August</form.SelectField.Option>
-            <form.SelectField.Option value="9">September</form.SelectField.Option>
-            <form.SelectField.Option value="10">October</form.SelectField.Option>
-            <form.SelectField.Option value="11">November</form.SelectField.Option>
-            <form.SelectField.Option value="12">December</form.SelectField.Option>
+            <form.SelectField.Option value="January">January</form.SelectField.Option>
+            <form.SelectField.Option value="February">February</form.SelectField.Option>
+            <form.SelectField.Option value="March">March</form.SelectField.Option>
+            <form.SelectField.Option value="April">April</form.SelectField.Option>
+            <form.SelectField.Option value="May">May</form.SelectField.Option>
+            <form.SelectField.Option value="June">June</form.SelectField.Option>
+            <form.SelectField.Option value="July">July</form.SelectField.Option>
+            <form.SelectField.Option value="August">August</form.SelectField.Option>
+            <form.SelectField.Option value="September">September</form.SelectField.Option>
+            <form.SelectField.Option value="October">October</form.SelectField.Option>
+            <form.SelectField.Option value="November">November</form.SelectField.Option>
+            <form.SelectField.Option value="December">December</form.SelectField.Option>
           </form.SelectField>
 
           <form.SelectField className="Register__select" name='dob.year' placeholder="Year">
@@ -157,6 +156,12 @@ const RegistrationRoute = () => {
             ))}
           </form.SelectField>
         </Flex>
+        {/* Date of birth field errors */}
+        {getFieldErrors('dob') && (
+          <Padding margin top="small">
+            <Text error sm>{getFieldErrors('dob')}</Text>
+          </Padding>
+        )}
         <Padding margin top="small">
           <form.CheckboxField name="notifications">
             (Optional) it's okay to send me emails with Tancord updates, tips and special offers. You can opt out at any time.

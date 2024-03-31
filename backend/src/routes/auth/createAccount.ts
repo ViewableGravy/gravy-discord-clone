@@ -11,13 +11,40 @@ import { PRISMA_CODES } from "../../models/enums"
 
 /***** VALIDATORS *****/
 const bodyValidator = z.object({
-  username: z.string(),
-  password: z.string(),
-  email: z.string().email(),
+  username: z.string()
+    .min(3, { message: "Username must be atleast 3 characters" })
+    .max(100, { message: "Username cannot be longer than 100 characters" }),
+  password: z.string()
+    .min(8, { message: "Password must be atleast 8 characters" })
+    .max(100, { message: "Password cannot be longer than 100 characters" })
+    .regex(/[@$!%*?&]/, { message: "Password must contain at least one special character" })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" }),
+  email: z.string()
+    .email({ message: "Invalid email" })
+    .max(100, { message: "Email cannot be longer than 100 characters" }),
   dob: z.object({
-    day: z.union([z.number(), z.string()]),
-    month: z.number({ coerce: true }).min(1).max(12).int(),
-    year: z.number({ coerce: true }).min(1900).max(2024).int(),
+    day: z.number({ coerce: true })
+      .min(1, { message: "The provided day must be greater than 1"})
+      .max(31, { message: "The provided day must be less than 31" }),
+    month: z.union([
+      z.literal('January'),
+      z.literal('February'),
+      z.literal('March'),
+      z.literal('April'),
+      z.literal('May'),
+      z.literal('June'),
+      z.literal('July'),
+      z.literal('August'),
+      z.literal('September'),
+      z.literal('October'),
+      z.literal('November'),
+      z.literal('December'),
+    ]),
+    year: z.number({ coerce: true })
+      .min(1900, { message: "The provided year must be greater than 1900"})
+      .max(new Date().getUTCFullYear(), { message: "The provided year must be less than 2024"})
   }),
 })
 
@@ -27,66 +54,40 @@ export const createAccount = createRouteCallback(async ({ builder, req, prisma }
   
   if (!validated.success) {
     return builder({
+      type: "fieldError",
       status: 400,
-      data: validated.error.errors
+      fieldErrors: {
+        email: validated.error.errors.find((error) => error.path[0] === 'email')?.message,
+        username: validated.error.errors.find((error) => error.path[0] === 'username')?.message,
+        password: validated.error.errors.find((error) => error.path[0] === 'password')?.message,
+        dob: validated.error.errors.find((error) => error.path[0] === 'dob')?.message,
+      }
     })
   }
 
   // specific validation responses
   const validateEmail = async () => {
-    const { email } = validated.data;
-    if (email.length > 100) {
-      return 'email must be less than 100 characters'
-    }
-    if (await prisma.user.findUnique({ where: { email } })) {
+    if (await prisma.user.findUnique({ where: { email: validated.data.email } })) {
       return 'email already exists'
     }
   }
 
   const validateUsername = async () => {
-    const { username } = validated.data;
-    if (username.length > 100) {
-      return 'username must be less than 100 characters'
-    }
-    if (await prisma.user.findUnique({ where: { username } })) {
+    if (await prisma.user.findUnique({ where: { username: validated.data.username } })) {
       return 'username already exists'
     }
   }
 
-  const validatePassword = () => {
-    const { password } = validated.data;
-    if (password.length < 8) {
-      return 'password must be at least 8 characters'
-    }
-    if (password.length > 100) {
-      return 'password must be less than 100 characters'
-    }
-    if (!password.match(/[@$!%*?&]/)) {
-      return 'password must contain at least one special character'
-    }
-    if (!password.match(/[A-Z]/)) {
-      return 'password must contain at least one uppercase letter'
-    }
-    if (!password.match(/[a-z]/)) {
-      return 'password must contain at least one lowercase letter'
-    }
-    if (!password.match(/[0-9]/)) {
-      return 'password must contain at least one number'
-    }
-  }
-
-  const validationErrors = {
+  const fieldErrors = {
     email: await validateEmail(),
     username: await validateUsername(),
-    password: validatePassword(),
   }
 
-  if (Object.values(validationErrors).some((error) => error)) {
+  if (Object.values(fieldErrors).some((error) => error)) {
     return builder({
+      type: "fieldError",
       status: 400,
-      data: {
-        fieldErrors: validationErrors
-      }
+      fieldErrors
     })
   }
 

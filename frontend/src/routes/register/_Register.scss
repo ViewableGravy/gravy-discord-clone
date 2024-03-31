@@ -18,6 +18,10 @@
         width: 100px;
       }
     }
+
+    .FieldLabel {
+      width: calc(100vw - 40px);
+    }
   }
 
   &--tiny {
@@ -30,9 +34,15 @@
     margin-bottom: 20px;
   }
 
-  &__select.SelectField {
-    flex-grow: 1;
-    min-width: 100px;
+  &__select {
+    &.SelectField {
+      flex-grow: 1;
+      min-width: 100px;
+    }
+
+    .FieldLabel {
+      width: 420px;
+    }
   }
 
   &__input {
