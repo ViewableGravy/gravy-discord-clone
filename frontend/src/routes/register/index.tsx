@@ -38,35 +38,31 @@ const RegistrationRoute = () => {
   /***** HOOKS *****/
   const isMobile = useMatchMedia({ max: 510 })
   const isTiny = useAppViewport(['xs'])
-  
-  /***** QUERIES *****/
-  const [result] = API.MUTATIONS.account.useCreateAccountMutationState()
-
-  //example of how the response from the API should look (for errors)
-  if (result?.error instanceof AxiosError) {
-    const { data } = result.error.response?.data;
-
-    if (data?.fieldErrors) {
-      console.log(data.fieldErrors.email)
-      console.log(data.fieldErrors.username)
-      console.log(data.fieldErrors.displayName)
-      console.log(data.fieldErrors.password)
-      console.log(data.fieldErrors.dob)
-    }
-  }
 
   /***** FORM *****/
   const form = useRegistrationForm();
+  
+  /***** QUERIES *****/
+  const result = API.MUTATIONS.account.useCreateAccountMutationState().at(-1)
+
+  /***** FUNCTIONS *****/
+  const getFieldErrors = (field: string) => {
+    if (!(result?.error instanceof AxiosError))
+      return undefined;
+
+    const { data } = result.error.response?.data;
+    return data?.fieldErrors?.[field]
+  }
 
   /***** RENDER *****/
   return (
     <Modal 
       isOpen 
-      fade={{ modal: false }} 
+      fade={{ modal: false, content: !isMobile }} 
       className={classNames('Register', { 
         "Register--mobile": isMobile, 
         "Register--tiny": isTiny,
-        "Register--error": result?.error
+        "Register--error": result?.status === 'error'
       })}
       background={(
         <img 
@@ -91,6 +87,7 @@ const RegistrationRoute = () => {
           intrinsic={{ autoComplete: 'email webauthn' }} 
           validators={{ onChange: validators.email }} 
           label={<Text span sm bold uppercase>email</Text>}
+          manualError={getFieldErrors('email')}
         />
         <form.InputField
           className="Register__field"
@@ -105,6 +102,7 @@ const RegistrationRoute = () => {
           intrinsic={{ autoComplete: 'username webauthn' }}
           validators={{ onChange: validators.username }} 
           label={<Text span sm bold uppercase>username</Text>}
+          manualError={getFieldErrors('username')}
         />
         <form.InputField 
           required
@@ -112,7 +110,8 @@ const RegistrationRoute = () => {
           validators={{ onChange: validators.password }} 
           label={<Text span sm bold uppercase>password</Text>}
           className="Register__field"
-          name="password" 
+          name="password"
+          manualError={getFieldErrors('password')}
         />
 
         <Flex 
@@ -166,7 +165,7 @@ const RegistrationRoute = () => {
           </form.CheckboxField>
         </Padding>
         <Padding margin top="large" bottom="medium">
-          <Button disabled={form.state.isSubmitting} full type="submit">Continue</Button>
+          <Button disabled={form.state.isSubmitting || form.state.errors.length > 0} full type="submit">Continue</Button>
         </Padding>
         <Text tertiary sm>
           By registering, you agree to Tancord's

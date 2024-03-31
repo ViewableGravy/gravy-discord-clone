@@ -157,6 +157,7 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
               toggleIsOpen(false)
             }}
             onKeyDown={(e) => {
+              e.preventDefault();
               if (e.key === 'Escape') {
                 toggleIsSearching(false)
                 toggleIsOpen(false)

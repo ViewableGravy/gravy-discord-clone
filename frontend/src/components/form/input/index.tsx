@@ -15,6 +15,7 @@ import './_Input.scss';
 import { z } from "zod";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { Text } from "../../utility/text";
+import { Padding } from "../../utility/padding";
 
 /***** COMPONENT START *****/
 export const generateInputField = <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
@@ -27,9 +28,30 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
     asyncDebounceMs?: number;
     validators?: FormValidators<TData, TValidator>;
     className?: string;
-    intrinsic?: InputHTMLAttributes<HTMLInputElement>,
+
+    /**
+     * Allows for providing intrinsic input attributes. This helps isolate native input attributes from the
+     * component's props.
+     */
+    intrinsic?: InputHTMLAttributes<HTMLInputElement>;
+
+    /**
+     * Allows for providing a reference to the input field. This is particularly useful for focusing the field
+     * after a certain action.
+     */
     innerRef?: React.RefObject<HTMLInputElement>;
+
+    /**
+     * Determines if the field is required. If true, the field will be validated with a minimum length of 1 as well as
+     * any additional validators provided.
+     */
     required?: boolean;
+
+    /**
+     * Allows for providing a manual error to the field. This is particularly useful for providing an error
+     * as a result of an API response. It is also in lieu of the feature not being supported in tanstack form yet.
+     */
+    manualError?: string | boolean;
   }>
 
   /**
@@ -37,7 +59,19 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
    * 
    * Does not currently support field level validation due to type issues
    */
-  const InputField: TInputField = ({ name, required, label, placeholder, defaultMeta, asyncDebounceMs, className, validators, innerRef, intrinsic = {} }) => {
+  const InputField: TInputField = ({ 
+    name, 
+    required, 
+    label, 
+    placeholder, 
+    defaultMeta, 
+    asyncDebounceMs, 
+    className, 
+    validators, 
+    innerRef, 
+    manualError, 
+    intrinsic = {} 
+  }) => {
     /***** HOOKS *****/
     const isUsingKeyboard = useUsingKeyboard();
 
@@ -85,6 +119,11 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
             "InputField__input--using-keyboard": isUsingKeyboard
           })}
         />
+        {manualError && (
+          <Padding margin top="extra-small">
+            <Text error sm>{manualError}</Text>
+          </Padding>
+        )}
       </div>
     )
   };
