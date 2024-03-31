@@ -31,6 +31,7 @@ export const theme = new Store({
     tertiary: '#949ba4',
     link: '#00a8fc',
     error: '#fa777c',
+    success: '#2dc770'
   }
 } as const)
 

@@ -17,6 +17,7 @@ import { logoutRoute } from './routes/auth/logout';
 
 /***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
+import { usernameAvailabilityRoute } from './routes/auth/usernameAvailability';
 
 /***** SERVER SETUP *****/
 const server =  express();
@@ -37,6 +38,7 @@ server.post('/api/auth/signup', createAccount)
 server.post('/api/auth/login', loginRoute)
 server.post('/api/auth/refresh', refreshRoute)
 server.post('/api/auth/logout', logoutRoute)
+server.post('/api/auth/username-availability', usernameAvailabilityRoute)
 
 server.all('*', (_, res) => {
   res.status(404).send('Not found');

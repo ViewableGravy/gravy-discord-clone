@@ -17,6 +17,7 @@ import { useAppViewport } from '../../utilities/hooks/useMedia';
 import { useRegistrationForm } from './-form';
 import { API } from '../../api/queries';
 import { AxiosError } from 'axios';
+import { useState } from 'react';
 
 const validators = {
   email: z.string().email(),
@@ -36,11 +37,15 @@ const RegistrationRoute = () => {
   const isMobile = useMatchMedia({ max: 510 })
   const isTiny = useAppViewport(['xs'])
 
+  /***** STATE *****/
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | undefined>(undefined)
+
   /***** FORM *****/
   const form = useRegistrationForm();
   
   /***** QUERIES *****/
   const result = API.MUTATIONS.account.useCreateAccountMutationState().at(-1)
+  const { mutateAsync: checkUsernameAsync } = API.MUTATIONS.account.useCheckUsernameAvailabilityMutation();
 
   /***** FUNCTIONS *****/
   const getFieldErrors = (field: string) => {
@@ -98,10 +103,33 @@ const RegistrationRoute = () => {
           className="Register__field"
           name="username" 
           intrinsic={{ autoComplete: 'username webauthn' }}
-          validators={{ onChange: validators.username }} 
+          validators={{ 
+            onChange: validators.username,
+            onChangeAsyncDebounceMs: 500, 
+            onChangeAsync({ value }) {
+              checkUsernameAsync({ username: value as unknown as string })
+                .then(({ data }) => setIsUsernameAvailable(!data.exists))
+                .catch((result) => {
+                  console.log(result)
+                  setIsUsernameAvailable(undefined)
+                })
+
+              return undefined;
+            }
+          }} 
           label={<Text span sm bold uppercase>username</Text>}
-          manualError={getFieldErrors('username')}
-          selectedMessage="Please only use numbers, letters, underscores or full stops."
+          manualError={
+            isUsernameAvailable === false 
+              ? "Username is unavailable. Try adding more characters."
+              : getFieldErrors('username')
+          }
+          selectedMessage={
+            isUsernameAvailable === undefined 
+              ? "Please only use numbers, letters, underscores or full stops."
+              : isUsernameAvailable
+                ? <Text success>Username is available. Nice!</Text>
+                : "Username is unavailable. Try adding numbers, letters, underscores or full stops."
+          }
         />
         <form.InputField 
           required

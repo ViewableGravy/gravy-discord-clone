@@ -2,32 +2,43 @@
 import { DeepKeys, FieldMeta, FormApi } from "@tanstack/react-form";
 import React, { InputHTMLAttributes } from "react";
 import classNames from "classnames";
-import { FormValidators, Validator } from "@tanstack/form-core";
+import { FieldValidators, Validator } from "@tanstack/form-core";
+import { z } from "zod";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 
 /***** HOOKS *****/
 import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 
 /***** SHARED *****/
 import { FieldLabel } from "../general/label/label";
+import { Text } from "../../utility/text";
 
 /***** CONSTS *****/
 import './_Input.scss';
-import { z } from "zod";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import { Text } from "../../utility/text";
-import { Padding } from "../../utility/padding";
 
 /***** COMPONENT START *****/
 export const generateInputField = <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
   /***** TYPE DEFINITIONS *****/
-  type TInputField = React.FC<{
-    name: DeepKeys<TData>;
+  type TInputFieldProps<TName extends DeepKeys<TData>> = {
+    name: TName;
     label?: React.ReactNode;
     placeholder?: string;
     defaultMeta?: Partial<FieldMeta>;
     asyncDebounceMs?: number;
-    validators?: FormValidators<TData, TValidator>;
     className?: string;
+
+    /**
+     * Allows for providing field level validators. The TName type currently gives a type error however
+     * I believe it meets the requirements of the FieldValidators type (and as a result, returns the correct)
+     * type for the validators based on the field name.
+     */
+    validators?: FieldValidators<
+      TData, 
+      //@ts-ignore
+      TName, 
+      TValidator, 
+      TValidator
+    >;
 
     /**
      * Allows for providing intrinsic input attributes. This helps isolate native input attributes from the
@@ -59,14 +70,14 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
      * means it cannot be shown at the same time as the manual error.
      */
     selectedMessage?: React.ReactNode;
-  }>
+  }
 
   /**
    * InputField
    * 
    * Does not currently support field level validation due to type issues
    */
-  const InputField: TInputField = ({ 
+  const InputField = <TName extends DeepKeys<TData>>({ 
     name, 
     required, 
     label, 
@@ -79,7 +90,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
     manualError, 
     selectedMessage,
     intrinsic = {} 
-  }) => {
+  }: TInputFieldProps<TName>) => {
     /***** HOOKS *****/
     const isUsingKeyboard = useUsingKeyboard();
     
@@ -117,7 +128,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
         "InputField__input--using-keyboard": isUsingKeyboard
       }),
       manualWrapper: classNames("InputField__manualWrapper", { 
-        "InputField__manualWrapper--open": manualError || (selectedMessage && isFocused) 
+        "InputField__manualWrapper--open": (selectedMessage && isFocused) || manualError
       })
     }
 
@@ -144,7 +155,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
           className={classes.input}
         />
         <div className={classes.manualWrapper}>
-          {!!manualError && <Text error sm>{manualError}</Text>}
+          {!!manualError && <Text error md>{manualError}</Text>}
           {!!selectedMessage && isFocused && !manualError && <Text md primary>{selectedMessage}</Text>}
         </div>
       </div>

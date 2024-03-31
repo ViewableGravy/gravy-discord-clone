@@ -1,5 +1,6 @@
 /***** QUERY IMPORTS *****/
 import { useAuthenticateMutation } from "./mutations/useAuthenticateMutation";
+import { useCheckUsernameAvailabilityMutation } from "./mutations/useCheckUsernameAvailabilityMutation";
 import { useCreateAccountMutation, useCreateAccountMutationState } from "./mutations/useCreateAccountMutation";
 import { useLogoutMutation, useLogoutMutationState } from "./mutations/useLogoutMutation";
 import { useRefreshTokenMutation } from "./mutations/useRefreshTokenMutation";
@@ -40,7 +41,12 @@ export const API = {
        * Mutation for logging out the user.
        */
       useLogoutMutation,
-      useLogoutMutationState
+      useLogoutMutationState,
+
+      /**
+       * Mutation for checking if a username is available.
+       */
+      useCheckUsernameAvailabilityMutation
     }
 
   }

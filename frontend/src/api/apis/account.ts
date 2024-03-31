@@ -34,10 +34,14 @@ export type TLogoutArgs = {
   id: string
 }
 
+export type TUsernameAvailabilityArgs = {
+  username: string
+}
+
 const successObject = z.object({
   status: z.literal(200),
   route: z.string(),
-  data: z.any()
+  data: z.unknown()
 })
 
 /***** VALIDATORS *****/
@@ -64,6 +68,11 @@ export const ACCOUNT_API_VALIDATORS = {
         z.literal('user'), 
         z.literal('admin')
       ])
+    })
+  })),
+  usernameAvailability: z.intersection(successObject, z.object({
+    data: z.object({
+      exists: z.boolean()
     })
   }))
 } as const;
@@ -98,6 +107,14 @@ export const ACCOUNT_API = {
     create: async (body: TCreateAccountArgs) => {
       const result = await globalAxios.post('/auth/signup', body);
       return ACCOUNT_API_VALIDATORS.create.parse(result.data);
+    },
+
+    /**
+     * Checks if a username is available
+     */
+    usernameAvailability: async (body: TUsernameAvailabilityArgs) => {
+      const result = await globalAxios.post('/auth/username-availability', body);
+      return ACCOUNT_API_VALIDATORS.usernameAvailability.parse(result.data);
     },
 
     /**

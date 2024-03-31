@@ -2,7 +2,6 @@
 import { UseMutationOptions, useMutation, useMutationState } from "@tanstack/react-query"
 import { API } from "../api"
 import { TCreateAccountArgs } from "../apis/account"
-import { AxiosError } from "axios"
 
 /***** TYPE DEFINITIONS *****/
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.create>>
