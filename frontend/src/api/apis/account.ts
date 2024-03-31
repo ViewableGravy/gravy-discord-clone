@@ -15,6 +15,7 @@ export type TAuthenticationArgs = {
 export type TCreateAccountArgs = {
   username: string,
   password: string,
+  displayName: string,
   email: string,
   dob: {
     day: string,

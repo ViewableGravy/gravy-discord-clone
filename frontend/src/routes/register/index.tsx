@@ -44,8 +44,8 @@ const RegistrationRoute = () => {
   const form = useRegistrationForm();
   
   /***** QUERIES *****/
-  const result = API.MUTATIONS.account.useCreateAccountMutationState().at(-1)
   const { mutateAsync: checkUsernameAsync } = API.MUTATIONS.account.useCheckUsernameAvailabilityMutation();
+  const result = API.MUTATIONS.account.useCreateAccountMutationState().at(-1)
 
   /***** FUNCTIONS *****/
   const getFieldErrors = (field: string) => {
@@ -109,10 +109,7 @@ const RegistrationRoute = () => {
             onChangeAsync({ value }) {
               checkUsernameAsync({ username: value as unknown as string })
                 .then(({ data }) => setIsUsernameAvailable(!data.exists))
-                .catch((result) => {
-                  console.log(result)
-                  setIsUsernameAvailable(undefined)
-                })
+                .catch(() => setIsUsernameAvailable(undefined))
 
               return undefined;
             }
@@ -128,7 +125,7 @@ const RegistrationRoute = () => {
               ? "Please only use numbers, letters, underscores or full stops."
               : isUsernameAvailable
                 ? <Text success>Username is available. Nice!</Text>
-                : "Username is unavailable. Try adding numbers, letters, underscores or full stops."
+                : undefined
           }
         />
         <form.InputField 
