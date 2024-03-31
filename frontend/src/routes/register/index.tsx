@@ -91,6 +91,7 @@ const RegistrationRoute = () => {
           name="displayName" 
           intrinsic={{ autoComplete: 'username' }}
           label={<Text span sm bold uppercase>display name</Text>}
+          selectedMessage="This is how others see you. You can use special characters and Emojies."
         />
         <form.InputField 
           required
@@ -100,6 +101,7 @@ const RegistrationRoute = () => {
           validators={{ onChange: validators.username }} 
           label={<Text span sm bold uppercase>username</Text>}
           manualError={getFieldErrors('username')}
+          selectedMessage="Please only use numbers, letters, underscores or full stops."
         />
         <form.InputField 
           required

@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { DeepKeys, FieldMeta, FormApi, UseField } from "@tanstack/react-form";
+import { DeepKeys, FieldMeta, FormApi } from "@tanstack/react-form";
 import React, { InputHTMLAttributes } from "react";
 import classNames from "classnames";
 import { FormValidators, Validator } from "@tanstack/form-core";
@@ -52,6 +52,13 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
      * as a result of an API response. It is also in lieu of the feature not being supported in tanstack form yet.
      */
     manualError?: string | boolean;
+
+    /**
+     * A message that should be displayed to the user when the field is selected. This is particularly useful for
+     * providing additional context to the user. Note, this message is in the same position as the manual error which
+     * means it cannot be shown at the same time as the manual error.
+     */
+    selectedMessage?: React.ReactNode;
   }>
 
   /**
@@ -70,13 +77,17 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
     validators, 
     innerRef, 
     manualError, 
+    selectedMessage,
     intrinsic = {} 
   }) => {
     /***** HOOKS *****/
     const isUsingKeyboard = useUsingKeyboard();
+    
+    /***** STATE *****/
+    const [isFocused, setIsFocused] = React.useState(false);
 
     const getValidators = () => {
-      const requiredValidator = z.string().min(1, 'A value must be provided');
+      const requiredValidator = z.string().min(1, 'Required');
       if (!required)
         return validators;
 
@@ -85,7 +96,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
 
       return {
         ...validators,
-        onChange: z.intersection(validators.onChange as any, requiredValidator)
+        onChange: z.intersection(requiredValidator, validators.onChange as any)
       }
     }
 
@@ -99,10 +110,21 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
 
     const { errors } = state.meta;
 
+    const classes = {
+      outer: classNames("InputField", className),
+      label: "InputField__label",
+      input: classNames("InputField__input", {
+        "InputField__input--using-keyboard": isUsingKeyboard
+      }),
+      manualWrapper: classNames("InputField__manualWrapper", { 
+        "InputField__manualWrapper--open": manualError || (selectedMessage && isFocused) 
+      })
+    }
+
     /***** RENDER *****/
     return (
-      <div className={classNames("InputField", className)}>
-        <FieldLabel render={!!label} errors={errors} name={name} className="InputField__label">
+      <div className={classes.outer}>
+        <FieldLabel render={!!label} errors={errors} name={name} className={classes.label} intrinsic={{ onClick: (e) => e.preventDefault() }}>
           {label} {label && required && <Text error span>*</Text>}
         </FieldLabel>
         <input
@@ -111,19 +133,20 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
           type="text"
           placeholder={placeholder}
           value={state.value ?? ''}
-          onBlur={handleBlur}
+          onBlur={() => {
+            handleBlur();
+            setIsFocused(false);
+          }}
           onChange={(e) => handleChange(e.target.value as any)}
           name={name}
+          onFocus={() => setIsFocused(true)}
           id={name}
-          className={classNames("InputField__input", {
-            "InputField__input--using-keyboard": isUsingKeyboard
-          })}
+          className={classes.input}
         />
-        {manualError && (
-          <Padding margin top="extra-small">
-            <Text error sm>{manualError}</Text>
-          </Padding>
-        )}
+        <div className={classes.manualWrapper}>
+          {!!manualError && <Text error sm>{manualError}</Text>}
+          {!!selectedMessage && isFocused && !manualError && <Text md primary>{selectedMessage}</Text>}
+        </div>
       </div>
     )
   };
