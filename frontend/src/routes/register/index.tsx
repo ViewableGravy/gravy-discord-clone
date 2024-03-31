@@ -24,10 +24,7 @@ const validators = {
   displayName: z.string().min(3, 'Display name must be atleast 3 characters'),
   password: z.string().min(8, 'A password must be provided'),
   dob: {
-    day: z.union([
-      z.number().min(1, 'A day must be provided'),
-      z.string().min(1, 'A day must be provided')
-    ]),
+    day: z.string().min(1, 'A day must be provided'),
     month: z.number().min(1, 'A month must be provided'),
     year: z.number().min(1, 'A year must be provided')
   },
@@ -124,6 +121,7 @@ const RegistrationRoute = () => {
             className="Register__select" 
             placeholder="Day" 
             name='dob.day'
+            validators={{ onChange: validators.dob.day }}
             label={(
               <FieldLabel.Required 
                 label="Date of birth" 

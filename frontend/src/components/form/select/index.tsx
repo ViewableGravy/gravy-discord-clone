@@ -1,54 +1,69 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, UseField } from "@tanstack/react-form";
-import React, { createContext, CSSProperties, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, CSSProperties, useContext, useEffect, useRef } from "react";
+import { Validator } from "@tanstack/form-core";
 import classNames from "classnames";
 
 /***** SHARED *****/
 import { FieldLabel } from "../general/label/label";
 import { Text } from "../../utility/text";
+import { StyledInput } from "../input/styled";
 
 /***** UTILITIES *****/
 import { useToggleState } from "../../../utilities/hooks/useToggleState";
 import { useClickAway } from "../../../utilities/hooks/useClickAway";
 import { useTheme } from "../../../utilities/hooks/useTheme";
-import { useOptionFieldKeyboardState, useSelectFieldKeyboardState as useSelectFieldKeyboardEffect } from "./useKeyboardEvents";
-import { generateInputField } from "../input";
+import { useSelectFieldKeyboardEffect } from "./useKeyboardEvents";
 
 /***** CONSTS *****/
 import './_Select.scss';
 import { ChevronRight } from "../../../assets/icons/chevron-right";
-import { Validator } from "@tanstack/form-core";
 
+/***** TYPE DEFINITIONS *****/
 type TSelectContext = {
   name: string;
-  form: FormApi<any, any>;
-  value: any;
-  isSearching: boolean;
-  inputRef: React.RefObject<HTMLInputElement>;
-  toggleIsSearching: (state?: boolean | undefined) => void;
+
+  /** This is the list of options that are currently visible */
+  visibleOptions: Array<[value: string, children: string | number]> | boolean;
+  
+  /** Functions for registering the option with select component */
   registerNameValueMapping: (mapping: Record<string, string | number>) => void;
   unregisterNameValueMapping: (value: string) => void;
+  
+  /** Functions for toggling the state of the select component */
+  toggleIsSearching: (state?: boolean | undefined) => void;
   toggleIsOpen: (state?: boolean | undefined) => void;
+
+  /** Refs for the search input field */
+  searchRef: React.RefObject<HTMLInputElement>;
+  setSearchValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SelectContext = createContext<TSelectContext>({
   name: '',
-  value: '',
-  form: {} as any,
-  isSearching: false,
+  visibleOptions: [],
+  setSearchValue: () => {},
   toggleIsSearching: () => {},
   registerNameValueMapping: () => {},
   unregisterNameValueMapping: () => {},
   toggleIsOpen: () => {},
-  inputRef: {} as any
+  searchRef: {} as any
 });
 
 export const useSelectContext = (_value?: unknown) => {  
-  const { value, ...rest } =  useContext(SelectContext);
+  const { visibleOptions, ...rest } =  useContext(SelectContext);
+
+  const getIsVisible = () => {
+    if (typeof visibleOptions === 'boolean') {
+      return visibleOptions
+    }
+
+    return visibleOptions?.some?.(([value]) => String(value) === String(_value)) ?? true;
+  }
 
   return {
     ...rest,
-    isSelected: value === _value
+    isVisible: getIsVisible()
   }
 };
 
@@ -105,19 +120,17 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
   const Option: TOption = ({ children, value }) => {
     /***** HOOKS *****/
     const { 
-      isSelected, 
-      form, 
+      searchRef,
+      setSearchValue,
+      isVisible,
       name, 
-      isSearching, 
       toggleIsSearching, 
       toggleIsOpen,
       registerNameValueMapping, 
-      unregisterNameValueMapping 
+      unregisterNameValueMapping
     } = useSelectContext(value);
     const [{ primary, form: themedForm }] = useTheme(({ backgroundColor }) => backgroundColor); 
-    const { state, handleChange: handleValueChange } = form.useField({ name });
-    const { state: humanState, handleChange: handleHumanChange } = form.useField({ name: `${name}--human`, defaultValue: state.value ?? '' });
-    const { state: searchState, handleChange: handleSearchChange } = form.useField({ name: `${name}--search`, defaultValue: state.value ?? humanState.value ?? '' })
+    const { handleChange, state } = form.useField({ name: name as any });
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
@@ -128,12 +141,9 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
       }
     }, [value, children])
 
-    useOptionFieldKeyboardState({ buttonRef })
-
     /***** RENDER HELPERS *****/
-    const matchesSearch = !searchState.value ? true : String(children).toLowerCase().includes(searchState?.value?.toLowerCase?.());
     const classes = classNames("SelectField__option", {
-      "SelectField__option--selected": isSelected 
+      "SelectField__option--selected": state.value === String(value), 
     })
     const styles = {
       '--background-color': primary,
@@ -144,30 +154,45 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     /***** RENDER *****/
     return (
       <>
-        {isSearching && !matchesSearch ? null : (
+        {!isVisible ? null : (
           <button 
             type="button"
             ref={buttonRef}
             style={styles}
             className={classes}
             onClick={() => {
-              handleValueChange(value)
-              handleHumanChange(children)
+              handleChange(value)
+              setSearchValue(String(children))
               toggleIsSearching(false)
               toggleIsOpen(false)
             }}
             onKeyDown={(e) => {
-              e.preventDefault();
               if (e.key === 'Escape') {
+                e.preventDefault();
                 toggleIsSearching(false)
                 toggleIsOpen(false)
               }
               if (e.key === 'Enter') {
-                handleValueChange(value)
-                handleSearchChange(children)
-                handleHumanChange(children)
+                e.preventDefault();
+                handleChange(value)
                 toggleIsSearching(false)
                 toggleIsOpen(false)
+              }
+              if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+                e.preventDefault();
+                const nextElement = e.key === 'ArrowDown' ? buttonRef.current?.nextElementSibling : buttonRef.current?.previousElementSibling;
+
+                if (nextElement instanceof HTMLElement) {
+                  nextElement.focus();
+                }
+              }
+
+              // update search value
+              if (e.key.length === 1) {
+                searchRef.current?.focus()
+              }
+              if (e.key === 'Backspace') {
+                searchRef.current?.focus()
               }
             }}
           >
@@ -193,12 +218,11 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     placeholder 
   }) => {
     /***** HOOKS *****/
-    const InputField = useMemo(() => generateInputField(form), [form])
     const clickawayRef = useClickAway<HTMLDivElement>(() => {
       toggleIsOpen(false)
       toggleIsSearching(false)
     });
-    const { state, handleChange } = form.useField({
+    const { state, handleChange, handleBlur } = form.useField({
       name, // typescript is going to think that name can be an object key but tanstack expects a string
       asyncDebounceMs: asyncDebounceMs ?? 200,
       defaultMeta,
@@ -208,16 +232,17 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     /***** STATE *****/
     const [isOpen, toggleIsOpen] = useToggleState()
     const [isSearching, toggleIsSearching] = useToggleState()
-    const inputRef = useRef<HTMLInputElement>(null)
-    const [nameValueMapping, setNameValueMapping] = React.useState<Record<string, string | number>>({})
+    const searchRef = useRef<HTMLInputElement>(null)
+    const [options, setOptions] = React.useState<Record<string, string | number>>({})
+    const [searchValue, setSearchValue] = React.useState<string>('')
 
     /***** FUNCTIONS *****/
-    const registerNameValueMapping = (mapping: Record<string, string | number>) => {
-      setNameValueMapping((prev) => ({ ...prev, ...mapping }))
+    const registerOption = (mapping: Record<string, string | number>) => {
+      setOptions((prev) => ({ ...prev, ...mapping }))
     }
 
-    const unregisterNameValueMapping = (value: string) => {
-      setNameValueMapping((prev) => {
+    const unregisterOption = (value: string) => {
+      setOptions((prev) => {
         const { [value]: _, ...rest } = prev
         return rest
       })
@@ -225,9 +250,7 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
 
     /***** EFFECTS *****/
     useSelectFieldKeyboardEffect({
-      inputRef,
-      clickawayRef,
-      isSearching,
+      inputRef: searchRef,
       toggleIsSearching,
       toggleIsOpen
     })
@@ -240,7 +263,9 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     const classes = {
       outer: classNames("SelectField", className),
       inputWrapper: "SelectField__select",
-      input: "SelectField__input",
+      input: classNames("SelectField__input", {
+        "SelectField__input--hidden": isOpen || isSearching
+      }),
       chevron: classNames("SelectField__chevron", {
         "SelectField__chevron--open": isOpen,
       }),
@@ -250,90 +275,166 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
         "SelectField__dropdown--hasLabel": label
       })
     }
-    const inputName = isSearching ? `${name}--search` as any : `${name}--human`;
+    const visibleOptions = !searchValue || searchValue === '' ? true : Object.entries(options).filter(([_, value]) => String(value).toLowerCase().includes(searchValue.toLowerCase()))
     const context = {
       name,
-      form,
-      handleChange,
-      value: state.value,
-      isSearching,
+      visibleOptions,
       toggleIsSearching,
-      registerNameValueMapping,
-      unregisterNameValueMapping,
+      registerNameValueMapping: registerOption,
+      unregisterNameValueMapping: unregisterOption,
       toggleIsOpen,
-      inputRef
+      searchRef,
+      setSearchValue
     };
 
     /***** RENDER *****/
     return (
       <SelectContext.Provider value={context}>
         <div ref={clickawayRef} className={classes.outer}>
-          <FieldLabel errors={errors} name={name}>
+          <FieldLabel render={!!label} errors={isSearching || isOpen ? [] : errors} name={name}>
             {label}
           </FieldLabel>
           <div className={classes.inputWrapper}>
-            <InputField
-              placeholder={placeholder}
-              key={inputName}
-              name={inputName}
-              innerRef={inputRef}
-              className={classes.input}
-              intrinsic={{
-                onClick() {
-                  toggleIsOpen();
-
-                  if (!isOpen) {
-                    toggleIsSearching(false);
-                  } else {
-                    toggleIsSearching(true);
-                  }
-                },
-                onKeyDown(e) {
-                  switch(e.key) {
-                    case 'Escape': {
-                      e.stopPropagation();
-                      toggleIsSearching(false);
-                      return toggleIsOpen(false);
-                    }
-                    case 'Enter': {
-                      e.stopPropagation();
-                      if (isSearching) {
-                        handleChange(e.currentTarget.value as any);
+            {/* Input field (Searching + displaying) */}
+            {isSearching || isOpen ? (
+              <StyledInput
+                name={`${name}-search`}
+                value={searchValue}
+                onChange={setSearchValue}
+                ref={searchRef}
+                intrinsic={{
+                  onKeyDown(e) {
+                    switch(e.key) {
+                      case 'Tab':
+                      case 'Shift':
+                        return;
+                      case 'ArrowUp': {
+                        e.preventDefault();
+                        const lastOption = clickawayRef.current?.querySelector('.SelectField__option:last-child');
+                        if (lastOption instanceof HTMLElement) {
+                          lastOption.focus();
+                        }
+                        return;
                       }
-                      toggleIsOpen();
-                      toggleIsSearching(isOpen);
-                      return void setTimeout(() => {
-                        inputRef.current?.focus(); 
-                      });
-                    }
-                    case 'ArrowUp':
-                    case 'ArrowDown': {
-                      e.stopPropagation();
-                      toggleIsOpen(true);
-                      return void setTimeout(() => {
+                      case 'ArrowDown': {
+                        e.preventDefault();
                         const firstOption = clickawayRef.current?.querySelector('.SelectField__option');
-                        if (firstOption instanceof HTMLElement) {
+                        if (e.key === 'ArrowDown' && firstOption instanceof HTMLElement) {
                           firstOption.focus();
                         }
-                      });
-                    }
-                    case 'Tab':
-                    case 'Shift': 
-                      return;
-                    default: {
-                      if (!isOpen) {
-                        toggleIsOpen(true);
+                        return;
                       }
-                      if (!isSearching) {
-                        toggleIsSearching(true);
+                      case 'Enter': {
+                        e.preventDefault();
+                        toggleIsOpen(false)
+                        toggleIsSearching(false)
+
+                        if (typeof visibleOptions === 'boolean') {
+                          return
+                        }
+
+                        if (visibleOptions.length === 0) {
+                          return
+                        }
+
+                        const value = visibleOptions.at(-1)?.[0]
+                        return handleChange(value as any)
                       }
+                      case 'Escape': {
+                        e.preventDefault();
+                        toggleIsOpen(false)
+                        toggleIsSearching(false)
+                        return;
+                      }
+                      default:
+                        return; // do nothing, this is handled by the onChange callback
                     }
+                  },
+                  onClick(e) {
+                    e.preventDefault();
+                    toggleIsOpen(false)
+                    toggleIsSearching(false)
+                    setSearchValue('')
                   }
-                },
-                autoFocus: isSearching || isOpen,
-                autoComplete: "off"
-              }}
-            />
+                }}
+              />
+            ) : (
+              <StyledInput
+                name={name}
+                placeholder={placeholder}
+                className={classes.input}
+                value={String(options[state.value] ?? '')}
+                onChange={(value: any) => {
+                  toggleIsOpen(true)
+                  toggleIsSearching(true)
+                  setSearchValue(String(options[value] ?? ''))
+                  return void setTimeout(() => {
+                    searchRef.current?.focus()
+                  })
+                }}
+                onBlur={handleBlur}
+                intrinsic={{ 
+                  autoFocus: isSearching || isOpen,
+                  autoComplete: 'off',
+                  onKeyDown(e) {
+                    switch(e.key) {
+                      case 'Tab':
+                      case 'Shift':
+                        return;
+                      case 'ArrowUp': {
+                        e.preventDefault();
+                        toggleIsOpen(true)
+                        return void setTimeout(() => {
+                          const lastOption = clickawayRef.current?.querySelector('.SelectField__option:last-child');
+                          if (lastOption instanceof HTMLElement) {
+                            lastOption.focus();
+                          }
+                        });
+                      }
+                      case 'ArrowDown': {
+                        e.preventDefault();
+                        toggleIsOpen(true)
+                        return void setTimeout(() => {
+                          const firstOption = clickawayRef.current?.querySelector('.SelectField__option');
+                          if (firstOption instanceof HTMLElement) {
+                            firstOption.focus();
+                          }
+                        });
+                      }
+                      case 'Enter': {
+                        e.preventDefault();
+                        toggleIsOpen(true)
+                        setSearchValue(String(options[state.value] ?? ''))
+                        return void setTimeout(() => {
+                          searchRef.current?.focus()
+                        })
+                      }
+                    }
+
+                    if (e.key.length === 1) {
+                      e.preventDefault();
+                      toggleIsOpen(true)
+                      toggleIsSearching(true)
+                      setSearchValue(String(state.value ?? '') + e.key)
+                      return void setTimeout(() => {
+                        searchRef.current?.focus()
+                      })
+                    }
+                  },
+                  onClick(e) {
+                    e.preventDefault();
+                    toggleIsOpen(true)
+                    toggleIsSearching(true)
+                    setSearchValue(String(options[state.value] ?? ''))
+                    return void setTimeout(() => {
+                      searchRef.current?.focus()
+                    })
+                  }
+                }}
+              />
+            )}
+
+            {/* Chevron overlay */}
             <div className={classes.chevron}>
               <ChevronRight height={16} />
             </div>

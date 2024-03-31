@@ -32,6 +32,12 @@
 
   &__select.SelectField {
     flex-grow: 1;
-    width: 100px;
+    min-width: 100px;
+  }
+
+  &__input {
+    &--hidden {
+      display: none;
+    }
   }
 }
