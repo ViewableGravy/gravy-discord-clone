@@ -41,7 +41,7 @@ export const verifyAccount = createRouteCallback(async ({
     });
   }
 
-  const isValidToken = validatePassword(token, pendingUser.hash, pendingUser.salt);
+  const isValidToken = validatePassword(token, pendingUser.signupHash, pendingUser.signupSalt);
 
   if (!isValidToken) {
     return builder({
@@ -68,7 +68,6 @@ export const verifyAccount = createRouteCallback(async ({
       }
     })
   ]);
-  result[0]
 
   const createSessionResult = await createSession({ prisma, user: result[0], socketId: id });
 

@@ -4,6 +4,9 @@ import { useEffect, Validator } from 'react';
 import { useVerifyMutation } from '../../api/mutations/useVerifyMutation';
 import { z } from 'zod';
 import { router } from '../../app';
+import { Modal } from '../../components/modal';
+import background from '../../assets/login-background.svg';
+import { Text } from '../../components/utility/text';
 
 const validateSearch = z.object({
   username: z.string(),
@@ -28,20 +31,33 @@ const Verify = () => {
   const { ready } = useSocket(({ readyState }) => ({ ready: readyState === "READY" }));
   const { username, token } = Route.useSearch();
 
+  console.log(token)
+
   /***** QUERIES *****/
-  const { mutate } = useVerifyMutation();
+  const { mutate, isIdle } = useVerifyMutation({ mutationKey: ['verify']});
 
   /***** EFFECTS *****/
   useEffect(() => {
-    if (ready) {
+    console.log(isIdle)
+    if (ready && isIdle) {
       mutate({ username, token })
     }
-  }, [ready])
+  }, [ready, isIdle])
 
   return (
-    <div>
-      <h1>Verifying...</h1>
-    </div>
+    <Modal 
+      isOpen
+      fade={{ modal: false }} 
+      background={(
+        <img 
+          src={background} 
+          alt="background" 
+          style={{ height: '100%', width: '100%' }} 
+        />
+      )}
+    >
+      <Text align-center>Verifying...</Text>
+    </Modal>
   );
 }
 

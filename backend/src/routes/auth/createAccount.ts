@@ -3,7 +3,7 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 
 /***** UTILITIES *****/
-import { createJWT, generateRandomToken, hashPassword } from "../../utilities/crypto"
+import { createJWT, generateRandomToken, hashPassword, validatePassword } from "../../utilities/crypto"
 import { createRouteCallback } from "../../models/base"
 
 /***** CONSTS *****/
@@ -117,9 +117,10 @@ export const createAccount = createRouteCallback(async ({
   }
 
   const { password, email, username, dob, displayName, notifications } = validated.data;
-  const { hash, salt }= hashPassword(password);
+  const { hash, salt } = hashPassword(password);
 
-  const verificationToken = generateRandomToken()
+  // remove trailing "=" due to frontend @tanstack/router bug (https://github.com/TanStack/router/issues/1404)
+  const verificationToken = generateRandomToken().replace(/=$/, '');
   const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken);
 
   const mailResult = await mailer.sendMail({
@@ -171,7 +172,7 @@ export const createAccount = createRouteCallback(async ({
       status: 500,
       data: 'An unexpected error occurred. Please try again later.'
     })
-  }  
+  }
 
   return builder({
     status: 200,

@@ -22,8 +22,8 @@ model PendingUser {
   hash     String
   salt     String
 
-  signupHash String? // Code that is sent to the user to verify their email
-  signupSalt String? // Salt for the signup hash
+  signupHash String // Code that is sent to the user to verify their email
+  signupSalt String // Salt for the signup hash
   createdAt DateTime? // When the user created the account creation request
 }
 
