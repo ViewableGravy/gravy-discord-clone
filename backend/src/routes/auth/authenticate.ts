@@ -8,6 +8,7 @@ import { createRouteCallback } from "../../models/base";
 /***** UTILITIES *****/
 import { elevateClient } from "../../socket/events/elevateClient";
 import { createJWT, validatePassword } from "../../utilities/crypto";
+import { createSession } from "./helpers/createSession";
 
 /***** VALIDATION *****/
 const validator = z.object({
@@ -54,59 +55,68 @@ export const loginRoute = createRouteCallback(async ({
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
 
-  //Create session ID
-  const expiry = {
-    str: '14d',
-    ms: 14 * 24 * 60 * 60 * 1000
+  const createSessionResults = await createSession({ prisma, user, socketId: id });
+
+  if ('error' in createSessionResults) {
+    return builder(createSessionResults.error);
+  } else {
+    return builder(createSessionResults);
   }
 
-  const sessionToken = randomBytes(64).toString('base64');
-  const sessionJWT = await createJWT({ token: sessionToken }, expiry.str);
 
-  // Create Session
-  const session = await prisma.session.create({
-    data: {
-      userId: user.id,
-      token: sessionToken,
-      expires: new Date(Date.now() + expiry.ms)
-    }
-  }).catch((error) => ({ error }));
+  // //Create session ID
+  // const expiry = {
+  //   str: '14d',
+  //   ms: 14 * 24 * 60 * 60 * 1000
+  // }
 
-  const revertSession = async () => {
-    await prisma.session.delete({
-      where: {
-        token: sessionToken
-      }
-    });
-  }
+  // const sessionToken = randomBytes(64).toString('base64');
+  // const sessionJWT = await createJWT({ token: sessionToken }, expiry.str);
 
-  if ('error' in session) {
-    return builder({
-      status: 500,
-      data: 'Could not create session. Please try again.'
-    });
-  }
+  // // Create Session
+  // const session = await prisma.session.create({
+  //   data: {
+  //     userId: user.id,
+  //     token: sessionToken,
+  //     expires: new Date(Date.now() + expiry.ms)
+  //   }
+  // }).catch((error) => ({ error }));
 
-  /**
-   * Elevate the socket and attach the database ID to the socket for use later
-   */
-  const elevationResult = elevateClient(id, user);
+  // const revertSession = async () => {
+  //   await prisma.session.delete({
+  //     where: {
+  //       token: sessionToken
+  //     }
+  //   });
+  // }
 
-  if (elevationResult.error) {
-    await revertSession().catch(() => {});
-    return builder({
-      status: 401,
-      data: 'Could not find socket identifier to elevate. Please try again.'
-    });
-  }
+  // if ('error' in session) {
+  //   return builder({
+  //     status: 500,
+  //     data: 'Could not create session. Please try again.'
+  //   });
+  // }
+
+  // /**
+  //  * Elevate the socket and attach the database ID to the socket for use later
+  //  */
+  // const elevationResult = elevateClient(id, user);
+
+  // if (elevationResult.error) {
+  //   await revertSession().catch(() => {});
+  //   return builder({
+  //     status: 401,
+  //     data: 'Could not find socket identifier to elevate. Please try again.'
+  //   });
+  // }
   
-  /***** RETURN *****/
-  return builder({
-    status: 200,
-    data: {
-      level: 'user',
-      refreshToken: sessionJWT
-    }
-  });
+  // /***** RETURN *****/
+  // return builder({
+  //   status: 200,
+  //   data: {
+  //     level: 'user',
+  //     refreshToken: sessionJWT
+  //   }
+  // });
 });
 

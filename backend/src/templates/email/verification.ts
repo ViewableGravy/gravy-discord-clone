@@ -9,12 +9,12 @@ type TVerificationEmail = (props: {
 if (!Bun.env.FRONTEND_URL)
   throw new Error("FRONTEND_URL must be set in the .env file");
 
-export const verificationEmail: TVerificationEmail = ({ verificationToken }) => String.raw`
+export const verificationEmail: TVerificationEmail = ({ verificationToken, username }) => String.raw`
   <html>
     <body>
       <h1>Verify your email</h1>
       <p>Click the link below to verify your email address</p>
-      <a href="${Bun.env.FRONTEND_URL}/verify/${verificationToken}">Verify Email</a>
+      <a href="${Bun.env.FRONTEND_URL}/verify?token=${verificationToken}&username=${username}">Verify Email</a>
     </body>
   </html>
 `;

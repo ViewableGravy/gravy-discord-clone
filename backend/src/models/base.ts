@@ -16,7 +16,7 @@ export const prisma = new PrismaClient();
 const mailer = new Mailer();
 
 /***** TYPE DEFINITIONS *****/
-type TStandardBuilder = {
+export type TStandardBuilder = {
    /**
    * Code representing the response. This may be a custom code to match on the frontend 
    * in case of a specific error, or it may be a standard HTTP status code.
@@ -45,7 +45,7 @@ type TStandardBuilder = {
    type?: "standard"
 }
 
-type TFieldErrorBuilder = {
+export type TFieldErrorBuilder = {
   /**
    * The Errors for the endpoint to return for the user.
    */
@@ -71,7 +71,7 @@ type TFieldErrorBuilder = {
 export type TBuilder = (args: TStandardBuilder | TFieldErrorBuilder) => void;
 export type TPrisma = typeof prisma;
 
-type TCreateBaseArgs = {
+export type TCreateBaseArgs = {
   builder: TBuilder
 
   /**

@@ -14,10 +14,11 @@ import { createAccount } from './routes/auth/createAccount';
 import { loginRoute } from './routes/auth/authenticate';
 import { refreshRoute } from './routes/auth/refresh';
 import { logoutRoute } from './routes/auth/logout';
+import { usernameAvailabilityRoute } from './routes/auth/usernameAvailability';
+import { verifyAccount } from './routes/auth/verify';
 
 /***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
-import { usernameAvailabilityRoute } from './routes/auth/usernameAvailability';
 
 /***** SERVER SETUP *****/
 const server =  express();
@@ -39,6 +40,7 @@ server.post('/api/auth/login', loginRoute)
 server.post('/api/auth/refresh', refreshRoute)
 server.post('/api/auth/logout', logoutRoute)
 server.post('/api/auth/username-availability', usernameAvailabilityRoute)
+server.post('/api/auth/verify', verifyAccount)
 
 server.all('*', (_, res) => {
   res.status(404).send('Not found');

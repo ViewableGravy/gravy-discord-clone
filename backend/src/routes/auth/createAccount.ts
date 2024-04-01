@@ -7,7 +7,8 @@ import { createJWT, generateRandomToken, hashPassword } from "../../utilities/cr
 import { createRouteCallback } from "../../models/base"
 
 /***** CONSTS *****/
-import { PRISMA_CODES } from "../../models/enums"
+import { DEBUG_LEVELS, PRISMA_CODES } from "../../models/enums"
+import { log } from "console"
 
 const monthsToNumber = {
   January: 1,
@@ -133,7 +134,7 @@ export const createAccount = createRouteCallback(async ({
   }).catch((error) => ({ error }))
 
   if ('error' in mailResult) {
-    console.log(mailResult.error)
+    log(DEBUG_LEVELS.ERROR, mailResult.error)
     return builder({
       status: 500,
       data: 'An unexpected error occurred sending a verification email. Please try again later.'
