@@ -37,14 +37,18 @@ export const loginRoute = createRouteCallback(async ({
   }
 
   /***** DATABASE *****/
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findMany({
     where: {
-      username: validated.data.username
-    }
+      OR: [{
+        username: validated.data.username,
+      }, {
+        email: validated.data.username
+      }]
+    },
   });
 
-  const userExists = !!user;
-  const validPassword = validatePassword(password, user?.hash ?? '', user?.salt ?? '');
+  const userExists = !!user && user.length > 0;
+  const validPassword = validatePassword(password, user[0]?.hash ?? '', user[0]?.salt ?? '');
 
   if (!userExists || !validPassword) {
     return builder({
@@ -55,7 +59,7 @@ export const loginRoute = createRouteCallback(async ({
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
 
-  const createSessionResults = await createSession({ prisma, user, socketId: id });
+  const createSessionResults = await createSession({ prisma, user: user[0], socketId: id });
 
   if ('error' in createSessionResults) {
     return builder(createSessionResults.error);

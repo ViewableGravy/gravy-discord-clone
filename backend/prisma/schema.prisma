@@ -12,7 +12,7 @@ datasource db {
 
 model PendingUser {
   id       String  @id @default(uuid())
-  username String? @unique
+  username String @unique
   email    String  @unique
   displayName String    // Display name
   dob      DateTime     // Date of birth
@@ -29,7 +29,7 @@ model PendingUser {
 
 model User {
   id       String  @id @default(uuid())
-  username String? @unique
+  username String @unique
   email    String  @unique
   displayName String    // Display name
   dob      DateTime     // Date of birth
