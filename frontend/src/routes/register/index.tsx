@@ -100,14 +100,14 @@ const RegistrationRoute = () => {
         />
         <form.InputField 
           required
-          className="Register__field"
+          className="Register__field Register__field--username"
           name="username" 
           intrinsic={{ autoComplete: 'username webauthn' }}
           validators={{ 
             onChange: validators.username,
             onChangeAsyncDebounceMs: 500, 
             onChangeAsync({ value }) {
-              checkUsernameAsync({ username: value as unknown as string })
+              checkUsernameAsync({ username: value.toLowerCase() })
                 .then(({ data }) => setIsUsernameAvailable(!data.exists))
                 .catch(() => setIsUsernameAvailable(undefined))
 

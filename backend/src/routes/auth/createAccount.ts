@@ -29,7 +29,8 @@ const monthsToNumber = {
 const bodyValidator = z.object({
   username: z.string()
     .min(3, { message: "Username must be atleast 3 characters" })
-    .max(100, { message: "Username cannot be longer than 100 characters" }),
+    .max(100, { message: "Username cannot be longer than 100 characters" })
+    .toLowerCase(),
   password: z.string()
     .min(8, { message: "Password must be atleast 8 characters" })
     .max(100, { message: "Password cannot be longer than 100 characters" })
