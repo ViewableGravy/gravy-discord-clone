@@ -4,10 +4,6 @@ import { z } from "zod";
 /***** MODELS *****/
 import { createRouteCallback } from "../../models/base";
 
-/***** UTILITIES *****/
-import { elevateClient } from "../../socket/events/elevateClient";
-import { getSession } from "./helpers/getSession";
-
 /***** VALIDATION *****/
 const validator = z.object({
   username: z.string()
@@ -38,10 +34,16 @@ export const usernameAvailabilityRoute = createRouteCallback(async ({
     }
   });
 
+  const pendingUser = await prisma.pendingUser.findUnique({
+    where: {
+      username
+    }
+  });
+
   return builder({
     status: 200,
     data: {
-      exists: !!user
+      exists: !!user || !!pendingUser
     }
   });
 });

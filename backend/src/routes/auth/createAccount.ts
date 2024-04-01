@@ -118,65 +118,86 @@ export const createAccount = createRouteCallback(async ({
   }
 
   const { password, email, username, dob, displayName, notifications } = validated.data;
-  const { hash, salt } = hashPassword(password);
-
-  // remove trailing "=" due to frontend @tanstack/router bug (https://github.com/TanStack/router/issues/1404)
   const verificationToken = generateRandomToken().replace(/=$/, '');
-  const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken);
 
-  const mailResult = await mailer.sendMail({
-    subject: 'Verify your email',
-    to: email,
-    html: mailer.templates.email.verificationEmail({ 
-      displayName: displayName ?? username,
-      email,
-      username,
-      verificationToken
-    })
-  }).catch((error) => ({ error }))
+  const { hash, salt } = hashPassword(password);
+  const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken); // remove trailing "=" due to frontend @tanstack/router bug (https://github.com/TanStack/router/issues/1404)
 
-  if ('error' in mailResult) {
-    log(DEBUG_LEVELS.ERROR, mailResult.error)
-    return builder({
-      status: 500,
-      data: 'An unexpected error occurred sending a verification email. Please try again later.'
-    })
-  }
+  // send verification email
+  const sendMail = async (revert: () => Promise<void>) => { 
+    const mailResult = await mailer.sendMail({
+      subject: 'Verify your email',
+      to: email,
+      html: mailer.templates.email.verificationEmail({ 
+        displayName: displayName ?? username,
+        email,
+        username,
+        verificationToken
+      })
+    }).catch((error) => ({ error }))
 
-  const result = await prisma.pendingUser.create({
-    data: {
-      email,
-      username,
-      displayName: displayName ?? username,
-      notifications: notifications ?? false,
-      createdAt: new Date(),
-      dob: new Date(`${dob.year}-${monthsToNumber[dob.month]}-${dob.day}`),
-      salt,
-      hash,
-      signupSalt: verificationSalt,
-      signupHash: verificationHash,
-    }
-  }).catch((error) => ({ error }))
+    if ('error' in mailResult) {
+      log(DEBUG_LEVELS.ERROR, mailResult.error)
 
-  if ('error' in result) {
-    if (result.error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (result.error.code === PRISMA_CODES.UNIQUE_CONSTRAINT) {
-        return builder({
-          status: 400,
-          code: PRISMA_CODES.UNIQUE_CONSTRAINT,
-          data: 'email already exists'
-        })
+      await revert()
+
+      throw {
+        status: 500,
+        data: 'An unexpected error occurred sending a verification email. Please try again later.'
       }
     }
+  }
 
-    return builder({
-      status: 500,
-      data: 'An unexpected error occurred. Please try again later.'
+  //check if a pending request already exists
+  const existingPendingUser = await prisma.pendingUser.findUnique({ where: { email } })
+
+  if (existingPendingUser) {
+    await prisma.pendingUser.update({
+      where: {
+        id: existingPendingUser.id
+      },
+      data: {
+        signupHash: verificationHash,
+        signupSalt: verificationSalt
+      }
     })
+
+    sendMail(async () => {
+      await prisma.pendingUser.update({
+        where: {
+          id: existingPendingUser.id
+        },
+        data: {
+          signupHash: existingPendingUser.signupHash,
+          signupSalt: existingPendingUser.signupSalt
+        }
+      })
+    });
+  } else {
+    const result = await prisma.pendingUser.create({
+      data: {
+        email,
+        username,
+        displayName: displayName ?? username,
+        notifications: notifications ?? false,
+        createdAt: new Date(),
+        dob: new Date(`${dob.year}-${monthsToNumber[dob.month]}-${dob.day}`),
+        salt,
+        hash,
+        signupSalt: verificationSalt,
+        signupHash: verificationHash,
+      }
+    })
+
+    sendMail(async () => {
+      await prisma.pendingUser.delete({ where: { id: result.id } })
+    });
   }
 
   return builder({
     status: 200,
-    data: 'Account created'
+    data: {
+      message: "An email has been sent to verify your account. Please check your inbox." 
+    }
   })
 })
