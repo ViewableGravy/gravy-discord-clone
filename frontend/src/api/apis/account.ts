@@ -39,6 +39,12 @@ export type TUsernameAvailabilityArgs = {
   username: string
 }
 
+export type TVerifyArgs = {
+  token: string;
+  username: string;
+  id: string;
+}
+
 const successObject = z.object({
   status: z.literal(200),
   route: z.string(),
@@ -74,6 +80,17 @@ export const ACCOUNT_API_VALIDATORS = {
   usernameAvailability: z.intersection(successObject, z.object({
     data: z.object({
       exists: z.boolean()
+    })
+  })),
+  verify: z.intersection(successObject, z.object({
+    data: z.object({
+      level: z.union([
+        z.null(), 
+        z.literal('guest'),
+        z.literal('user'), 
+        z.literal('admin')
+      ]),
+      refreshToken: z.string(),
     })
   }))
 } as const;
@@ -124,6 +141,16 @@ export const ACCOUNT_API = {
     logout: async (body: TLogoutArgs) => {
       const result = await globalAxios.post('/auth/logout', body);
       return result.data;
+    },
+
+    /**
+     * Verifies a user has access to their email and finalizes the account creation process.
+     * This endpoint also logs the user in and returns a refresh token with an identical
+     * response to the authenticate endpoint.
+     */
+    verify: async (body: TVerifyArgs) => {
+      const result = await globalAxios.post('/auth/verify', body);
+      return ACCOUNT_API_VALIDATORS.verify.parse(result.data);
     }
   },
 
