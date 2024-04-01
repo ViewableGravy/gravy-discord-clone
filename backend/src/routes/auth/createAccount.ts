@@ -3,11 +3,26 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 
 /***** UTILITIES *****/
-import { hashPassword } from "../../utilities/crypto"
+import { createJWT, generateRandomToken, hashPassword } from "../../utilities/crypto"
 import { createRouteCallback } from "../../models/base"
 
 /***** CONSTS *****/
 import { PRISMA_CODES } from "../../models/enums"
+
+const monthsToNumber = {
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12,
+}
 
 /***** VALIDATORS *****/
 const bodyValidator = z.object({
@@ -24,6 +39,8 @@ const bodyValidator = z.object({
   email: z.string()
     .email({ message: "Invalid email" })
     .max(100, { message: "Email cannot be longer than 100 characters" }),
+  displayName: z.string().optional(),
+  notifications: z.boolean().optional(),
   dob: z.object({
     day: z.number({ coerce: true })
       .min(1, { message: "The provided day must be greater than 1"})
@@ -49,7 +66,14 @@ const bodyValidator = z.object({
 })
 
 /***** ROUTE START *****/
-export const createAccount = createRouteCallback(async ({ builder, req, prisma }) => {
+export const createAccount = createRouteCallback(async ({ 
+  builder, 
+  req, 
+  ctx: { 
+    prisma,
+    mailer 
+  } 
+}) => {
   const validated = bodyValidator.safeParse(req.body);
   
   if (!validated.success) {
@@ -91,15 +115,43 @@ export const createAccount = createRouteCallback(async ({ builder, req, prisma }
     })
   }
 
-  const { password, email, username } = validated.data;
+  const { password, email, username, dob, displayName, notifications } = validated.data;
   const { hash, salt }= hashPassword(password);
 
-  const result = await prisma.user.create({
+  const verificationToken = generateRandomToken()
+  const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken);
+
+  const mailResult = await mailer.sendMail({
+    subject: 'Verify your email',
+    to: email,
+    html: mailer.templates.email.verificationEmail({ 
+      displayName: displayName ?? username,
+      email,
+      username,
+      verificationToken
+    })
+  }).catch((error) => ({ error }))
+
+  if ('error' in mailResult) {
+    console.log(mailResult.error)
+    return builder({
+      status: 500,
+      data: 'An unexpected error occurred sending a verification email. Please try again later.'
+    })
+  }
+
+  const result = await prisma.pendingUser.create({
     data: {
       email,
       username,
+      displayName: displayName ?? username,
+      notifications: notifications ?? false,
+      createdAt: new Date(),
+      dob: new Date(`${dob.year}-${monthsToNumber[dob.month]}-${dob.day}`),
       salt,
       hash,
+      signupSalt: verificationSalt,
+      signupHash: verificationHash,
     }
   }).catch((error) => ({ error }))
 
@@ -118,7 +170,7 @@ export const createAccount = createRouteCallback(async ({ builder, req, prisma }
       status: 500,
       data: 'An unexpected error occurred. Please try again later.'
     })
-  }
+  }  
 
   return builder({
     status: 200,

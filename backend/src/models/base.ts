@@ -9,9 +9,11 @@ import { PrismaClient } from '@prisma/client';
 /***** CONSTS *****/
 import { STATUS } from './status';
 import { CODES } from './enums';
+import { Mailer } from '../utilities/mail';
 
 /***** CONSTANTS *****/
 export const prisma = new PrismaClient();
+const mailer = new Mailer();
 
 /***** TYPE DEFINITIONS *****/
 type TStandardBuilder = {
@@ -67,7 +69,6 @@ type TFieldErrorBuilder = {
 }
 
 export type TBuilder = (args: TStandardBuilder | TFieldErrorBuilder) => void;
-
 export type TPrisma = typeof prisma;
 
 type TCreateBaseArgs = {
@@ -84,9 +85,19 @@ type TCreateBaseArgs = {
   res: express.Response;
 
   /**
-   * The prisma client
+   * DI context
    */
-  prisma: typeof prisma;
+  ctx: {
+    /**
+     * The mailer utility
+     */
+    mailer: typeof mailer;
+
+    /**
+     * The prisma client
+     */
+    prisma: typeof prisma;
+  }
 }
 
 type TCreateMiddlewareArgs = TCreateBaseArgs & {
@@ -107,7 +118,10 @@ export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareAr
     req,
     res,
     next,
-    prisma,
+    ctx: {
+      mailer,
+      prisma,
+    },
     builder: ({ type = "standard", ...args}) => {
       if (type === "standard") {
         const { data, status, code, meta } = args as TStandardBuilder;
@@ -143,7 +157,10 @@ export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void
   callback({
     req,
     res,
-    prisma,
+    ctx: {
+      mailer,
+      prisma,
+    },
     builder: ({ type = "standard", ...args}) => {
       if (type === "standard") {
         const { data, status, code, meta } = args as TStandardBuilder;
@@ -201,7 +218,10 @@ export const createAuthenticatedRouteCallback = (level: string, callback: (optio
     callback({
       req,
       res,
-      prisma,
+      ctx: {
+        mailer,
+        prisma,
+      },
       user: {} as TUser,
       builder: ({ type = "standard", ...args}) => {
         if (type === "standard") {

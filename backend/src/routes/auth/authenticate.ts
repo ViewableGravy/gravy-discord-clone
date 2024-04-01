@@ -17,7 +17,13 @@ const validator = z.object({
 });
 
 /***** ROUTE START *****/
-export const loginRoute = createRouteCallback(async ({ req, builder, prisma }) => {
+export const loginRoute = createRouteCallback(async ({ 
+  req, 
+  builder, 
+  ctx: { 
+    prisma 
+  } 
+}) => {
   const { username, password, id } = req.body;
 
   /***** VALIDATION *****/
