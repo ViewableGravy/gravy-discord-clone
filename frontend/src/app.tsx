@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen'
 
 /***** UTILITIES *****/
 import { useApplicationBootProcess } from './routes/-useApplicationBootProcess';
-import { useSocket } from './utilities/hooks/useSocket';
+import { useAuthorizationSocket } from './utilities/hooks/useSocket';
 
 /***** SHARED *****/
 import { Lightbox } from './components/lightbox';
@@ -42,7 +42,7 @@ declare module '@tanstack/react-router' {
 const InnerApp = () => {
   /***** HOOKS *****/
   const { applicationLoading } = useApplicationBootProcess()
-  const { level } = useSocket(({ authorization }) => authorization)
+  const { level } = useAuthorizationSocket(({ authorization }) => authorization)
   
   /***** RENDER *****/
   return (

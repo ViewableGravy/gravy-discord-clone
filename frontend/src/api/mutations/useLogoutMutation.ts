@@ -3,7 +3,7 @@ import { UseMutationOptions, useMutation, useMutationState } from "@tanstack/rea
 import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
-import { useSocket, authSocket } from "../../utilities/hooks/useSocket";
+import { useAuthorizationSocket, authSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 import { wait } from "../../utilities/functions/wait";
 
@@ -21,7 +21,7 @@ const mutationKeys = ['logout'] as const;
 /***** HOOK START *****/
 export const useLogoutMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
-  const { id } = useSocket(({ identifier: id }) => ({ id }));
+  const { id } = useAuthorizationSocket(({ identifier: id }) => ({ id }));
   const [refreshToken, setRefreshToken] = useRefreshToken();
   const navigate = useNavigate();
   const matchRoute = useMatchRoute()

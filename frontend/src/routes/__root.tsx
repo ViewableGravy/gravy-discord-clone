@@ -13,7 +13,7 @@ import { Navbar } from "../components/navbar";
 import { Button } from "../components/button";
 
 /***** UTILITIES *****/
-import { useSocket } from "../utilities/hooks/useSocket";
+import { useAuthorizationSocket } from "../utilities/hooks/useSocket";
 
 /***** CONSTS *****/
 import discord from '../assets/discord.jpg';
@@ -24,7 +24,7 @@ import { TSocketTypes } from "../utilities/hooks/useSocket/static";
 /***** COMPONENT START *****/
 const RenderMain = () => {
   /***** HOOKS *****/
-  const { authorization } = useSocket();
+  const { authorization } = useAuthorizationSocket();
   const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
   const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
 
@@ -41,7 +41,7 @@ const RenderMain = () => {
 /***** COMPONENT START *****/
 const RootRoute = () => {
   /***** HOOKS *****/
-  const { authorization } = useSocket(({ authorization }) => ({ authorization }));
+  const { authorization } = useAuthorizationSocket(({ authorization }) => ({ authorization }));
 
   /***** RENDER *****/
   return (

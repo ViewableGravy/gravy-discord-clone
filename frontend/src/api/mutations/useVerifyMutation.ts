@@ -4,7 +4,7 @@ import { globalAxios } from "../axios";
 import { useNavigate } from "@tanstack/react-router";
 
 /***** UTILITIES *****/
-import { useSocket, authSocket } from "../../utilities/hooks/useSocket";
+import { useAuthorizationSocket, authSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** API IMPORTS *****/
@@ -17,7 +17,7 @@ type TOptions = UseMutationOptions<TReturnType, Error, Omit<TVerifyArgs, 'id'>, 
 
 export const useVerifyMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
-  const { id, ready } = useSocket(({ identifier: id, readyState }) => ({ id, ready: readyState === "READY" }));
+  const { id, ready } = useAuthorizationSocket(({ identifier: id, readyState }) => ({ id, ready: readyState === "READY" }));
   const [, setRefreshToken] = useRefreshToken();
   const navigate = useNavigate();
 

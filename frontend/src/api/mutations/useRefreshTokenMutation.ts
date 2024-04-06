@@ -4,7 +4,7 @@ import { globalAxios } from "../axios";
 import { AxiosError } from "axios";
 
 /***** UTILITIES *****/
-import { authSocket, useSocket } from "../../utilities/hooks/useSocket";
+import { authSocket, useAuthorizationSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 
 /***** API IMPORTS *****/
@@ -17,7 +17,7 @@ type TOptions = Omit<UseMutationOptions<TReturnType, Error, void, unknown>, 'mut
 /***** HOOK START *****/
 export const useRefreshTokenMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
-  const { id } = useSocket(({ identifier: id }) => ({ id }));
+  const { id } = useAuthorizationSocket(({ identifier: id }) => ({ id }));
   const [refreshToken, setRefreshToken] = useRefreshToken();
 
   /***** RENDER *****/

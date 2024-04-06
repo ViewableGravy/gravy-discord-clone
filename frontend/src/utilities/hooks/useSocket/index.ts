@@ -22,7 +22,7 @@ export const authSocket = new AuthSocket({
 /**
  * This hook provides a set of standard methods to interact with the socket shared for the application. This includes joining "rooms", sending messages, and listening for messages.
  */
-export const useSocket: TUseSocket = (selector = (s) => s as any) => {
+export const useAuthorizationSocket: TUseSocket = (selector = (s) => s as any) => {
   const state = useStore(authSocket.store, selector)
 
   return {

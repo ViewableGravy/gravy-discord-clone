@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useSocket } from '../../utilities/hooks/useSocket';
+import { useAuthorizationSocket } from '../../utilities/hooks/useSocket';
 import { useEffect, Validator } from 'react';
 import { useVerifyMutation } from '../../api/mutations/useVerifyMutation';
 import { z } from 'zod';
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/verify/')({
 
 const Verify = () => {
   /***** HOOKS *****/
-  const { ready } = useSocket(({ readyState }) => ({ ready: readyState === "READY" }));
+  const { ready } = useAuthorizationSocket(({ readyState }) => ({ ready: readyState === "READY" }));
   const { username, token } = Route.useSearch();
 
   console.log(token)
