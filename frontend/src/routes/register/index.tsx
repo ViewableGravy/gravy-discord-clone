@@ -70,7 +70,7 @@ const RegistrationRoute = () => {
         <img 
           src={background} 
           alt="background" 
-          style={{ height: '100%', width: '100%' }} 
+          style={{ height: '100%', width: '100%', userSelect: "none" }} 
         />
       )}
     >
