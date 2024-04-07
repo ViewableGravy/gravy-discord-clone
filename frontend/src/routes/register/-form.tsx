@@ -19,6 +19,7 @@ export const useRegistrationForm = () => {
       email: '',
       username: '',
       password: '',
+      passwordConfirmation: '',
       displayName: '',
       dob: {
         day: '',

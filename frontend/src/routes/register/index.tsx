@@ -2,11 +2,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod';
 import { AxiosError } from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 /***** UTILITIES *****/
 import { useAppViewport } from '../../utilities/hooks/useMedia';
 import { useRegistrationForm } from './-form';
+import { useToggleState } from '../../utilities/hooks/useToggleState';
 
 /***** SHARED *****/
 import { Text } from '../../components/utility/text';
@@ -26,12 +27,20 @@ import { API } from '../../api/queries';
 
 /***** CONSTS *****/
 import './_Register.scss';
+import { EyeIcon } from '../../assets/icons/eye';
+import { EyeSlashIcon } from '../../assets/icons/eye-slash';
 
 const validators = {
   email: z.string().email(),
   username: z.string().min(3, 'Username must be atleast 3 characters'),
   displayName: z.string().min(3, 'Display name must be atleast 3 characters'),
-  password: z.string().min(8, 'A password must be provided'),
+  password: z
+    .string()
+    .min(8, 'Password must be atleast 8 characters')
+    .regex(/[@$!%*?&]/, 'Password must contain at least one special character')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
   dob: {
     day: z.string().min(1, 'A day must be provided'),
     month: z.number().min(1, 'A month must be provided'),
@@ -40,6 +49,8 @@ const validators = {
   notifications: z.boolean()
 } as const;
 
+const OwnEyeIcon = ({ slash, ...rest } : { slash: boolean } & React.SVGProps<SVGSVGElement>) => slash ? <EyeSlashIcon {...rest}/> : <EyeIcon {...rest} />;
+
 /***** COMPONENT START *****/
 const RegistrationRoute = () => {
   /***** HOOKS *****/
@@ -47,6 +58,7 @@ const RegistrationRoute = () => {
 
   /***** STATE *****/
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | undefined>(undefined)
+  const [showPassword, toggleShowPassword] = useToggleState();
 
   /***** FORM *****/
   const form = useRegistrationForm();
@@ -90,6 +102,7 @@ const RegistrationRoute = () => {
         <Padding margin bottom="large">
           <Text xxxl semiBold align-center>Create an account</Text>
         </Padding>
+        
         <form.InputField 
           required
           className="Register__field"
@@ -138,14 +151,23 @@ const RegistrationRoute = () => {
         />
         <form.InputField 
           required
-          intrinsic={{ autoComplete: 'new-password webauthn' }}
+          key="password"
+          intrinsic={{ autoComplete: 'new-password webauthn', type: showPassword ? "text" : "password" }}
           validators={{ onChange: validators.password }} 
-          label={<Text span sm bold uppercase>password</Text>}
+          label={{
+            left: <Text span sm bold uppercase>password</Text>,
+            right: (
+              <Padding margin right={5}>
+                <OwnEyeIcon slash={!showPassword} onClick={() => toggleShowPassword()} />
+              </Padding>
+            )
+          }}
           className="Register__field"
           name="password"
           manualError={getFieldErrors('password')}
         />
 
+        {/* DOB */}
         <Flex 
           column={isTiny} 
           align={isTiny ? 'flex-start' : 'flex-end'} 
@@ -191,12 +213,14 @@ const RegistrationRoute = () => {
             ))}
           </form.SelectField>
         </Flex>
+
         {/* Date of birth field errors */}
         {getFieldErrors('dob') && (
           <Padding margin top="small">
             <Text error sm>{getFieldErrors('dob')}</Text>
           </Padding>
         )}
+
         <Padding margin top="small">
           <form.CheckboxField name="notifications">
             (Optional) it's okay to send me emails with Tancord updates, tips and special offers. You can opt out at any time.

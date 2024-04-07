@@ -12,16 +12,34 @@ import { useUsingKeyboard } from "../../../utilities/hooks/useUsingKeyboard";
 /***** SHARED *****/
 import { FieldLabel } from "../general/label/label";
 import { Text } from "../../utility/text";
+import { Flex } from "../../utility/flex";
 
 /***** CONSTS *****/
 import './_Input.scss';
+
+const isLeftRightLabel = z.object({
+  left: z.any(),
+  right: z.any()
+})
 
 /***** COMPONENT START *****/
 export const generateInputField = <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
   /***** TYPE DEFINITIONS *****/
   type TInputFieldProps<TName extends DeepKeys<TData>> = {
     name: TName;
-    label?: React.ReactNode;
+
+    /**
+     * Label for the input field. This can be any react node, however, if an object is provided, the left key will be
+     * displayed on the left side of the input field and the right key will be displayed on the right side of the input field.
+     * 
+     * This distinction is necessary to allow the required field and displayed errors to still be positioned relative to the left
+     * side of the input field.
+     */
+    label?: React.ReactNode | {
+      left?: React.ReactNode;
+      right?: React.ReactNode;
+    };
+
     placeholder?: string;
     defaultMeta?: Partial<FieldMeta>;
     asyncDebounceMs?: number;
@@ -132,15 +150,29 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
       })
     }
 
+    const parsedLabel = isLeftRightLabel.safeParse(label);
+
     /***** RENDER *****/
     return (
       <div className={classes.outer}>
-        <FieldLabel render={!!label} errors={errors} name={name} className={classes.label} intrinsic={{ onClick: (e) => e.preventDefault() }}>
-          {label} {label && required && <Text error span>*</Text>}
-        </FieldLabel>
+        
+        {parsedLabel.success && (
+          <Flex justify="space-between">
+            <FieldLabel render={!!parsedLabel.data.left || !!parsedLabel.data.right} errors={errors} name={name} className={classes.label} intrinsic={{ onClick: (e) => e.preventDefault() }}>
+              {parsedLabel.data.left} {parsedLabel.data.left && required && <Text error span>*</Text>}
+            </FieldLabel>
+            {parsedLabel.data.right}
+          </Flex>
+        )}
+
+        {parsedLabel.success && Object.keys(parsedLabel.data).length === 0 && (
+          <FieldLabel render={!!label} errors={errors} name={name} className={classes.label} intrinsic={{ onClick: (e) => e.preventDefault() }}>
+            {label as React.ReactNode} {label && required && <Text error span>*</Text>}
+          </FieldLabel>
+        )}
+
         <input
           ref={innerRef}
-          {...intrinsic}
           type="text"
           placeholder={placeholder}
           value={state.value ?? ''}
@@ -153,6 +185,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
           onFocus={() => setIsFocused(true)}
           id={name}
           className={classes.input}
+          {...intrinsic}
         />
         <div className={classes.manualWrapper}>
           {!!manualError && <Text error md>{manualError}</Text>}
