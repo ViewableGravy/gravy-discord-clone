@@ -1,14 +1,21 @@
+/***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, UseField } from "@tanstack/react-form";
 import classNames from "classnames";
-import { Flex } from "../../utility/flex";
-import { Text } from "../../utility/text";
-
-import './_Checkbox.scss';
-import { Checkmark } from "../../../assets/icons/check";
-import { useTheme } from "../../../utilities/hooks/useTheme";
 import { CSSProperties } from "react";
 import { Validator } from "@tanstack/form-core";
 
+/***** SHARED *****/
+import { Flex } from "../../utility/flex";
+import { Text } from "../../utility/text";
+
+/***** UTILITIES *****/
+import { useTheme } from "../../../utilities/hooks/useTheme";
+
+/***** CONSTS *****/
+import './_Checkbox.scss';
+import { Checkmark } from "../../../assets/icons/check";
+
+/***** GENERATOR START *****/
 export const generateCheckboxField = <TData extends Record<string, any>, TValidator extends Validator<TData> | undefined>(form: FormApi<TData, TValidator>) => {
   /***** TYPE DEFINITIONS *****/
   type TValidators = Parameters<UseField<TData, TValidator>>[0]['validators'];
@@ -33,6 +40,7 @@ export const generateCheckboxField = <TData extends Record<string, any>, TValida
     className,
     children,
   }) => {
+    /***** HOOKS *****/
     const [{ backgroundColor, color }, { opacity }] = useTheme((theme) => theme)
     const { handleChange, state, handleBlur } = form.useField({
       name,
@@ -41,6 +49,7 @@ export const generateCheckboxField = <TData extends Record<string, any>, TValida
       validators
     });
 
+    /***** RENDER HELPERS *****/
     const style = {
       '--background-color': backgroundColor.button,
       '--border-color': opacity(color.tertiary, state.value && 0.5)
@@ -54,6 +63,7 @@ export const generateCheckboxField = <TData extends Record<string, any>, TValida
       native: "CheckboxField__nativeCheckbox"
     }
 
+    /***** RENDER *****/
     return (
       <div className={classes.outer}>
         <label>

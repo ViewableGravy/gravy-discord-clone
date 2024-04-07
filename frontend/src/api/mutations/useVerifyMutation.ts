@@ -15,13 +15,14 @@ import { TVerifyArgs } from "../apis/account";
 type TReturnType = Awaited<ReturnType<typeof API.ACCOUNT.POST.verify>>
 type TOptions = UseMutationOptions<TReturnType, Error, Omit<TVerifyArgs, 'id'>, unknown> | undefined
 
+/***** HOOK START *****/
 export const useVerifyMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
   const { id, ready } = useAuthorizationSocket(({ identifier: id, readyState }) => ({ id, ready: readyState === "READY" }));
   const [, setRefreshToken] = useRefreshToken();
   const navigate = useNavigate();
 
-  /***** RENDER *****/
+  /***** HOOK RESULTS *****/
   return useMutation({
     mutationFn: async (body) => {
       if (!id)

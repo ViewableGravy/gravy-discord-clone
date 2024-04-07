@@ -1,14 +1,21 @@
+/***** BASE IMPORTS *****/
 import { z } from "zod";
-import { createRouteCallback } from "../../models/base";
+
+/***** UTILITIES *****/
 import { validatePassword } from "../../utilities/crypto";
 import { createSession } from "./helpers/createSession";
 
+/***** CONSTS *****/
+import { createRouteCallback } from "../../models/base";
+
+/***** VALIDATORS *****/
 const bodyValidator = z.object({
   token: z.string(),
   username: z.string(),
   id: z.string()
 })
 
+/***** COMPONENT START *****/
 export const verifyAccount = createRouteCallback(async ({ 
   builder, 
   req, 
@@ -16,7 +23,6 @@ export const verifyAccount = createRouteCallback(async ({
     prisma
   } 
 }) => {
-
   const validated = bodyValidator.safeParse(req.body);
 
   if (!validated.success) {
@@ -76,5 +82,4 @@ export const verifyAccount = createRouteCallback(async ({
   } else {
     return builder(createSessionResult);
   }
-
 })

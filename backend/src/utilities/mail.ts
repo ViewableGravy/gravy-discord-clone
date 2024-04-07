@@ -1,9 +1,15 @@
+/***** BASE IMPORTS *****/
 import nodeMailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
+
+/***** UTILITIES *****/
 import { log } from "./logging";
-import { DEBUG_LEVELS } from "../models/enums";
 import { templates } from "../templates";
 
+/***** CONSTS *****/
+import { DEBUG_LEVELS } from "../models/enums";
+
+/***** TYPE DEFINITIONS *****/
 type TSendMailProps = {
   to: string;
   subject: string;
@@ -13,6 +19,7 @@ type TSendMailProps = {
   html?: string;
 }
 
+/***** COMPONENT START *****/
 export class Mailer {
   private SMTP_HOST = process.env.SMTP_HOST;
   private SMTP_PORT = process.env.SMTP_PORT;

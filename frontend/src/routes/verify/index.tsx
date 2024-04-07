@@ -1,16 +1,26 @@
+/***** BASE IMPORTS *****/
 import { createFileRoute } from '@tanstack/react-router'
-import { useAuthorizationSocket } from '../../utilities/hooks/useSocket';
-import { useEffect, Validator } from 'react';
-import { useVerifyMutation } from '../../api/mutations/useVerifyMutation';
+import { useEffect } from 'react';
 import { z } from 'zod';
 import { router } from '../../app';
+
+/***** UTILITIES *****/
+import { useAuthorizationSocket } from '../../utilities/hooks/useSocket';
+
+/***** SHARED *****/
 import { Modal } from '../../components/modal';
-import background from '../../assets/login-background.svg';
 import { Text } from '../../components/utility/text';
 import { Anchor } from '../../components/Anchor';
 import { Padding } from '../../components/utility/padding';
 import { Flex } from '../../components/utility/flex';
 
+/***** API *****/
+import { useVerifyMutation } from '../../api/mutations/useVerifyMutation';
+
+/***** CONSTS *****/
+import background from '../../assets/login-background.svg';
+
+/***** VALIDATION *****/
 const validateSearch = z.object({
   username: z.string(),
   token: z.string()
@@ -29,6 +39,7 @@ export const Route = createFileRoute('/verify/')({
   }
 })
 
+/***** COMPONENT START *****/
 const Verify = () => {
   /***** HOOKS *****/
   const { ready } = useAuthorizationSocket(({ readyState }) => ({ ready: readyState === "READY" }));
@@ -44,6 +55,7 @@ const Verify = () => {
     }
   }, [ready, isIdle])
 
+  /***** COMPONENT START *****/
   return (
     <Modal 
       isOpen
@@ -81,4 +93,3 @@ const Verify = () => {
 Route.update({
   component: Verify
 })
-

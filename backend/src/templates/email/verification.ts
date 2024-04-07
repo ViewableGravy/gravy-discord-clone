@@ -1,4 +1,4 @@
-
+/***** TYPE DEFINITIONS *****/
 type TVerificationEmail = (props: {
   verificationToken: string;
   username: string;
@@ -9,6 +9,7 @@ type TVerificationEmail = (props: {
 if (!Bun.env.FRONTEND_URL)
   throw new Error("FRONTEND_URL must be set in the .env file");
 
+/***** UTILITY START *****/
 export const verificationEmail: TVerificationEmail = ({ verificationToken, username }) => String.raw`
   <html>
     <body>

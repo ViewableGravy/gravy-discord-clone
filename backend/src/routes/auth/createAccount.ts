@@ -1,14 +1,13 @@
 /***** BASE IMPORTS *****/
 import { z } from "zod"
-import { Prisma } from "@prisma/client"
 
 /***** UTILITIES *****/
-import { createJWT, generateRandomToken, hashPassword, validatePassword } from "../../utilities/crypto"
+import { generateRandomToken, hashPassword } from "../../utilities/crypto"
 import { createRouteCallback } from "../../models/base"
 
 /***** CONSTS *****/
-import { DEBUG_LEVELS, PRISMA_CODES } from "../../models/enums"
-import { log } from "console"
+import { DEBUG_LEVELS } from "../../models/enums"
+import { log } from "../../utilities/logging"
 
 const monthsToNumber = {
   January: 1,
@@ -79,14 +78,17 @@ export const createAccount = createRouteCallback(async ({
   const validated = bodyValidator.safeParse(req.body);
   
   if (!validated.success) {
+    const { errors } = validated.error;
+    const findError = (path: string) => errors.find((error) => error.path[0] === path)?.message;
+
     return builder({
       type: "fieldError",
       status: 400,
       fieldErrors: {
-        email: validated.error.errors.find((error) => error.path[0] === 'email')?.message,
-        username: validated.error.errors.find((error) => error.path[0] === 'username')?.message,
-        password: validated.error.errors.find((error) => error.path[0] === 'password')?.message,
-        dob: validated.error.errors.find((error) => error.path[0] === 'dob')?.message,
+        email: findError('email'),
+        username: findError('username'),
+        password: findError('password'),
+        dob: findError('dob'),
       }
     })
   }
@@ -121,7 +123,7 @@ export const createAccount = createRouteCallback(async ({
   const verificationToken = generateRandomToken();
 
   const { hash, salt } = hashPassword(password);
-  const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken); // remove trailing "=" due to frontend @tanstack/router bug (https://github.com/TanStack/router/issues/1404)
+  const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken);
 
   // send verification email
   const sendMail = async (revert: () => Promise<void>) => { 
@@ -200,4 +202,4 @@ export const createAccount = createRouteCallback(async ({
       message: "An email has been sent to verify your account. Please check your inbox." 
     }
   })
-})
+});

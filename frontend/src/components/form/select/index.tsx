@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi, UseField } from "@tanstack/react-form";
-import React, { createContext, CSSProperties, useContext, useEffect, useRef } from "react";
+import React, { createContext, CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import { Validator } from "@tanstack/form-core";
 import classNames from "classnames";
 
@@ -92,12 +92,6 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     label?: React.ReactNode;
     defaultMeta?: Partial<FieldMeta>;
     asyncDebounceMs?: number;
-
-    /**
-     * Although this is typed correctly and will be passed through, there are currently issues with this implementation
-     * due to the field implementation. I'll likely want to reconsider the implementation to use a controlled input field
-     * for searching and displaying rather than a single input field.
-     */
     validators?: TValidators;
     className?: string;
     children: React.ReactNode;
@@ -120,6 +114,7 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
   /***** COMPONENT START *****/
   const Option: TOption = ({ children, value }) => {
     /***** HOOKS *****/
+    const [{ primary, form: themedForm }] = useTheme(({ backgroundColor }) => backgroundColor); 
     const { 
       searchRef,
       setSearchValue,
@@ -130,10 +125,12 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
       registerNameValueMapping, 
       unregisterNameValueMapping
     } = useSelectContext(value);
-    const [{ primary, form: themedForm }] = useTheme(({ backgroundColor }) => backgroundColor); 
-    const { handleChange, state } = form.useField({ name: name as any });
     const buttonRef = useRef<HTMLButtonElement>(null);
 
+    /***** FORM *****/
+    const { handleChange, state } = form.useField({ name: name as any });
+
+    /***** EFFECTS *****/
     useEffect(() => {
       registerNameValueMapping({ [value]: children })
 
@@ -223,6 +220,8 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
       toggleIsOpen(false)
       toggleIsSearching(false)
     });
+
+    /***** FORM *****/
     const { state, handleChange, handleBlur } = form.useField({
       name, // typescript is going to think that name can be an object key but tanstack expects a string
       asyncDebounceMs: asyncDebounceMs ?? 200,
@@ -235,8 +234,8 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
     const [isOpen, toggleIsOpen] = useToggleState()
     const [isSearching, toggleIsSearching] = useToggleState()
     const searchRef = useRef<HTMLInputElement>(null)
-    const [options, setOptions] = React.useState<Record<string, string | number>>({})
-    const [searchValue, setSearchValue] = React.useState<string>('')
+    const [options, setOptions] = useState<Record<string, string | number>>({})
+    const [searchValue, setSearchValue] = useState<string>('')
 
     /***** FUNCTIONS *****/
     const registerOption = (mapping: Record<string, string | number>) => {
@@ -293,6 +292,7 @@ export const generateSelectField =  <TData extends Record<string, any>, TValidat
       })
     }
     const visibleOptions = getVisibleOptions()
+    
     const context = {
       name,
       visibleOptions,

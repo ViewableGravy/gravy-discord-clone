@@ -1,9 +1,15 @@
+/***** BASE IMPORTS *****/
 import { randomBytes } from "crypto";
-import type { prisma, TStandardBuilder } from "../../../models/base";
 import type { User } from "@prisma/client";
+
+/***** UTILITIES *****/
 import { createJWT } from "../../../utilities/crypto";
 import { elevateClient } from "../../../socket/events/elevateClient";
 
+/***** MODELS *****/
+import type { prisma, TStandardBuilder } from "../../../models/base";
+
+/***** TYPE DEFINITIONS *****/
 type TArgs = {
   prisma: typeof prisma,
   user: User,
@@ -12,6 +18,7 @@ type TArgs = {
 
 type TCreateSession = (args: TArgs) => Promise<{ error: TStandardBuilder; } | TStandardBuilder>;
 
+/***** COMPONENT START *****/
 export const createSession: TCreateSession = async ({ prisma, user, socketId }) => {
   //Create session ID
   const expiry = {

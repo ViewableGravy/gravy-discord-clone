@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import { DeepKeys, FieldMeta, FormApi } from "@tanstack/react-form";
-import React, { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useState } from "react";
 import classNames from "classnames";
 import { FieldValidators, Validator } from "@tanstack/form-core";
 import { z } from "zod";
@@ -113,8 +113,9 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
     const isUsingKeyboard = useUsingKeyboard();
     
     /***** STATE *****/
-    const [isFocused, setIsFocused] = React.useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
+    /***** FUNCTIONS *****/
     const getValidators = () => {
       const requiredValidator = z.string().min(1, 'Required');
       if (!required)
@@ -129,6 +130,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
       }
     }
 
+    /***** FORM *****/
     const { state, handleBlur, handleChange } = form.useField({
       name, // typescript is going to think that name can be an object key but tanstack expects a string
       asyncDebounceMs: asyncDebounceMs ?? 200,
@@ -139,6 +141,7 @@ export const generateInputField = <TData extends Record<string, any>, TValidator
 
     const { errors } = state.meta;
 
+    /***** RENDER HELPERS *****/
     const classes = {
       outer: classNames("InputField", className),
       label: "InputField__label",

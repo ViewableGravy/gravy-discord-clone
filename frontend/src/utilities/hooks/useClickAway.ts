@@ -1,9 +1,13 @@
+/***** BASE IMPORTS *****/
 import { useEffect, useLayoutEffect, useRef } from "react";
 
+/***** HOOK START *****/
 export const useClickAway = <E>(cb: (e: MouseEvent | TouchEvent) => void) => {
+  /***** STATE *****/
   const ref = useRef<E>(null);
   const callbackRef = useRef(cb);
 
+  /***** EFFECTS *****/
   useLayoutEffect(() => {
     callbackRef.current = cb;
   });
@@ -25,5 +29,6 @@ export const useClickAway = <E>(cb: (e: MouseEvent | TouchEvent) => void) => {
     };
   }, []);
 
+  /***** HOOK RESULTS *****/
   return ref;
 }

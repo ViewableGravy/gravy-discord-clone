@@ -1,6 +1,10 @@
+/***** BASE IMPORTS *****/
 import { useEffect } from "react";
+
+/***** UTILITIES *****/
 import { useDownKeys } from "../../../utilities/hooks/useKeysDown";
 
+/***** TYPE DEFINITIONS *****/
 type TUseSelectFieldKeyboardStateProps = {
   inputRef: React.RefObject<HTMLInputElement>;
   toggleIsSearching: (state?: boolean) => void;
@@ -9,11 +13,13 @@ type TUseSelectFieldKeyboardStateProps = {
 
 type TUseSelectFieldKeyboardState = (props: TUseSelectFieldKeyboardStateProps) => void;
 
+/***** HOOK START *****/
 export const useSelectFieldKeyboardEffect: TUseSelectFieldKeyboardState = ({
   inputRef,
   toggleIsSearching,
   toggleIsOpen
 }) => {
+  /***** HOOKS *****/
   const [keys] = useDownKeys();
 
   /***** EFFECTS *****/

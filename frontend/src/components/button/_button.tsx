@@ -14,6 +14,7 @@ export namespace NButton {
   type BaseProps = {
     children: React.ReactNode;
     className?: string;
+    style?: CSSProperties;
 
     /**
      * The size of the button
@@ -25,8 +26,9 @@ export namespace NButton {
      */
     full?: boolean;
 
-    style?: CSSProperties;
-
+    /**
+     * If true, the button will be disabled. Note that this does not have an alternative appearance as per discords theming
+     */
     disabled?: boolean;
   }
 
@@ -86,32 +88,27 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     ...style
   } as CSSProperties;
 
+  const baseProps = {
+    className: classNames("Button", className),
+    style: _style,
+    tabIndex: 0,
+    "aria-disabled": props.disabled 
+  }
+
   /***** RENDER *****/
   switch (true) {
     case "href" in props: {
-      const { href, disabled } = props
+      const { href } = props
       return (
-        <a 
-          tabIndex={0}
-          aria-disabled={disabled} 
-          href={href} 
-          className={classNames("Button", className)} 
-          style={_style}
-        >
+        <a {...baseProps} href={href}>
           {children}
         </a>
       );
     }
     case "to" in props: {
-      const { to, disabled } = props
+      const { to } = props
       return (
-        <Link 
-          tabIndex={0}
-          aria-disabled={disabled} 
-          to={to} 
-          className={classNames("Button", className)} 
-          style={_style}
-        >
+        <Link {...baseProps} to={to}>
           {children}
         </Link>
       );
@@ -119,13 +116,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     case "onClick" in props: {
       const { onClick, type, disabled } = props
       return (
-        <button 
-          disabled={disabled} 
-          type={type} 
-          onClick={onClick} 
-          className={classNames("Button", className)} 
-          style={_style}
-        >
+        <button {...baseProps} onClick={onClick} type={type} disabled={disabled}>
           {children}
         </button>
       );
@@ -133,12 +124,7 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     case "type" in props && props.type === 'submit': {
       const { type, disabled } = props;
       return (
-        <button 
-          disabled={disabled} 
-          type={type} 
-          className={classNames("Button", className)} 
-          style={_style}
-        >
+        <button {...baseProps} type={type} disabled={disabled}>
           {children}
         </button>
       )
