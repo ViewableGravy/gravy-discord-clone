@@ -1,23 +1,31 @@
+/***** BASE IMPORTS *****/
 import { createFileRoute } from '@tanstack/react-router'
-import { Modal } from '../../components/modal'
-
-import background from '../../assets/login-background.svg';
-import { Text } from '../../components/utility/text';
 import { z } from 'zod';
+import { AxiosError } from 'axios';
+import { useState } from 'react';
 
-import './_Register.scss';
-import { FieldLabel } from '../../components/form/general/label/label';
+/***** UTILITIES *****/
+import { useAppViewport } from '../../utilities/hooks/useMedia';
+import { useRegistrationForm } from './-form';
+
+/***** SHARED *****/
+import { Text } from '../../components/utility/text';
 import { Padding } from '../../components/utility/padding';
 import { Flex } from '../../components/utility/flex';
 import { Button } from '../../components/button';
 import { Anchor } from '../../components/Anchor';
-import classNames from 'classnames';
-import { useMatchMedia } from '../../utilities/hooks/useMatchMedia';
-import { useAppViewport } from '../../utilities/hooks/useMedia';
-import { useRegistrationForm } from './-form';
+
+/***** FORM *****/
+import { FieldLabel } from '../../components/form/general/label/label';
+
+/***** LOCAL IMPORTS *****/
+import { RegistrationModal } from './-registrationModal';
+
+/***** API IMPORTS *****/
 import { API } from '../../api/queries';
-import { AxiosError } from 'axios';
-import { useState } from 'react';
+
+/***** CONSTS *****/
+import './_Register.scss';
 
 const validators = {
   email: z.string().email(),
@@ -32,9 +40,9 @@ const validators = {
   notifications: z.boolean()
 } as const;
 
+/***** COMPONENT START *****/
 const RegistrationRoute = () => {
   /***** HOOKS *****/
-  const isMobile = useMatchMedia({ max: 510 })
   const isTiny = useAppViewport(['xs'])
 
   /***** STATE *****/
@@ -57,26 +65,26 @@ const RegistrationRoute = () => {
   }
 
   /***** RENDER *****/
+  if (result?.status === "success") {
+    return (
+      <RegistrationModal>
+        <Text xxxl align-center>Success</Text>
+        <Padding bottom="large" />
+        <Text>Thank you for registering. Please check your email to verify your account.</Text>
+        <Padding bottom="medium" />
+        <Anchor.Link to="/login">Back to login</Anchor.Link>
+      </RegistrationModal>
+    )
+  }
+  
   return (
-    <Modal 
-      isOpen 
-      fade={{ modal: false, content: !isMobile }} 
-      className={classNames('Register', { 
-        "Register--mobile": isMobile, 
-        "Register--tiny": isTiny,
-        "Register--error": result?.status === 'error'
-      })}
-      background={(
-        <img 
-          src={background} 
-          alt="background" 
-          style={{ height: '100%', width: '100%', userSelect: "none" }} 
-        />
-      )}
-    >
+    <RegistrationModal>
       <form onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (isUsernameAvailable === false)
+          return;
+
         form.handleSubmit()
       }}>
         <Padding margin bottom="large">
@@ -207,7 +215,7 @@ const RegistrationRoute = () => {
           <Anchor.Link to="/login">Already have an account?</Anchor.Link>
         </Padding>
       </form>
-    </Modal>
+    </RegistrationModal>
   )
 }
 

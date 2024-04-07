@@ -65,7 +65,9 @@ export const ACCOUNT_API_VALIDATORS = {
     })
   })),
   create: z.intersection(successObject, z.object({
-    data: z.string()
+    data: z.object({
+      message: z.string()
+    })
   })),
   refresh: z.intersection(successObject, z.object({
     data: z.object({
