@@ -37,6 +37,7 @@ export const loginRoute = createRouteCallback(async ({
   }
 
   /***** DATABASE *****/
+  // note that both of these fields are unique and there is only one, so there will only be one user returned.
   const user = await prisma.user.findMany({
     where: {
       OR: [{
@@ -58,7 +59,6 @@ export const loginRoute = createRouteCallback(async ({
   }
 
   /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
-
   const createSessionResults = await createSession({ prisma, user: user[0], socketId: id });
 
   if ('error' in createSessionResults) {
@@ -66,61 +66,5 @@ export const loginRoute = createRouteCallback(async ({
   } else {
     return builder(createSessionResults);
   }
-
-
-  // //Create session ID
-  // const expiry = {
-  //   str: '14d',
-  //   ms: 14 * 24 * 60 * 60 * 1000
-  // }
-
-  // const sessionToken = randomBytes(64).toString('base64');
-  // const sessionJWT = await createJWT({ token: sessionToken }, expiry.str);
-
-  // // Create Session
-  // const session = await prisma.session.create({
-  //   data: {
-  //     userId: user.id,
-  //     token: sessionToken,
-  //     expires: new Date(Date.now() + expiry.ms)
-  //   }
-  // }).catch((error) => ({ error }));
-
-  // const revertSession = async () => {
-  //   await prisma.session.delete({
-  //     where: {
-  //       token: sessionToken
-  //     }
-  //   });
-  // }
-
-  // if ('error' in session) {
-  //   return builder({
-  //     status: 500,
-  //     data: 'Could not create session. Please try again.'
-  //   });
-  // }
-
-  // /**
-  //  * Elevate the socket and attach the database ID to the socket for use later
-  //  */
-  // const elevationResult = elevateClient(id, user);
-
-  // if (elevationResult.error) {
-  //   await revertSession().catch(() => {});
-  //   return builder({
-  //     status: 401,
-  //     data: 'Could not find socket identifier to elevate. Please try again.'
-  //   });
-  // }
-  
-  // /***** RETURN *****/
-  // return builder({
-  //   status: 200,
-  //   data: {
-  //     level: 'user',
-  //     refreshToken: sessionJWT
-  //   }
-  // });
 });
 

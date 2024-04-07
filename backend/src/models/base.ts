@@ -5,12 +5,14 @@
 /***** BASE IMPORTS *****/
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
+
+/***** UTILITIES *****/
+import { Mailer } from '../utilities/mail';
 
 /***** CONSTS *****/
 import { STATUS } from './status';
 import { CODES } from './enums';
-import { Mailer } from '../utilities/mail';
-import { z } from 'zod';
 
 /***** CONSTANTS *****/
 export const prisma = new PrismaClient();
