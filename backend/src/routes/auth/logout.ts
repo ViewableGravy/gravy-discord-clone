@@ -28,7 +28,13 @@ const responses = {
 } as const;
 
 /***** ROUTE START *****/
-export const logoutRoute = createRouteCallback(async ({ req, builder, prisma }) => {
+export const logoutRoute = createRouteCallback(async ({ 
+  req, 
+  builder, 
+  ctx: { 
+    prisma 
+  } 
+}) => {
   /***** VALIDATION *****/
   const validated = validator.safeParse(req.body);
   if (!validated.success) {

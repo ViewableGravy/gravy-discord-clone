@@ -3,10 +3,10 @@ import { z, ZodType } from "zod";
 
 /***** UTILITIES *****/
 import { socketValidators } from "./validators";
-import { _socketStore } from ".";
+import { authSocket } from "./";
 
 /***** QUERY IMPORTS *****/
-import { queryClient } from "../../../main";
+import { queryClient } from "../../../app";
 
 /***** TYPE DEFINITIONS *****/
 import type { TSocketTypes } from "./static";
@@ -41,7 +41,7 @@ export const voidParse: TVoidParse = (parser, callback) => (message) => {
  */
 export const RouteHandlers: THandlers = {
   "server-connection": voidParse(socketValidators.serverConnection, ({ identifier, authorization }) => {
-    _socketStore.setState((state) => ({ 
+    authSocket.store.setState((state) => ({ 
       ...state, 
       readyState: 'READY',
       rooms: [],
@@ -50,7 +50,7 @@ export const RouteHandlers: THandlers = {
     }))
   }),
   "rooms": voidParse(socketValidators.rooms, ({ rooms }) => {
-    _socketStore.setState((state) => ({
+    authSocket.store.setState((state) => ({
       ...state,
       rooms
     }))
@@ -64,7 +64,7 @@ export const RouteHandlers: THandlers = {
     })
   }),
   'authorization': voidParse(socketValidators.authorization, ({ level }) => {
-    _socketStore.setState((state) => ({
+    authSocket.store.setState((state) => ({
       ...state,
       authorization: {
         level

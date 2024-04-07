@@ -3,7 +3,6 @@ import { z } from "zod";
 import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
-import { _socketStore } from "../../utilities/hooks/useSocket";
 import { waitAtleast } from "../../utilities/functions/wait";
 
 /***** TYPE DEFINITIONS *****/
@@ -16,7 +15,14 @@ export type TAuthenticationArgs = {
 export type TCreateAccountArgs = {
   username: string,
   password: string,
-  email: string
+  displayName: string,
+  email: string,
+  dob: {
+    day: string,
+    month: string,
+    year: string
+  },
+  notifications: boolean,
 }
 
 export type TRefreshArgs = {
@@ -29,10 +35,20 @@ export type TLogoutArgs = {
   id: string
 }
 
+export type TUsernameAvailabilityArgs = {
+  username: string
+}
+
+export type TVerifyArgs = {
+  token: string;
+  username: string;
+  id: string;
+}
+
 const successObject = z.object({
   status: z.literal(200),
   route: z.string(),
-  data: z.any()
+  data: z.unknown()
 })
 
 /***** VALIDATORS *****/
@@ -49,7 +65,9 @@ export const ACCOUNT_API_VALIDATORS = {
     })
   })),
   create: z.intersection(successObject, z.object({
-    data: z.string()
+    data: z.object({
+      message: z.string()
+    })
   })),
   refresh: z.intersection(successObject, z.object({
     data: z.object({
@@ -59,6 +77,22 @@ export const ACCOUNT_API_VALIDATORS = {
         z.literal('user'), 
         z.literal('admin')
       ])
+    })
+  })),
+  usernameAvailability: z.intersection(successObject, z.object({
+    data: z.object({
+      exists: z.boolean()
+    })
+  })),
+  verify: z.intersection(successObject, z.object({
+    data: z.object({
+      level: z.union([
+        z.null(), 
+        z.literal('guest'),
+        z.literal('user'), 
+        z.literal('admin')
+      ]),
+      refreshToken: z.string(),
     })
   }))
 } as const;
@@ -96,11 +130,29 @@ export const ACCOUNT_API = {
     },
 
     /**
+     * Checks if a username is available
+     */
+    usernameAvailability: async (body: TUsernameAvailabilityArgs) => {
+      const result = await globalAxios.post('/auth/username-availability', body);
+      return ACCOUNT_API_VALIDATORS.usernameAvailability.parse(result.data);
+    },
+
+    /**
      * Logs out the user for the current session
      */
     logout: async (body: TLogoutArgs) => {
       const result = await globalAxios.post('/auth/logout', body);
       return result.data;
+    },
+
+    /**
+     * Verifies a user has access to their email and finalizes the account creation process.
+     * This endpoint also logs the user in and returns a refresh token with an identical
+     * response to the authenticate endpoint.
+     */
+    verify: async (body: TVerifyArgs) => {
+      const result = await waitAtleast(1000, globalAxios.post('/auth/verify', body));
+      return ACCOUNT_API_VALIDATORS.verify.parse(result.data);
     }
   },
 

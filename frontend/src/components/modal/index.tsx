@@ -50,7 +50,9 @@ export const Modal: TModal = ({ children, isOpen, fade, className, background })
   /***** RENDER *****/
   return (
     <Lightbox isOpen={isOpen} className={classes.modal}>
-      {!!background && background}
+      <div className='Modal__backgroundContainer'>
+        {!!background && background}
+      </div>
       <div className={classes.content} style={style}>
         {children}
       </div>

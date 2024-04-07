@@ -7,7 +7,6 @@ import { Button } from "../../components/button"
 /***** UTILITIES *****/
 import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
 import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
-import { _socketStore } from "../../utilities/hooks/useSocket"
 
 /***** COMPONENT START *****/
 const Dashboard = () => {    

@@ -12,6 +12,10 @@ const keylen = 64;
 const digest = 'sha512';
 const encoding = 'base64';
 
+export const generateRandomToken = (length: number = 32) => {
+  return randomBytes(length).toString(encoding);
+}
+
 export const hashPassword = (password: string) => {
   const salt = randomBytes(128).toString(encoding);
   const hash = pbkdf2Sync(password, salt, iterations, keylen, digest).toString(encoding); 

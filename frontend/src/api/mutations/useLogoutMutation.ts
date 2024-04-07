@@ -3,7 +3,7 @@ import { UseMutationOptions, useMutation, useMutationState } from "@tanstack/rea
 import { globalAxios } from "../axios";
 
 /***** UTILITIES *****/
-import { _socketStore, useSocket } from "../../utilities/hooks/useSocket";
+import { useAuthorizationSocket, authSocket } from "../../utilities/hooks/useSocket";
 import { useRefreshToken } from "../../utilities/hooks/useRefreshToken";
 import { wait } from "../../utilities/functions/wait";
 
@@ -21,11 +21,10 @@ const mutationKeys = ['logout'] as const;
 /***** HOOK START *****/
 export const useLogoutMutation = (options: TOptions = {}) => {
   /***** HOOKS *****/
-  const { id } = useSocket(({ identifier: id }) => ({ id }));
+  const { id } = useAuthorizationSocket(({ identifier: id }) => ({ id }));
   const [refreshToken, setRefreshToken] = useRefreshToken();
   const navigate = useNavigate();
   const matchRoute = useMatchRoute()
-
 
   /***** RENDER *****/
   return useMutation({
@@ -41,12 +40,12 @@ export const useLogoutMutation = (options: TOptions = {}) => {
       // wait for the socket to update the authorization level (or timeout after 5 seconds)
       return await Promise.race([
         new Promise<typeof result>((resolve) => {
-          if (_socketStore.state.authorization.level === 'guest') {
+          if (authSocket.store.state.authorization.level === 'guest') {
             resolve(result);
           }
 
-          _socketStore.subscribe(() => {
-            if (_socketStore.state.authorization.level === 'guest') {
+          authSocket.store.subscribe(() => {
+            if (authSocket.store.state.authorization.level === 'guest') {
               resolve(result);
             }
           })

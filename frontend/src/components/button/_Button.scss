@@ -34,4 +34,9 @@
   &:hover {
     background-color: var(--background-color--hover);
   }
+
+  &:focus {
+    border-radius: 4px;
+    outline: 1px solid #fbfbff;
+  }
 }

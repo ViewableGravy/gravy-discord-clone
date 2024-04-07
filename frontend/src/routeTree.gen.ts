@@ -11,14 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as SignupIndexImport } from './routes/signup/index'
+import { Route as VerifyIndexImport } from './routes/verify/index'
+import { Route as RegisterIndexImport } from './routes/register/index'
 import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 
 // Create/Update Routes
 
-const SignupIndexRoute = SignupIndexImport.update({
-  path: '/signup/',
+const VerifyIndexRoute = VerifyIndexImport.update({
+  path: '/verify/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RegisterIndexRoute = RegisterIndexImport.update({
+  path: '/register/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -44,8 +50,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginIndexImport
       parentRoute: typeof rootRoute
     }
-    '/signup/': {
-      preLoaderRoute: typeof SignupIndexImport
+    '/register/': {
+      preLoaderRoute: typeof RegisterIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/verify/': {
+      preLoaderRoute: typeof VerifyIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -56,7 +66,8 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   DashboardIndexRoute,
   LoginIndexRoute,
-  SignupIndexRoute,
+  RegisterIndexRoute,
+  VerifyIndexRoute,
 ])
 
 /* prettier-ignore-end */

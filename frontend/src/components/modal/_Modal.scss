@@ -30,6 +30,7 @@
     padding: 30px;
     border-radius: 8px;
     width: fit-content;
+    min-width: 500px;
 
     &--fadeIn {
       animation: fadeIn 0.3s ease-in; /* Fade in animation */
@@ -38,5 +39,11 @@
     &--fadeDown {
       animation: fadeDown 0.4s cubic-bezier(0.48, 1.55, 0.74, 0.91);
     }
+  }
+
+  &__backgroundContainer {
+    position: absolute;
+    height: 100%;
+    min-width: 100%;
   }
 }

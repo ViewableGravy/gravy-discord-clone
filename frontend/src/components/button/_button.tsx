@@ -14,6 +14,7 @@ export namespace NButton {
   type BaseProps = {
     children: React.ReactNode;
     className?: string;
+    style?: CSSProperties;
 
     /**
      * The size of the button
@@ -25,7 +26,10 @@ export namespace NButton {
      */
     full?: boolean;
 
-    style?: CSSProperties;
+    /**
+     * If true, the button will be disabled. Note that this does not have an alternative appearance as per discords theming
+     */
+    disabled?: boolean;
   }
 
   export type OnClickProps = BaseProps & {
@@ -84,12 +88,19 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     ...style
   } as CSSProperties;
 
+  const baseProps = {
+    className: classNames("Button", className),
+    style: _style,
+    tabIndex: 0,
+    "aria-disabled": props.disabled 
+  }
+
   /***** RENDER *****/
   switch (true) {
     case "href" in props: {
       const { href } = props
       return (
-        <a href={href} className={classNames("Button", className)} style={_style}>
+        <a {...baseProps} href={href}>
           {children}
         </a>
       );
@@ -97,23 +108,23 @@ export const _Button: React.FC<NButton.Props> = ({ children, className, style, f
     case "to" in props: {
       const { to } = props
       return (
-        <Link to={to} className={classNames("Button", className)} style={_style}>
+        <Link {...baseProps} to={to}>
           {children}
         </Link>
       );
     }
     case "onClick" in props: {
-      const { onClick, type } = props
+      const { onClick, type, disabled } = props
       return (
-        <button type={type} onClick={onClick} className={classNames("Button", className)} style={_style}>
+        <button {...baseProps} onClick={onClick} type={type} disabled={disabled}>
           {children}
         </button>
       );
     }
     case "type" in props && props.type === 'submit': {
-      const { type } = props;
+      const { type, disabled } = props;
       return (
-        <button type={type} className={classNames("Button", className)} style={_style}>
+        <button {...baseProps} type={type} disabled={disabled}>
           {children}
         </button>
       )

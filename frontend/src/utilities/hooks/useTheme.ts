@@ -14,7 +14,14 @@ export const theme = new Store({
     modal: '#313338',
     button: '#5865f2',
     hover: {
-      button: '#4752c4'
+      button: '#4752c4',
+    },
+    form: {
+      input: '#1e1f22',
+      select: {
+        selected: '#404249',
+        hover: '#35373c'
+      }
     },
     black: '#000000',
   },
@@ -24,12 +31,16 @@ export const theme = new Store({
     tertiary: '#949ba4',
     link: '#00a8fc',
     error: '#fa777c',
+    success: '#2dc770'
   }
 } as const)
 
 /***** UTILITIES *****/
 const utilities = {
   opacity: (color: string, opacity: number) => {
+    if (!opacity) 
+      return color
+
     const [r, g, b] = color.match(/\w\w/g)!.map((hex) => parseInt(hex, 16))
     return `rgba(${r}, ${g}, ${b}, ${opacity})`
   }

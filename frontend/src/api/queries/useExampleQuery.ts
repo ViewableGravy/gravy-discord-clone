@@ -2,7 +2,7 @@
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 /***** UTILITIES *****/
-import { useSocket } from "../../utilities/hooks/useSocket";
+import { useAuthorizationSocket } from "../../utilities/hooks/useSocket";
 
 /***** API IMPORTS *****/
 import { API } from "../api";
@@ -14,7 +14,7 @@ type TExampleQuery = (options?: TOptions) => ReturnType<typeof useQuery>
 
 /***** HOOK START *****/
 export const useExampleQuery: TExampleQuery = ({ queryKey = [], ...rest } = {}) => {
-  const { readyState, useJoinRoomEffect } = useSocket((state) => ({
+  const { readyState, useJoinRoomEffect } = useAuthorizationSocket((state) => ({
     readyState: state.readyState
   }));
   

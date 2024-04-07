@@ -15,7 +15,13 @@ const validator = z.object({
 });
 
 /***** ROUTE START *****/
-export const refreshRoute = createRouteCallback(async ({ req, builder, prisma }) => {
+export const refreshRoute = createRouteCallback(async ({ 
+  req, 
+  builder, 
+  ctx: { 
+    prisma 
+  } 
+}) => {
   /***** VALIDATION *****/
   const validated = validator.safeParse(req.body);
   if (!validated.success) {

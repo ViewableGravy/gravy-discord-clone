@@ -24,7 +24,7 @@ export const Text: TTextComponent = ({ children, className, span, div, ...props 
   })
   
   /***** RENDER HELPERS *****/
-  const classes = classNames('Text', classNames, Object
+  const classes = classNames('Text', className, Object
     .entries(props)
     .filter(([,value]) => Boolean(value))
     .map(([key]) => `Text--${key}`)

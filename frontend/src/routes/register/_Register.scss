@@ -1,0 +1,59 @@
+.Register {
+  .Modal__content {
+    max-width: 480px;
+    min-width: unset;
+  }
+
+  &--mobile {
+    .Modal__content {
+      padding: 20px;
+      border-radius: 0;
+      height: 100%;
+      max-width: 100%;
+    }
+
+    .Register__select {
+      & label {
+        display: block;
+        width: 100px;
+      }
+    }
+
+    .FieldLabel {
+      width: calc(100vw - 40px);
+    }
+  }
+
+  &--tiny {
+    .Register__select {
+      width: 100%;
+    }
+  }
+
+  &__field {
+    margin-bottom: 20px;
+
+    &--username {
+      input[type="text"] {
+        text-transform: lowercase;
+      }
+    }
+  }
+
+  &__select {
+    &.SelectField {
+      flex-grow: 1;
+      min-width: 100px;
+    }
+
+    .FieldLabel {
+      width: 420px;
+    }
+  }
+
+  &__input {
+    &--hidden {
+      display: none;
+    }
+  }
+}

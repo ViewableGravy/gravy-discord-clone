@@ -18,7 +18,6 @@ import { Anchor } from '../../components/Anchor'
 import { Flex } from '../../components/utility/flex'
 
 /***** UTILITIES *****/
-import { _socketStore } from '../../utilities/hooks/useSocket'
 import { useMatchMedia } from '../../utilities/hooks/useMatchMedia'
 
 /***** QUERIES *****/

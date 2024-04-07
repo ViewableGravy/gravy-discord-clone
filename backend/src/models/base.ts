@@ -5,6 +5,10 @@
 /***** BASE IMPORTS *****/
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
+
+/***** UTILITIES *****/
+import { Mailer } from '../utilities/mail';
 
 /***** CONSTS *****/
 import { STATUS } from './status';
@@ -12,35 +16,29 @@ import { CODES } from './enums';
 
 /***** CONSTANTS *****/
 export const prisma = new PrismaClient();
+const mailer = new Mailer();
 
 /***** TYPE DEFINITIONS *****/
-export type TBuilder = (args: {
-  /**
-   * Code representing the response. This may be a custom code to match on the frontend 
-   * in case of a specific error, or it may be a standard HTTP status code.
-   */
-  code?: string,
+const StandardBuilderValidator = z.object({
+  code: z.string().optional(),
+  status: z.number().optional(),
+  data: z.any(),
+  meta: z.any().optional(),
+  type: z.literal("standard").optional()
+});
 
-  /**
-   * The status of the response. This should be a standard HTTP status code.
-   */
-  status: ValueOf<typeof STATUS>;
+const FieldErrorBuilderValidator = z.object({
+  fieldErrors: z.record(z.string().optional()),
+  status: z.number(),
+  meta: z.any().optional(),
+  type: z.literal("fieldError").optional()
+});
 
-  /**
-   * The data to be sent back to the client. This may be an object, array, or string.
-   */
-  data: Record<TObjectKeys, unknown> | Array<any> | string;
-
-  /**
-   * Any additional metadata to be sent back to the client. This may be an object with 
-   * additional information about the request.
-   */
-  meta?: Record<TObjectKeys, unknown>;
-}) => void;
-
+export type TStandardBuilder = z.infer<typeof StandardBuilderValidator>;
+export type TFieldErrorBuilder = z.infer<typeof FieldErrorBuilderValidator>;
+export type TBuilder = (args: TStandardBuilder | TFieldErrorBuilder) => void;
 export type TPrisma = typeof prisma;
-
-type TCreateBaseArgs = {
+export type TCreateBaseArgs = {
   builder: TBuilder
 
   /**
@@ -54,9 +52,19 @@ type TCreateBaseArgs = {
   res: express.Response;
 
   /**
-   * The prisma client
+   * DI context
    */
-  prisma: typeof prisma;
+  ctx: {
+    /**
+     * The mailer utility
+     */
+    mailer: typeof mailer;
+
+    /**
+     * The prisma client
+     */
+    prisma: typeof prisma;
+  }
 }
 
 type TCreateMiddlewareArgs = TCreateBaseArgs & {
@@ -69,43 +77,97 @@ type TCreateAuthenticatedRouteCallbackArgs = {
   user: TUser;
 } & TCreateBaseArgs;
 
+const generateBuilder = (res: express.Response, req: express.Request) => (args: TStandardBuilder | TFieldErrorBuilder) => {
+  const _args = { ...args, type: args.type ?? "standard" };
+
+  if (_args.type === "fieldError") {
+    const { fieldErrors, status, meta } = _args as TFieldErrorBuilder;
+    return res.status(status).send({
+      code: "FORM_VALIDATION_ERROR",
+      status,
+      meta,
+      route: req.route.path,
+      data: {
+        fieldErrors
+      }
+    })
+  }
+
+  if (_args.type === "standard") {
+    const { data, status, code, meta } = _args as TStandardBuilder;
+    return res.status(status ?? 200).send({
+      code,
+      status,
+      data,
+      meta,
+      route: req.route.path
+    });
+  }
+}
+
 /***** COMPONENT START *****/
 export const createMiddlewareCallback = (callback: (options: TCreateMiddlewareArgs) => void) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const route = req.route.path;
+  const builder = generateBuilder(res, req);
 
-  callback({
-    req,
-    res,
-    next,
-    prisma,
-    builder: ({ status, data, meta }) => {
-      res.status(status).send({
-        route, 
-        status,
-        data,
-        meta
-      })
+  try {
+    callback({
+      req,
+      res,
+      next,
+      ctx: {
+        mailer,
+        prisma,
+      },
+      builder
+    })
+  } catch (e) {
+    const standardBuilder = StandardBuilderValidator.safeParse(e);
+    const fieldErrorBuilder = FieldErrorBuilderValidator.safeParse(e);
+
+    switch (true) {
+      case standardBuilder.success:
+        return builder(standardBuilder.data);
+      case fieldErrorBuilder.success:
+        return builder(fieldErrorBuilder.data);
+      default:
+        return builder({
+          status: 500,
+          data: "An unknown error occurred"
+        });
     }
-  });
+  }
 }
 
 /***** COMPONENT START *****/
 export const createRouteCallback = (callback: (options: TCreateBaseArgs) => void) => (req: express.Request, res: express.Response) => {
-  const route = req.route.path;
+  const builder = generateBuilder(res, req);
 
-  callback({
-    req,
-    res,
-    prisma,
-    builder: ({ status, data, meta }) => {
-      res.status(status).send({
-        route, 
-        status,
-        data,
-        meta
-      })
+  try {
+    return callback({
+      req,
+      res,
+      ctx: {
+        mailer,
+        prisma,
+      },
+      builder
+    });
+  } catch (e) {
+    const standardBuilder = StandardBuilderValidator.safeParse(e);
+    const fieldErrorBuilder = FieldErrorBuilderValidator.safeParse(e);
+
+    switch (true) {
+      case standardBuilder.success:
+        return builder(standardBuilder.data);
+      case fieldErrorBuilder.success:
+        return builder(fieldErrorBuilder.data);
+      default:
+        return builder({
+          status: 500,
+          data: "An unknown error occurred"
+        });
     }
-  });
+  }
 }
 
 /***** COMPONENT START *****/
@@ -137,16 +199,12 @@ export const createAuthenticatedRouteCallback = (level: string, callback: (optio
     callback({
       req,
       res,
-      prisma,
+      ctx: {
+        mailer,
+        prisma,
+      },
       user: {} as TUser,
-      builder: ({ status, data, meta }) => {
-        res.status(status).send({
-          status,
-          data,
-          meta,
-          route: req.route.path
-        });
-      }
+      builder:generateBuilder(res, req)
     });
   }
 }

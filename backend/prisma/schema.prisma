@@ -10,10 +10,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String  @id @default(uuid()) @map("_id")
-  username String? @unique
+model PendingUser {
+  id       String  @id @default(uuid())
+  username String @unique
   email    String  @unique
+  displayName String    // Display name
+  dob      DateTime     // Date of birth
+  notifications Boolean // Whether or not the user wants to receive notifications
+
+  // Password hash and salt
+  hash     String
+  salt     String
+
+  signupHash String // Code that is sent to the user to verify their email
+  signupSalt String // Salt for the signup hash
+  createdAt DateTime? // When the user created the account creation request
+}
+
+model User {
+  id       String  @id @default(uuid())
+  username String @unique
+  email    String  @unique
+  displayName String    // Display name
+  dob      DateTime     // Date of birth
+  notifications Boolean // Whether or not the user wants to receive notifications
+  dateVerified DateTime? // When the user verified their account
+
+  // Password hash and salt
   hash     String
   salt     String
 
