@@ -1,6 +1,6 @@
 import { createRouteCallback } from "../../models/base"
 import { INVALIDATE_ROOMS } from "../../models/enums"
-import { invalidateRooms } from "../../socket/store/helpers"
+import { socketManager } from "../../socket/store"
 
 export const testInvalidateRoute = createRouteCallback(({ builder, req }) => {
   const endpoint = req.query.endpoint as ValueOf<typeof INVALIDATE_ROOMS>
@@ -12,7 +12,7 @@ export const testInvalidateRoute = createRouteCallback(({ builder, req }) => {
     })
   }
 
-  invalidateRooms([endpoint])
+  socketManager.invalidateRooms([endpoint])
 
   return builder({
     status: 200,

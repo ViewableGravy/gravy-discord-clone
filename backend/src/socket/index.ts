@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import { withMe } from './store/helpers';
+import { socketManager } from './store';
 import { DEBUG_LEVELS } from '../models/enums';
 import { log } from '../utilities/logging';
 import { baseValidators, getTypeLiteralAsString } from '../validators/socket/base';
@@ -10,7 +10,7 @@ export const socketServer = new WebSocketServer({
   noServer: true,
 })
 
-socketServer.on('connection', withMe(({ ws, me }) => {
+socketServer.on('connection', socketManager.withMe(({ ws, me }) => {
   // Generate handlers
   const handleRoom = generateHandleRoom(me);
 

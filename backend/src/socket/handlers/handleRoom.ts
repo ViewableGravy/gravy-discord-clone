@@ -2,7 +2,7 @@ import type { z } from "zod";
 import type { baseValidators } from "../../validators/socket/base";
 import { socketValidators } from "../../validators/socket/rooms";
 import type { TClient } from "../store/types";
-import { announceRoomsToClient } from "../store/helpers";
+import { socketManager } from "../store";
 
 /***** TYPE DEFINITIONS *****/
 type THandleJoinRoomProps = {
@@ -24,7 +24,7 @@ const handleJoinRoom: THandleJoinRoom = ({ me, message }) => {
     me.rooms.add(room);
   })
 
-  announceRoomsToClient(me)
+  socketManager.announceRoomsToClient(me)
 }
 
 const handleLeaveRoom: THandleLeaveRoom = ({ me, message }) => {
@@ -32,7 +32,7 @@ const handleLeaveRoom: THandleLeaveRoom = ({ me, message }) => {
     me.rooms.delete(room);
   })
 
-  announceRoomsToClient(me)
+  socketManager.announceRoomsToClient(me)
 }
 
 /***** EXPORTS *****/

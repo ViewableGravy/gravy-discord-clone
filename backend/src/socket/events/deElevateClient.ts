@@ -1,5 +1,5 @@
 /***** UTILITIES *****/
-import { sendToClient } from "../store/helpers";
+import { socketManager } from "../store";
 
 /***** TYPE DEFINITIONS *****/
 import type { TClient } from "../store/types";
@@ -13,7 +13,7 @@ export const deElevateClient = (client: TClient) => {
   client.authorization.level = 'guest';
   client.userId = undefined;
 
-  sendToClient(client, {
+  socketManager.sendToClient(client, {
     type: 'authorization',
     level: 'guest'
   });

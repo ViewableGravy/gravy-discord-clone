@@ -5,9 +5,9 @@ import { z } from "zod";
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { getClientById } from "../../socket/store/helpers";
 import { getSession } from "./helpers/getSession";
 import { deElevateClient } from "../../socket/events/deElevateClient";
+import { socketManager } from "../../socket/store";
 
 /***** VALIDATION *****/
 const validator = z.object({
@@ -45,7 +45,7 @@ export const logoutRoute = createRouteCallback(async ({
   }
 
   const { id } = validated.data;
-  const client = getClientById(id);
+  const client = socketManager.getClientById(id);
   const sessionResponse = await getSession({ ...validated.data }, { prisma });
 
   if ('error' in sessionResponse)
