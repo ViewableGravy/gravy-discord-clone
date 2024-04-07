@@ -11,11 +11,10 @@ import type { INVALIDATE_ROOMS } from "../../models/enums";
 /***** INTERVALS *****/
 setInterval(() => {
   // remove closed connections
-  socketStore.clients.forEach(({ ws, identifier }) => {
-      if (ws.readyState === ws.CLOSED) {
-          const index = socketStore.clients.findIndex(x => x.identifier === identifier);
-          socketStore.clients.splice(index, 1);
-      }
+  Object.values(socketStore.clients).forEach((client) => {
+    if (client.ws.readyState === client.ws.CLOSED) {
+      delete socketStore.clients[client.identifier];
+    }
   });
 }, 10000);
 
@@ -32,7 +31,7 @@ const createMe = (props: TCreateMeProps) => {
 
   initializeClient(client);
 
-  socketStore.clients.push(client);
+  socketStore.clients[client.identifier] = client;
 
   return client;
 };
@@ -50,11 +49,11 @@ export const sendToClient = (client: TClient, message: any) => {
 } 
 
 export const getClientById = (id: string) => {
-  return socketStore.clients.find(client => client.identifier === id);
+    return socketStore.clients[id];
 }
 
 export const getClientsInRoom = (room: string) => {
-  return socketStore.clients.filter(client => client.rooms.has(room));
+  return Object.values(socketStore.clients).filter(client => client.rooms.has(room));
 }
 
 export const announceRoomsToClient = (client: TClient) => {
@@ -74,7 +73,7 @@ export const initializeClient = (client: TClient) => {
 }
 
 export const invalidateRooms = (rooms: Array<ValueOf<typeof INVALIDATE_ROOMS>>) => {
-  socketStore.clients.forEach((client) => {
+  Object.values(socketStore.clients).forEach((client) => {
     const invalidatedRooms = rooms.filter(room => client.rooms.has(`invalidate/${room}`));
 
     if (invalidatedRooms.length > 0) {

@@ -4,7 +4,6 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 /***** QUERY IMPORTS *****/
-import { API } from "../api/queries";
 import { Sidebar } from "../components/innerNavbar"
 
 /***** SHARED *****/
@@ -20,23 +19,6 @@ import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
 import { TSocketTypes } from "../utilities/hooks/useSocket/static";
-
-/***** COMPONENT START *****/
-const RenderMain = () => {
-  /***** HOOKS *****/
-  const { authorization } = useAuthorizationSocket();
-  const { mutate: authenticate } = API.MUTATIONS.account.useAuthenticateMutation();
-  const { mutate: createAccount } = API.MUTATIONS.account.useCreateAccountMutation();
-
-  /***** RENDER *****/
-  return (
-    <main>
-      <Outlet />
-      <TanStackRouterDevtools />
-      <ReactQueryDevtools />
-    </main>
-  )
-}
 
 /***** COMPONENT START *****/
 const RootRoute = () => {
