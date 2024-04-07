@@ -151,7 +151,7 @@ export const ACCOUNT_API = {
      * response to the authenticate endpoint.
      */
     verify: async (body: TVerifyArgs) => {
-      const result = await globalAxios.post('/auth/verify', body);
+      const result = await waitAtleast(1000, globalAxios.post('/auth/verify', body));
       return ACCOUNT_API_VALIDATORS.verify.parse(result.data);
     }
   },

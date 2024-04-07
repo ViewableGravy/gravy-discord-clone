@@ -7,6 +7,9 @@ import { router } from '../../app';
 import { Modal } from '../../components/modal';
 import background from '../../assets/login-background.svg';
 import { Text } from '../../components/utility/text';
+import { Anchor } from '../../components/Anchor';
+import { Padding } from '../../components/utility/padding';
+import { Flex } from '../../components/utility/flex';
 
 const validateSearch = z.object({
   username: z.string(),
@@ -31,14 +34,11 @@ const Verify = () => {
   const { ready } = useAuthorizationSocket(({ readyState }) => ({ ready: readyState === "READY" }));
   const { username, token } = Route.useSearch();
 
-  console.log(token)
-
   /***** QUERIES *****/
-  const { mutate, isIdle } = useVerifyMutation({ mutationKey: ['verify']});
+  const { mutate, isIdle, isError } = useVerifyMutation({ mutationKey: ['verify']});
 
   /***** EFFECTS *****/
   useEffect(() => {
-    console.log(isIdle)
     if (ready && isIdle) {
       mutate({ username, token })
     }
@@ -56,7 +56,24 @@ const Verify = () => {
         />
       )}
     >
-      <Text align-center>Verifying...</Text>
+      {!isError && (
+        <Text align-center>Verifying...</Text>
+      )}
+
+      {isError && (
+        <>
+          <Text align-center xxxl>Error verifying Account</Text>
+          <Padding bottom="medium" />
+          <Text>
+            Your verification link may have expired or the link provided has already been used.
+          </Text>
+          <Padding bottom="medium" />
+          <Flex column>
+            <Anchor.Link to="/login">Already have an account?</Anchor.Link>
+            <Anchor.Link to="/register">Create a new account</Anchor.Link>
+          </Flex>
+        </>
+      )}
     </Modal>
   );
 }
