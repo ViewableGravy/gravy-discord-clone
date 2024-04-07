@@ -14,7 +14,7 @@ export const verificationEmail: TVerificationEmail = ({ verificationToken, usern
     <body>
       <h1>Verify your email</h1>
       <p>Click the link below to verify your email address</p>
-      <a href="${Bun.env.FRONTEND_URL}/verify?token=${verificationToken}&username=${username}">Verify Email</a>
+      <a href="${Bun.env.FRONTEND_URL}/verify?token=${encodeURIComponent(verificationToken)}&username=${encodeURIComponent(username)}">Verify Email</a>
     </body>
   </html>
 `;

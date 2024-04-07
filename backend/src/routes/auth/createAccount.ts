@@ -118,7 +118,7 @@ export const createAccount = createRouteCallback(async ({
   }
 
   const { password, email, username, dob, displayName, notifications } = validated.data;
-  const verificationToken = generateRandomToken().replace(/=$/, '');
+  const verificationToken = generateRandomToken();
 
   const { hash, salt } = hashPassword(password);
   const { hash: verificationHash, salt: verificationSalt } = hashPassword(verificationToken); // remove trailing "=" due to frontend @tanstack/router bug (https://github.com/TanStack/router/issues/1404)
