@@ -9,3 +9,9 @@ export type TClient = {
   userId?: string;
 }
 export type TCreateMeProps = Partial<Omit<TClient, 'ws'>> & { ws: WebSocket; }
+
+export type TCreateUserArgs = Partial<Omit<TClient, 'ws'>> & { ws: WebSocket; }
+export type TUnidentifiedClient = {
+  ws: WebSocket;
+  awaitingIdentification: true;
+}
