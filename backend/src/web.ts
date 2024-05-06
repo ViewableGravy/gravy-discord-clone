@@ -20,8 +20,11 @@ import { verifyAccount } from './routes/auth/verify';
 /***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
 import { DiscordWebSocketServer } from './socket/index.new';
-import { randomUUID } from 'crypto';
-import { z } from 'zod';
+import { testSocketHandler } from './routes/sockets/test';
+import { ROUTES } from './route-names';
+import { leaveRoomSocketHandler } from './routes/sockets/invalidate/leave-room';
+import { joinRoomSocketHandler } from './routes/sockets/invalidate/join-room';
+import { log } from './utilities/logging';
 
 /***** SERVER SETUP *****/
 const server =  express();
@@ -38,53 +41,46 @@ if (Bun.env.NODE_ENV === 'development') {
 }
 
 /***** ROUTES ******/
-server.get('/api/ami/alive', aliveRoute);
-server.get('/api/ami/authorized', authenticatedRoute);
+server.get(ROUTES.HTTP.AMI.ALIVE, aliveRoute);
+server.get(ROUTES.HTTP.AMI.AUTHORIZED, authenticatedRoute);
 
-server.post('/api/auth/signup', createAccount)
-server.post('/api/auth/login', loginRoute)
-server.post('/api/auth/refresh', refreshRoute)
-server.post('/api/auth/logout', logoutRoute)
-server.post('/api/auth/username-availability', usernameAvailabilityRoute)
-server.post('/api/auth/verify', verifyAccount)
+server.post(ROUTES.HTTP.AUTH.CREATE_ACCOUNT, createAccount)
+server.post(ROUTES.HTTP.AUTH.LOGIN, loginRoute)
+server.post(ROUTES.HTTP.AUTH.REFRESH, refreshRoute)
+server.post(ROUTES.HTTP.AUTH.LOGOUT, logoutRoute)
+server.post(ROUTES.HTTP.AUTH.USERNAME_AVAILABILITY, usernameAvailabilityRoute)
+server.post(ROUTES.HTTP.AUTH.VERIFY_ACCOUNT, verifyAccount)
 
 server.all('*', (_, res) => {
   res.status(404).send('Not found');
 })
 
-const validateTest = z.object({
-  room: z.literal('room/test'),
-  message: z.string()
-})
-
 /***** SOCKET HANDLERS *****/
-wsServer.route("/test", validateTest, ({ data }) => {
-  console.log("we made it!:", data)
-})
+wsServer.route("/test", testSocketHandler.validate, testSocketHandler)
+wsServer.route(ROUTES.SOCKETS.INVALIDATE.LEAVE_ROOM, leaveRoomSocketHandler.validate, leaveRoomSocketHandler)
+wsServer.route(ROUTES.SOCKETS.INVALIDATE.JOIN_ROOM, joinRoomSocketHandler.validate, joinRoomSocketHandler)
 
-
-
-// start server
+/***** START SERVER *****/
 const expressServer = server.listen(3000, () => {
-  console.log('Server is running on port 3000');
+  log('INFO', 'Server is running on port 3000');
 });
 
+wsServer.connect("/api/socket", expressServer);
+
 // handle socket upgrade
-expressServer.on('upgrade', (req, socket, head) => {
-  console.log(req.url)
+// expressServer.on('upgrade', (req, socket, head) => {
+//   if (req.url === '/api/socket') {
+//     socketServer.handleUpgrade(req, socket, head, (ws) => {
+//       socketServer.emit('connection', ws, req);
+//     })
+//   }
 
-  if (req.url === '/api/socket') {
-    socketServer.handleUpgrade(req, socket, head, (ws) => {
-      socketServer.emit('connection', ws, req);
-    })
-  }
-
-  if (req.url === '/api/socket/test') {
-    wsServer.socketServer.handleUpgrade(req, socket, head, (ws) => {
-      wsServer.socketServer.emit('connection', ws, req);
-    })
-  }
-})
+//   if (req.url === '/api/socket') {
+//     wsServer.socketServer.handleUpgrade(req, socket, head, (ws) => {
+//       wsServer.socketServer.emit('connection', ws, req);
+//     })
+//   }
+// })
 
 /***** CRONS *****/
 initializeClearSessionsCron();

@@ -1,7 +1,12 @@
-import { WebSocketServer as _WebSocketServer } from 'ws';
-import type { TClient, TCreateMeProps, TUnidentifiedClient, WebSocketClient } from './store/types';
-import { randomUUID } from 'crypto';
+/***** BASE IMPORTS *****/
 import { z } from 'zod';
+import { WebSocketServer as _WebSocketServer } from 'ws';
+import { randomUUID } from 'crypto';
+
+/***** TYPE DEFINITIONS *****/
+import type { TCreateMeProps, TSocketRouteCallback, TUnidentifiedClient, WebSocketClient } from './store/types';
+import type { Server } from 'http';
+import { log } from '../utilities/logging';
 
 type WebSocketServerBaseProps = {
   /**
@@ -86,6 +91,7 @@ export class DiscordWebSocketServer<T extends WebSocketServerProps> {
     
     this.identificationSource = props.identificationSource;
     this.socketServer.on('connection', this.onConnection);
+    this.cleanConnections();
   }
 
   private onConnection = (ws: WebSocket) => {
@@ -117,8 +123,10 @@ export class DiscordWebSocketServer<T extends WebSocketServerProps> {
           client = {
             identifier: parsed.identifier,
             rooms: new Set<string>(),
+            send: (data) => ws.send(JSON.stringify(data)),
             ws
           }
+
           builder = this.generateBuilder(client);
           
           this.initializeClient(client)
@@ -168,16 +176,17 @@ export class DiscordWebSocketServer<T extends WebSocketServerProps> {
       const client: TUnidentifiedClient = {
         ws: args.ws,
         awaitingIdentification: true,
+        send: (data) => args.ws.send(JSON.stringify(data)),
       }
 
       return client;
     }
 
-
     const client: WebSocketClient = {
       identifier: this.generateIdentifier(args.ws),
       rooms: new Set(),
-      ...args,
+      ws: args.ws,
+      send: (data) => args.ws.send(JSON.stringify(data)),
     }
 
     this.store[client.identifier] = client;
@@ -194,26 +203,6 @@ export class DiscordWebSocketServer<T extends WebSocketServerProps> {
     }))
   }
 
-  public route<TValidator extends z.AnyZodObject>(
-    route: string, 
-    validator: TValidator,
-    handler: (props: {
-      data: z.infer<TValidator>, 
-      client: WebSocketClient, 
-      builder: (client: WebSocketClient) => void 
-    }) => void
-  ) {
-    this.routes[route] = ({ client, body, builder }) => {
-      const validated = validator.safeParse(body);
-
-      if (!validated.success) {
-        return builder({ error: validated.error });
-      }
-
-      return handler({ data: validated.data, client, builder });
-    }
-  }
-
   // TODO: Implement this method
   private generateBuilder(client: WebSocketClient) {
     type TBuilderProps = {
@@ -223,6 +212,54 @@ export class DiscordWebSocketServer<T extends WebSocketServerProps> {
     return (options: TBuilderProps) => {
       return client.ws.send(JSON.stringify(options));
     }
+  }
+
+  private cleanConnections() {
+    setInterval(() => {
+      Object.values(this.store).forEach((client) => {
+        if (client.ws.readyState === client.ws.CLOSED) {
+          delete this.store[client.identifier];
+        }
+      });
+    }, 10000);
+  }
+
+  /***** PUBIC FUNCTIONS *****/
+  public route<TValidator extends z.AnyZodObject>(
+    route: string, 
+    validator: TValidator,
+    handler: TSocketRouteCallback<TValidator>
+  ) {
+    this.routes[route] = ({ client, body, builder }) => {
+      const validated = validator.safeParse(body);
+
+      if (!validated.success) {
+        log('INFO', `${client.identifier} sent a malformed request to ${route}`)
+        return builder({ error: validated.error });
+      }
+
+      return handler({ data: validated.data, client, builder });
+    }
+  }
+
+  public connect(route: string, server: Server) {
+    server.on('upgrade', (req, socket, head) => {    
+      if (req.url === route) {
+        this.socketServer.handleUpgrade(req, socket, head, (ws) => {
+          this.socketServer.emit('connection', ws, req);
+        })
+      }
+    })
+
+    log('INFO', `WebSocket server is connected to ${route}`);
+  }
+
+  public getClientByIdentifier(identifier: string) {
+    return this.store[identifier];
+  }
+
+  public getClientsByRoom(room: string) {
+    return Object.values(this.store).filter((client) => client.rooms.has(room));
   }
 
 }
