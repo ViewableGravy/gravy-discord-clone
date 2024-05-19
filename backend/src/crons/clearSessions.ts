@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from 'prisma/generated/auth';
 
 const prisma = new PrismaClient();
 

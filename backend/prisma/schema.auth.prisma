@@ -3,11 +3,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  output = "./generated/auth"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = env("AUTHENTICATION_DATABASE_URL")
 }
 
 model PendingUser {

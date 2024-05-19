@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev_old": "tsx watch src/web.ts",
-    "dev": "bun --watch run src/web.ts"
+    "dev": "bun --watch run src/web.ts",
+    "prisma": "npx prisma generate --schema prisma/schema.auth.prisma --watch && npx prisma generate --schema prisma/schema.server.prisma --watch"
   },
   "devDependencies": {
     "tsx": "^4.7.1",

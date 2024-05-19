@@ -2,7 +2,8 @@
 import { z } from "zod";
 
 /***** TYPE DEFINITIONS *****/
-import type { TSocketRouteCallback } from "../../socket/store/types";
+import type { SocketRouteCallback } from "src/socket_new/type";
+import type { Client } from "src/singleton";
 
 /***** VALIDATORS *****/
 const validateSocketTest = z.object({
@@ -11,7 +12,7 @@ const validateSocketTest = z.object({
 })
 
 /***** HANDLERS *****/
-const _handler: TSocketRouteCallback<typeof validateSocketTest> = ({ data }) => {
+const _handler: SocketRouteCallback<typeof validateSocketTest, Client> = ({ data }) => {
   console.log("we made it!:", data)
 }
 

@@ -1,15 +1,11 @@
 /***** BASE IMPORTS *****/
-import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-
-/***** SOCKET IMPORTS *****/
-import { socketServer } from './socket';
 
 /***** ROUTE IMPORTS *****/
 import { aliveRoute } from './routes/ami/alive';
 import { authenticatedRoute } from './routes/ami/authenticated';
-import { testInvalidateRoute } from './routes/test/invalidate';
+// import { testInvalidateRoute } from './routes/test/invalidate';
 import { createAccount } from './routes/auth/createAccount';
 import { loginRoute } from './routes/auth/authenticate';
 import { refreshRoute } from './routes/auth/refresh';
@@ -19,25 +15,20 @@ import { verifyAccount } from './routes/auth/verify';
 
 /***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
-import { DiscordWebSocketServer } from './socket/index.new';
 import { testSocketHandler } from './routes/sockets/test';
 import { ROUTES } from './route-names';
 import { leaveRoomSocketHandler } from './routes/sockets/invalidate/leave-room';
 import { joinRoomSocketHandler } from './routes/sockets/invalidate/join-room';
 import { log } from './utilities/logging';
+import { server, wsServer } from './singleton';
 
 /***** SERVER SETUP *****/
-const server =  express();
-const wsServer = new DiscordWebSocketServer({
-  identificationSource: "server"
-})
-
 server.use(cors());
 server.use(bodyParser.json());
 
 /***** DEVELOPMENT ROUTES ******/
 if (Bun.env.NODE_ENV === 'development') {
-  server.post('/api/test/invalidate', testInvalidateRoute)
+  // server.post('/api/test/invalidate', testInvalidateRoute)
 }
 
 /***** ROUTES ******/
@@ -66,6 +57,7 @@ const expressServer = server.listen(3000, () => {
 });
 
 wsServer.connect("/api/socket", expressServer);
+// exampleWSServer.connect("/api/testing/socket", expressServer);
 
 // handle socket upgrade
 // expressServer.on('upgrade', (req, socket, head) => {

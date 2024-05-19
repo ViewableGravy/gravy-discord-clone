@@ -2,7 +2,8 @@
 import { z } from "zod";
 
 /***** TYPE DEFINITIONS *****/
-import type { TSocketRouteCallback } from "../../../socket/store/types";
+import type { SocketRouteCallback } from "src/socket_new/type";
+import type { Client } from "src/singleton";
 
 /***** CONSTS *****/
 import { ROUTES } from "../../../route-names";
@@ -15,7 +16,7 @@ const validateJoinRoom = z.object({
 })
 
 /***** HANDLERS *****/
-const _handler: TSocketRouteCallback<typeof validateJoinRoom> = ({ data, client }) => {
+const _handler: SocketRouteCallback<typeof validateJoinRoom, Client> = ({ data, client }) => {
   client.rooms.delete(`invalidate/${data.endpoint}`);
 }
 

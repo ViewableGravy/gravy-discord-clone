@@ -58,7 +58,7 @@ export class AuthSocket {
       try {
         const parsed = JSON.parse(data);
         socketValidators.typeValidator.parse(parsed)
-        
+
         callback(parsed)
       } catch (e) {
       }

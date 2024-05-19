@@ -6,7 +6,7 @@ import { verifyJWT } from "../../../utilities/crypto";
 
 /***** TYPE DEFINITIONS *****/
 import type { TBuilder, TPrisma } from "../../../models/base";
-import type { Session, User } from "@prisma/client";
+import type { Session, User } from "../../../../prisma/generated/auth";
 
 /***** CONSTS *****/
 const responses = {

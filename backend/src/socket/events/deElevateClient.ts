@@ -1,11 +1,12 @@
 /***** UTILITIES *****/
-import { socketManager } from "../store";
+import { wsServer, type Client } from "src/singleton";
+// import { socketManager } from "../store";
 
-/***** TYPE DEFINITIONS *****/
-import type { TClient } from "../store/types";
+// /***** TYPE DEFINITIONS *****/
+// import type { TClient } from "../store/types";
 
 /***** COMPONENT START *****/
-export const deElevateClient = (client: TClient) => {
+export const deElevateClient = (client: Client) => {
   if (!client) {
     return { error: 'client not found' }
   }
@@ -13,7 +14,7 @@ export const deElevateClient = (client: TClient) => {
   client.authorization.level = 'guest';
   client.userId = undefined;
 
-  socketManager.sendToClient(client, {
+  client.send({
     type: 'authorization',
     level: 'guest'
   });

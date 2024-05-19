@@ -1,6 +1,6 @@
 /***** BASE IMPORTS *****/
 import { randomBytes } from "crypto";
-import type { User } from "@prisma/client";
+import type { User } from "../../../../prisma/generated/auth";
 
 /***** UTILITIES *****/
 import { createJWT } from "../../../utilities/crypto";

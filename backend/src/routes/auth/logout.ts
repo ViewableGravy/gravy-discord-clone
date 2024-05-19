@@ -7,7 +7,7 @@ import { createRouteCallback } from "../../models/base";
 /***** UTILITIES *****/
 import { getSession } from "./helpers/getSession";
 import { deElevateClient } from "../../socket/events/deElevateClient";
-import { socketManager } from "../../socket/store";
+import { wsServer } from "src/singleton";
 
 /***** VALIDATION *****/
 const validator = z.object({
@@ -45,7 +45,7 @@ export const logoutRoute = createRouteCallback(async ({
   }
 
   const { id } = validated.data;
-  const client = socketManager.getClientById(id);
+  const client = wsServer.client.byIdentifier(id);
   const sessionResponse = await getSession({ ...validated.data }, { prisma });
 
   if ('error' in sessionResponse)
@@ -56,7 +56,7 @@ export const logoutRoute = createRouteCallback(async ({
 
   const { session } = sessionResponse;
 
-  /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGIN *****/
+  /***** DONE OUR CHECKS, THE USER IS GOOD TO LOGOUT *****/
   await prisma.session.delete({
     where: {
       token: session.token

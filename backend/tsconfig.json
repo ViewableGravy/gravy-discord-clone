@@ -18,5 +18,10 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "prisma": ["prisma/client"],
+    }
   }
 }

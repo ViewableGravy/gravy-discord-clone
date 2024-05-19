@@ -2,23 +2,24 @@
 // import { getClientById, sendToClient } from "../store/helpers";
 
 /***** TYPE DEFINITIONS *****/
-import type { User } from "@prisma/client";
-import type { TAuthorizationLevels } from "../store/types";
-import { socketManager } from "../store";
+import type { User } from "prisma/generated/auth";
+// import type { TAuthorizationLevels } from "../store/types";
+// import { socketManager } from "../store";
+import { wsServer } from "src/singleton";
 
 /***** COMPONENT START *****/
 export const elevateClient = (clientId: string, { id }: User) => {
-  // since we do not currently store this in the database, we will hardcode the level
-  const level = 'user' as TAuthorizationLevels;
-  const client = socketManager.getClientById(clientId);
+  // const client = socketManager.getClientById(clientId);
+  const client = wsServer.client.byIdentifier(clientId)
 
   if (client) {
-    client.authorization.level = level;
+    client.authorization.level = 'user';
     client.userId = id;
 
-    socketManager.sendToClient(client, {
+    client.send({
+    // socketManager.sendToClient(client, {
       type: 'authorization',
-      level
+      level: 'user'
     });
 
     return { success: 'client elevated' }

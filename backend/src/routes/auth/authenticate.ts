@@ -1,13 +1,11 @@
 /***** BASE IMPORTS *****/
 import { z } from "zod";
-import { randomBytes } from "crypto";
 
 /***** MODELS *****/
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { elevateClient } from "../../socket/events/elevateClient";
-import { createJWT, validatePassword } from "../../utilities/crypto";
+import { validatePassword } from "../../utilities/crypto";
 import { createSession } from "./helpers/createSession";
 
 /***** VALIDATION *****/
