@@ -16,6 +16,11 @@ export type BaseClient = {
   send: (data: any) => void;
   ws: WebSocket;
 }
+export type UnidentifiedBaseClient = {
+  awaitingVerification: true;
+  send: (data: any) => void;
+  ws: WebSocket;
+}
 export type Client = BaseClient & Record<string, any>;
 export type Store<TClient extends Client> = {
   create: (client: BaseClient) => Promise<void> | void;
@@ -64,6 +69,14 @@ type ClientProps = {
 
   direction: 'client';
 
+  /**
+   * Callback function to call when the client provides the identifier. This should make a request to an auth server
+   * to verify that the ID is valid.
+   * 
+   * If information about the client needs to be stored in the external store, consider adding this functionality to the store.create function
+   */
+  verifyId: (id: string) => Promise<boolean>;
+
 }
 
 type TDirectionProps<TDirection extends Direction> = NoInfer<TDirection> extends 'client' ? ClientProps : ServerProps;
@@ -92,5 +105,5 @@ export type Props<
 } & TDirectionProps<TDirection>; 
 
 export type inferClient<TServer extends ReturnType<typeof generateSocketServer<any, any>>> = NonNullable<ReturnType<TServer['client']['byIdentifier']>>
-
+export type InferClientFromStore<TStore extends Store<any>> = NonNullable<ReturnType<TStore['read']>>
 

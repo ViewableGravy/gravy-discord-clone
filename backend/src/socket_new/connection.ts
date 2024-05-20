@@ -1,14 +1,14 @@
 /***** IMPORTS *****/
-import { handleServerMessage } from "./message";
+import { handleClientMessage, handleServerMessage } from "./message";
 
 /***** TYPE IMPORTS *****/
-import type { BaseClient, Client, Direction, Props, Routes } from "./type";
+import type { BaseClient, Client, Direction, Props, Routes, UnidentifiedBaseClient } from "./type";
 
 /***** TYPE DEFINITIONS *****/
 type GenerateConnectionHandlers = <
   TClient extends Client, 
   TDirection extends Direction
->(props: Props<TClient, TDirection>  & { routes: Routes }) => (ws: WebSocket) => void;
+>(props: { routes: Routes } & Props<TClient, TDirection>) => (ws: WebSocket) => void;
 
 /***** COMPONENT START *****/
 export const generateConnectionHandlers: GenerateConnectionHandlers = (props) => {
@@ -39,12 +39,24 @@ export const generateConnectionHandlers: GenerateConnectionHandlers = (props) =>
   
     store.create(client);
     client.send(initializeClient?.(initializationObject) ?? initializationObject);
-    handleServerMessage({ client, ...props });
-    return;
+    return handleServerMessage({ client, ...props });
+  }
+
+  const clientHandler = (ws: WebSocket) => {
+    if (props.direction !== 'client') 
+      throw new Error('clientHandler must be invoked using a client direction');
+
+    const client: UnidentifiedBaseClient = {
+      ws,
+      awaitingVerification: true,
+      send: (data) => ws.send(JSON.stringify(data)),
+    }
+
+    return handleClientMessage({ client, ...props });
   }
 
   /***** RETURN *****/
   return props.direction === 'server' 
     ? serverHandler 
-    : () => {};
+    : clientHandler;
 }
