@@ -2,7 +2,7 @@
 import express from 'express';
 
 /***** SOCKET IMPORTS *****/
-import { generateSocketServer } from './socket_new/index.new.new';
+import { generateSocketServer } from './socket_new';
 import { randomUUID } from 'crypto';
 
 /***** TYPE DEFINITIONS *****/

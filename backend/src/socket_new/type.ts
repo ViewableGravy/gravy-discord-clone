@@ -1,14 +1,12 @@
 /***** BASE IMPORTS *****/
 import type { z } from "zod";
-import type { generateSocketServer } from "./index.new.new";
+import type { generateSocketServer } from ".";
 
 /***** TYPE DEFINITIONS *****/
 export type Direction = 'client' | 'server';
+export type Routes = Record<string, (props: any) => void>;
+export type BuilderProps = { status: 'success' | 'error' }
 
-
-type BuilderProps = {
-  status: 'success' | 'error';
-}
 export type Dependencies = {
   builder?: <TClient extends Client>(client: TClient) => (options: BuilderProps) => void; 
 }
@@ -50,7 +48,7 @@ type InitializationObject = {
   identifier: string
 };
 
-type OnInitializeClient = (args: InitializationObject) => InitializationObject & Record<string, any>;
+export type OnInitializeClient = (args: InitializationObject) => InitializationObject & Record<string, any>;
 
 type ServerProps = {
 
