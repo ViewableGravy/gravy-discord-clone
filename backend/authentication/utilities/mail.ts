@@ -3,11 +3,11 @@ import nodeMailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 /***** UTILITIES *****/
-import { log } from "./logging";
-import { templates } from "../templates";
+import { log } from "shared/utilities/logging";
+import { templates } from "authentication/templates";
 
 /***** CONSTS *****/
-import { DEBUG_LEVELS } from "../models/enums";
+import { DEBUG_LEVELS } from "shared/utilities/constants";
 
 /***** TYPE DEFINITIONS *****/
 type TSendMailProps = {

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createRouteCallback } from "../../models/base";
 
 /***** UTILITIES *****/
-import { validatePassword } from "../../utilities/crypto";
+import { validatePassword } from "shared/utilities/crypto";
 import { createSession } from "./helpers/createSession";
 
 /***** VALIDATION *****/

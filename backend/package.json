@@ -3,8 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "dev_old": "tsx watch src/web.ts",
-    "dev": "bun --watch run src/web.ts",
+    "authentication": "bun --watch run authentication/web.ts",
+    "server": "bun --watch run authentication/web.ts",
     "prisma": "npx prisma generate --schema prisma/schema.auth.prisma --watch && npx prisma generate --schema prisma/schema.server.prisma --watch"
   },
   "devDependencies": {

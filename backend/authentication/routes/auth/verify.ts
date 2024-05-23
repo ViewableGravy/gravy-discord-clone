@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 /***** UTILITIES *****/
-import { validatePassword } from "../../utilities/crypto";
+import { validatePassword } from "shared/utilities/crypto";
 import { createSession } from "./helpers/createSession";
 
 /***** CONSTS *****/

@@ -2,17 +2,14 @@
 import express from 'express';
 
 /***** SOCKET IMPORTS *****/
-import { generateSocketServer } from './socket_new';
+import { generateSocketServer } from 'shared/socket';
 import { randomUUID } from 'crypto';
 
 /***** TYPE DEFINITIONS *****/
-import type { BaseClient, inferClient } from './socket_new/type';
+import type { BaseClient } from '../shared/socket/type';
 
 export type Client = BaseClient & {
-  authorization: {
-    level: 'guest' | 'user' | 'admin',
-  },
-  userId?: string
+  // extra fields not stored by the BaseClient
 }
 
 const socketStore: Record<string, Client> = {};
@@ -29,12 +26,7 @@ export const wsServer = generateSocketServer({
       return socketStore[identifier]
     },
     create(client) {
-      socketStore[client.identifier] = {
-        ...client,
-        authorization: {
-          level: 'guest'
-        }
-      };
+      socketStore[client.identifier] = client;
     },
     update(identifier, client) {
       socketStore[identifier] = client;
@@ -49,12 +41,7 @@ export const wsServer = generateSocketServer({
     }
   },
   initializeClient(base) {
-    return {
-      ...base,
-      authorization: {
-        level: 'guest'
-      }
-    }
+    return base
   },
   dependencies: {
     builder(client) {
@@ -64,8 +51,3 @@ export const wsServer = generateSocketServer({
     }
   }
 })
-
-/**
- * Type can be inferred from the store if necessary
- */
-type SocketClient = inferClient<typeof wsServer>

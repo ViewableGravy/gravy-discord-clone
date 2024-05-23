@@ -7,7 +7,7 @@ import { createRouteCallback } from "../../models/base";
 /***** UTILITIES *****/
 import { getSession } from "./helpers/getSession";
 import { deElevateClient } from "../../socket/events/deElevateClient";
-import { wsServer } from "src/singleton";
+import { wsServer } from "authentication/singleton";
 
 /***** VALIDATION *****/
 const validator = z.object({

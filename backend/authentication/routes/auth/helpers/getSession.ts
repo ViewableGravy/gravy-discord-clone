@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 /***** UTILITIES *****/
-import { verifyJWT } from "../../../utilities/crypto";
+import { verifyJWT } from "shared/utilities/crypto";
 
 /***** TYPE DEFINITIONS *****/
 import type { TBuilder, TPrisma } from "../../../models/base";

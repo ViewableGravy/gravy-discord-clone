@@ -1,13 +1,13 @@
 /***** BASE IMPORTS *****/
 import { randomBytes } from "crypto";
-import type { User } from "../../../../prisma/generated/auth";
+import type { User } from "prisma/generated/auth";
 
 /***** UTILITIES *****/
-import { createJWT } from "../../../utilities/crypto";
-import { elevateClient } from "../../../socket/events/elevateClient";
+import { createJWT } from "shared/utilities/crypto";
+import { elevateClient } from "authentication/socket/events/elevateClient";
 
 /***** MODELS *****/
-import type { prisma, TStandardBuilder } from "../../../models/base";
+import type { prisma, TStandardBuilder } from "authentication/models/base";
 
 /***** TYPE DEFINITIONS *****/
 type TArgs = {

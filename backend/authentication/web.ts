@@ -3,24 +3,29 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 
 /***** ROUTE IMPORTS *****/
-import { aliveRoute } from './routes/ami/alive';
-import { authenticatedRoute } from './routes/ami/authenticated';
-// import { testInvalidateRoute } from './routes/test/invalidate';
-import { createAccount } from './routes/auth/createAccount';
-import { loginRoute } from './routes/auth/authenticate';
-import { refreshRoute } from './routes/auth/refresh';
-import { logoutRoute } from './routes/auth/logout';
-import { usernameAvailabilityRoute } from './routes/auth/usernameAvailability';
-import { verifyAccount } from './routes/auth/verify';
+import { aliveRoute } from 'authentication/routes/ami/alive';
+import { authenticatedRoute } from 'authentication/routes/ami/authenticated';
+import { createAccount } from 'authentication/routes/auth/createAccount';
+import { loginRoute } from 'authentication/routes/auth/authenticate';
+import { refreshRoute } from 'authentication/routes/auth/refresh';
+import { logoutRoute } from 'authentication/routes/auth/logout';
+import { usernameAvailabilityRoute } from 'authentication/routes/auth/usernameAvailability';
+import { verifyAccount } from 'authentication/routes/auth/verify';
+import { testSocketHandler } from 'authentication/routes/sockets/test';
+import { leaveRoomSocketHandler } from 'authentication/routes/sockets/invalidate/leave-room';
+import { joinRoomSocketHandler } from 'authentication/routes/sockets/invalidate/join-room';
 
 /***** CRON IMPORTS *****/
 import { initializeClearSessionsCron } from './crons/clearSessions';
-import { testSocketHandler } from './routes/sockets/test';
-import { ROUTES } from './route-names';
-import { leaveRoomSocketHandler } from './routes/sockets/invalidate/leave-room';
-import { joinRoomSocketHandler } from './routes/sockets/invalidate/join-room';
-import { log } from './utilities/logging';
+
+/***** INSTANCE IMPORTS *****/
 import { server, wsServer } from './singleton';
+
+/***** UTILITIES *****/
+import { log } from 'shared/utilities/logging';
+
+/***** CONSTS *****/
+import { ROUTES } from 'authentication/routes';
 
 /***** SERVER SETUP *****/
 server.use(cors());
@@ -28,7 +33,7 @@ server.use(bodyParser.json());
 
 /***** DEVELOPMENT ROUTES ******/
 if (Bun.env.NODE_ENV === 'development') {
-  // server.post('/api/test/invalidate', testInvalidateRoute)
+  
 }
 
 /***** ROUTES ******/
@@ -57,22 +62,6 @@ const expressServer = server.listen(3000, () => {
 });
 
 wsServer.connect("/api/socket", expressServer);
-// exampleWSServer.connect("/api/testing/socket", expressServer);
-
-// handle socket upgrade
-// expressServer.on('upgrade', (req, socket, head) => {
-//   if (req.url === '/api/socket') {
-//     socketServer.handleUpgrade(req, socket, head, (ws) => {
-//       socketServer.emit('connection', ws, req);
-//     })
-//   }
-
-//   if (req.url === '/api/socket') {
-//     wsServer.socketServer.handleUpgrade(req, socket, head, (ws) => {
-//       wsServer.socketServer.emit('connection', ws, req);
-//     })
-//   }
-// })
 
 /***** CRONS *****/
 initializeClearSessionsCron();

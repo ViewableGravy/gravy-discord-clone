@@ -5,12 +5,6 @@ export const CODES = {
   AUTHORIZATION_HEADER_INVALID: 'AUTHORIZATION_HEADER_INVALID',
 } as const;
 
-export const DEBUG_LEVELS = {
-  ERROR: 'ERROR',
-  INFO: 'INFO',
-  WARN: 'WARN',
-} as const;
-
 export const ROOMS = {
   INVALIDATE_ENDPOINT_A: 'invalidate/endpointA',
   INVALIDATE_ENDPOINT_B: 'invalidate/endpointB',

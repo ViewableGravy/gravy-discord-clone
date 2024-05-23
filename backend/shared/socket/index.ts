@@ -2,13 +2,12 @@
 import { WebSocketServer } from 'ws';
 
 /***** UTILITIES *****/
-import { log } from 'src/utilities/logging';
+import { log } from 'shared/utilities/logging';
 
 /***** TYPE DEFINITIONS *****/
 import type { SocketRouteCallback, Client, Props, Direction, BaseClient } from "./type";
 import type { Server } from 'http';
 import type { z } from 'zod';
-import { socketServerValidators } from './validator';
 import { generateConnectionHandlers } from './connection';
 
 /***** COMPONENT START *****/

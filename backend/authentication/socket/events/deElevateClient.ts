@@ -1,5 +1,5 @@
 /***** UTILITIES *****/
-import { wsServer, type Client } from "src/singleton";
+import { wsServer, type Client } from "authentication/singleton";
 // import { socketManager } from "../store";
 
 // /***** TYPE DEFINITIONS *****/

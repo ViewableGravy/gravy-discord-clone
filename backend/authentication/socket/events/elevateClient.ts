@@ -1,5 +1,5 @@
 /***** CONSTANTS *****/
-import { wsServer } from "src/singleton";
+import { wsServer } from "authentication/singleton";
 
 /***** TYPE DEFINITIONS *****/
 import type { User } from "prisma/generated/auth";

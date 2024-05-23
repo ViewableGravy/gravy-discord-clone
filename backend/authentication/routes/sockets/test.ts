@@ -2,8 +2,8 @@
 import { z } from "zod";
 
 /***** TYPE DEFINITIONS *****/
-import type { SocketRouteCallback } from "src/socket_new/type";
-import type { Client } from "src/singleton";
+import type { SocketRouteCallback } from "shared/socket/type";
+import type { Client } from "authentication/singleton";
 
 /***** VALIDATORS *****/
 const validateSocketTest = z.object({
