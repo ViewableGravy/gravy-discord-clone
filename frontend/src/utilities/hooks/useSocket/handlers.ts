@@ -6,7 +6,7 @@ import { socketValidators } from "./validators";
 import { authSocket } from "./";
 
 /***** QUERY IMPORTS *****/
-import { queryClient } from "../../../app";
+import { queryClient } from "singletons/queryClient";
 
 /***** TYPE DEFINITIONS *****/
 import type { TSocketTypes } from "./static";

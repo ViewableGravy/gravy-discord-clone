@@ -5,8 +5,9 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { Button } from "../../components/button"
 
 /***** UTILITIES *****/
-import { useBrowserNotification } from "../../utilities/hooks/useBrowserNotification"
+import { useBrowserNotification } from "utilities/hooks/useBrowserNotification"
 import { useLogoutMutation } from "../../api/mutations/useLogoutMutation"
+import { authSocket } from "utilities/hooks/useSocket"
 
 /***** COMPONENT START *****/
 const Dashboard = () => {    
@@ -41,8 +42,8 @@ const Dashboard = () => {
 
 export const Route = createFileRoute('/dashboard/')({
     component: Dashboard,
-    async beforeLoad({ context, location }) {
-        if (context.authorizationLevel === 'guest') {
+    async beforeLoad({ location }) {
+        if (authSocket.store.state.authorization.level === 'guest') {
             throw redirect({
                 to: '/login',
                 search: {

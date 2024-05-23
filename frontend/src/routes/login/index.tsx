@@ -29,6 +29,7 @@ import { QRCode } from './-components/qrCode'
 /***** CONSTS *****/
 import background from '../../assets/login-background.svg';
 import './_Login.scss';
+import { authSocket } from 'utilities/hooks/useSocket'
 
 const validators = {
   login: z.string().min(1, 'Login is required'),
@@ -162,8 +163,8 @@ const Login = () => {
 
 export const Route = createFileRoute('/login/')({
   component: Login,
-  async beforeLoad({ context }) {
-    if (context.authorizationLevel !== 'guest') {
+  async beforeLoad() {
+    if ("guest" !== authSocket.store.state.authorization.level) {
       throw redirect({
         to: '/dashboard'
       })

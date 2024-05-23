@@ -2,7 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect } from 'react';
 import { z } from 'zod';
-import { router } from '../../app';
+import { router } from 'singletons/router';
 
 /***** UTILITIES *****/
 import { useAuthorizationSocket } from '../../utilities/hooks/useSocket';

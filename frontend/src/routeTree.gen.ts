@@ -43,18 +43,30 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
     '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
       preLoaderRoute: typeof LoginIndexImport
       parentRoute: typeof rootRoute
     }
     '/register/': {
+      id: '/register/'
+      path: '/register'
+      fullPath: '/register'
       preLoaderRoute: typeof RegisterIndexImport
       parentRoute: typeof rootRoute
     }
     '/verify/': {
+      id: '/verify/'
+      path: '/verify'
+      fullPath: '/verify'
       preLoaderRoute: typeof VerifyIndexImport
       parentRoute: typeof rootRoute
     }
@@ -63,11 +75,11 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([
+export const routeTree = rootRoute.addChildren({
   DashboardIndexRoute,
   LoginIndexRoute,
   RegisterIndexRoute,
   VerifyIndexRoute,
-])
+})
 
 /* prettier-ignore-end */

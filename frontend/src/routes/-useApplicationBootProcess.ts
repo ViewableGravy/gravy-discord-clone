@@ -5,6 +5,8 @@ import { API } from "../api/queries";
 import { useRefreshToken } from "../utilities/hooks/useRefreshToken";
 import { useAuthorizationSocket } from "../utilities/hooks/useSocket";
 import { useFirstEffect } from "../utilities/hooks/useFirstEffect";
+import { useEffect } from "react";
+import { appStore } from "../store";
 
 /***** COMPONENT START *****/
 export const useApplicationBootProcess = () => {
@@ -21,6 +23,15 @@ export const useApplicationBootProcess = () => {
   useFirstEffect(() => {
     refresh()
   }, !!refreshToken && authorization.level === 'guest' && !hasLoggedOutOnce)
+
+  useEffect(() => {
+    if (readyState === 'READY' && refreshStatus !== 'pending' || hasLoggedOutOnce) {
+      appStore.setState((state) => ({
+        ...state,
+        initialized: true
+      }))
+    }
+  })
 
   /***** RENDER *****/
   return {
