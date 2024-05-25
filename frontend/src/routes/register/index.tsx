@@ -5,30 +5,30 @@ import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 
 /***** UTILITIES *****/
-import { useAppViewport } from '../../utilities/hooks/useMedia';
+import { useAppViewport } from 'utilities/hooks/useMedia';
 import { useRegistrationForm } from './-form';
-import { useToggleState } from '../../utilities/hooks/useToggleState';
+import { useToggleState } from 'utilities/hooks/useToggleState';
 
 /***** SHARED *****/
-import { Text } from '../../components/utility/text';
-import { Padding } from '../../components/utility/padding';
-import { Flex } from '../../components/utility/flex';
-import { Button } from '../../components/button';
-import { Anchor } from '../../components/Anchor';
+import { Text } from 'components/utility/text';
+import { Padding } from 'components/utility/padding';
+import { Flex } from 'components/utility/flex';
+import { Button } from 'components/button';
+import { Anchor } from 'components/Anchor';
 
 /***** FORM *****/
-import { FieldLabel } from '../../components/form/general/label/label';
+import { FieldLabel } from 'components/form/general/label/label';
 
 /***** LOCAL IMPORTS *****/
 import { RegistrationModal } from './-registrationModal';
 
 /***** API IMPORTS *****/
-import { API } from '../../api/queries';
+import { API } from 'api/queries';
 
 /***** CONSTS *****/
+import { EyeIcon } from 'assets/icons/eye';
+import { EyeSlashIcon } from 'assets/icons/eye-slash';
 import './_Register.scss';
-import { EyeIcon } from '../../assets/icons/eye';
-import { EyeSlashIcon } from '../../assets/icons/eye-slash';
 
 const validators = {
   email: z.string().email(),

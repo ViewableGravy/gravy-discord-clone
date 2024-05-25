@@ -1,5 +1,5 @@
 /***** BASE IMPORTS *****/
-import { Outlet, createRootRouteWithContext, redirect, useRouteContext } from "@tanstack/react-router"
+import { Outlet, createRootRouteWithContext, redirect, useLocation, useRouteContext } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -12,26 +12,17 @@ import { Navbar } from "../components/navbar";
 import { Button } from "../components/button";
 
 /***** UTILITIES *****/
-import { useAuthorizationSocket } from "../utilities/hooks/useSocket";
+import { authSocket, useAuthorizationSocket } from "../utilities/hooks/useSocket";
 
 /***** CONSTS *****/
 import discord from '../assets/discord.jpg';
 import nvidia from '../assets/nvidia.png';
 import spotify from '../assets/spotify.png';
-import { Lightbox } from "../components/lightbox";
-import { useApplicationBootProcess } from "./-useApplicationBootProcess";
 
 /***** COMPONENT START *****/
 const RootRoute = () => {
   /***** HOOKS *****/
-  const { applicationLoading } = useApplicationBootProcess()
   const { authorization } = useAuthorizationSocket(({ authorization }) => ({ authorization }));
-
-  if (applicationLoading) {
-    <Lightbox isOpen={applicationLoading}>
-      Cooking up some spaghetti
-    </Lightbox>
-  }
 
   /***** RENDER *****/
   return (
@@ -74,18 +65,21 @@ export const Route = createRootRouteWithContext()({
   component: RootRoute,
   notFoundComponent: RouteFallbackComponents.NotFound,
   errorComponent: () => <div>Error!</div>,
-  // async beforeLoad({ context, location }) {
-  //   // if (location.pathname.startsWith('/authed')) {
-  //   //   if (context.authorizationLevel === 'guest') {
-  //   //     if (location.pathname !== '/login') {
-  //   //       throw redirect({
-  //   //         to: '/login',
-  //   //         search: {
-  //   //           redirect: location.href
-  //   //         }
-  //   //       })
-  //   //     }
-  //   //   }
-  //   // }
-  // }
+  async beforeLoad({ location }) {
+    const { pathname } = location;
+    const { authorization } = authSocket.store.state;
+
+    if (pathname.startsWith('/authed')) {
+      if (authorization.level === 'guest') {
+        if (pathname !== '/login') {
+          throw redirect({
+            to: '/login',
+            search: {
+              redirect: location.href
+            }
+          })
+        }
+      }
+    }
+  }
 })

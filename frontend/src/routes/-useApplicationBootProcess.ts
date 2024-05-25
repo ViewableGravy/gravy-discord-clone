@@ -35,6 +35,6 @@ export const useApplicationBootProcess = () => {
 
   /***** RENDER *****/
   return {
-    applicationLoading: readyState !== 'READY' || refreshStatus === 'pending' && !hasLoggedOutOnce,
+    initialized: readyState !== 'READY' || refreshStatus === 'pending' && !hasLoggedOutOnce,
   }
 }
